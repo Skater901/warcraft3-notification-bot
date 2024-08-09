@@ -6,11 +6,10 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 
 fun main() {
-    // parse config
-    val config = parseConfig("")
+    val config = parseConfig()
 
     JDABuilder.createLight(
-        config.discordConfiguration!!.privateToken,
+        config.discordConfiguration.privateToken,
         GatewayIntent.GUILD_MESSAGES
     )
         .build()
@@ -18,7 +17,7 @@ fun main() {
         .apply {
             // register commands
             addCommands(
-                RegisterNotification()
+//                RegisterNotification()
             )
 
             queue()

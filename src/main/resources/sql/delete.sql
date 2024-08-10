@@ -1,0 +1,1 @@
+DELETE FROM channel_notification WHERE channel_id = :channelId;

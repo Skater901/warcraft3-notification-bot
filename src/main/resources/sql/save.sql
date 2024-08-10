@@ -1,0 +1,1 @@
+REPLACE INTO channel_notification (channel_id, regex_pattern) VALUES (:channelId, :regexPattern);

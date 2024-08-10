@@ -4,6 +4,7 @@ import au.com.skater901.w3cconnect.api.commands.Command
 import au.com.skater901.w3cconnect.api.commands.Help
 import au.com.skater901.w3cconnect.api.commands.RegisterNotification
 import au.com.skater901.w3cconnect.api.commands.StopNotification
+import au.com.skater901.w3cconnect.application.database.MigrationsManager
 import au.com.skater901.w3cconnect.application.module.AppModule
 import au.com.skater901.w3cconnect.application.module.ConfigModule
 import au.com.skater901.w3cconnect.application.module.DatabaseModule
@@ -20,6 +21,9 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 
 fun main() {
     val injector = Guice.createInjector(AppModule(), ConfigModule(), DatabaseModule())
+
+    // Run database migrations
+    injector.getInstance(MigrationsManager::class.java).runMigrations()
 
     val config = injector.getInstance(WC3ConnectDiscordNotificationBotConfiguration::class.java)
 

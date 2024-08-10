@@ -9,8 +9,13 @@ val liquibase_logging_version: String by project
 val logback_version: String by project
 val guice_version: String by project
 
+// Testing library versions
+val assertj_version: String by project
+val mysql_test_container_version: String by project
+
 plugins {
     kotlin("jvm") version "2.0.0"
+    jacoco
 }
 
 group = "au.com.skater901"
@@ -40,11 +45,39 @@ dependencies {
     implementation("com.google.inject:guice:$guice_version")
 
     testImplementation(kotlin("test"))
+
+    // Testing/assertion libraries
+    testImplementation("org.assertj:assertj-core:$assertj_version")
+
+    // Integration/end to end testing libraries
+    testImplementation("org.testcontainers:mysql:$mysql_test_container_version")
 }
 
-tasks.test {
-    useJUnitPlatform()
+jacoco {
+    reportsDirectory = file("$buildDir/coverage-reports")
 }
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
+
+    jacocoTestReport {
+        dependsOn(test)
+    }
+
+    jacocoTestCoverageVerification {
+        dependsOn(jacocoTestReport)
+        violationRules {
+            rule {
+                limit {
+                    minimum = BigDecimal("0.9")
+                }
+            }
+        }
+    }
+}
+
 kotlin {
     jvmToolchain(21)
 }

@@ -8,6 +8,7 @@ build/
 *.iml
 *.ipr
 out/
+.kotlin/
 
 ### Eclipse ###
 .apt_generated

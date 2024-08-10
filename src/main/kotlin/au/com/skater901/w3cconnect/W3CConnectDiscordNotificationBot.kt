@@ -17,7 +17,7 @@ fun main() {
         .apply {
             // register commands
             addCommands(
-//                RegisterNotification()
+                RegisterNotification()
             )
 
             queue()

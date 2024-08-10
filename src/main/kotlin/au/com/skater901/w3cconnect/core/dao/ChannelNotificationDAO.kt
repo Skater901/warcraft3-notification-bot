@@ -1,7 +1,11 @@
 package au.com.skater901.w3cconnect.core.dao
 
-interface ChannelNotificationDAO {
-    suspend fun save()
+import au.com.skater901.w3cconnect.core.ChannelNotification
 
-    suspend fun find(): List<Any>
+interface ChannelNotificationDAO {
+    suspend fun save(channelNotification: ChannelNotification)
+
+    suspend fun find(): List<ChannelNotification>
+
+    suspend fun delete(channelId: Long)
 }

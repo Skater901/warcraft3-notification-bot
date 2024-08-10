@@ -6,6 +6,7 @@ import au.com.skater901.w3cconnect.api.commands.RegisterNotification
 import au.com.skater901.w3cconnect.api.commands.StopNotification
 import au.com.skater901.w3cconnect.application.module.AppModule
 import au.com.skater901.w3cconnect.application.module.ConfigModule
+import au.com.skater901.w3cconnect.application.module.DatabaseModule
 import com.google.inject.Guice
 import com.google.inject.Injector
 import dev.minn.jda.ktx.events.listener
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.requests.GatewayIntent
 
 fun main() {
-    val injector = Guice.createInjector(AppModule(), ConfigModule())
+    val injector = Guice.createInjector(AppModule(), ConfigModule(), DatabaseModule())
 
     val config = injector.getInstance(WC3ConnectDiscordNotificationBotConfiguration::class.java)
 

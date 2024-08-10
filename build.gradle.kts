@@ -4,6 +4,7 @@ val coroutines_version: String by project
 val mysql_version: String by project
 val jdbi_version: String by project
 val logback_version: String by project
+val guice_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -29,6 +30,8 @@ dependencies {
 
     // Logging libraries
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
+    implementation("com.google.inject:guice:$guice_version")
 
     testImplementation(kotlin("test"))
 }

@@ -1,6 +1,6 @@
 package au.com.skater901.w3cconnect.core.dao.jdbi
 
-import au.com.skater901.w3cconnect.core.ChannelNotification
+import au.com.skater901.w3cconnect.core.domain.ChannelNotification
 import au.com.skater901.w3cconnect.core.dao.ChannelNotificationDAO
 import jakarta.inject.Inject
 import org.jdbi.v3.core.Jdbi

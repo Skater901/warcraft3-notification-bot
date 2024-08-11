@@ -23,6 +23,12 @@ class RegisterNotification @Inject constructor(
     }
 
     override suspend fun handleCommand(command: SlashCommandInteractionEvent) {
+        if (command.channelIdLong == 0L) {
+            // Can this even happen? idk but just in case
+            command.replySuspended("Notification requested from outside a channel. Please use a channel.")
+            return
+        }
+
         try {
             notificationService.createNotification(command.channelIdLong, command.getOption("filter")!!.asString)
             command.replySuspended(

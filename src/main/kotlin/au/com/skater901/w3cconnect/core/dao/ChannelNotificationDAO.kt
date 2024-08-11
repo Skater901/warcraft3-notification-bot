@@ -1,6 +1,6 @@
 package au.com.skater901.w3cconnect.core.dao
 
-import au.com.skater901.w3cconnect.core.ChannelNotification
+import au.com.skater901.w3cconnect.core.domain.ChannelNotification
 
 interface ChannelNotificationDAO {
     suspend fun save(channelNotification: ChannelNotification)

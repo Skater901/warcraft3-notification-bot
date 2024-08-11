@@ -11,6 +11,7 @@ val guice_version: String by project
 
 // Testing library versions
 val assertj_version: String by project
+val mockito_version: String by project
 val mysql_test_container_version: String by project
 
 plugins {
@@ -48,6 +49,7 @@ dependencies {
 
     // Testing/assertion libraries
     testImplementation("org.assertj:assertj-core:$assertj_version")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockito_version")
 
     // Integration/end to end testing libraries
     testImplementation("org.testcontainers:mysql:$mysql_test_container_version")

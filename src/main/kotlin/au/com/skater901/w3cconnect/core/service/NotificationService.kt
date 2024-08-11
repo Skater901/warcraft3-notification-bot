@@ -1,6 +1,6 @@
 package au.com.skater901.w3cconnect.core.service
 
-import au.com.skater901.w3cconnect.core.ChannelNotification
+import au.com.skater901.w3cconnect.core.domain.ChannelNotification
 import au.com.skater901.w3cconnect.core.dao.ChannelNotificationDAO
 import au.com.skater901.w3cconnect.core.domain.exceptions.InvalidRegexPatternException
 import jakarta.inject.Inject
@@ -13,7 +13,7 @@ class NotificationService @Inject constructor(
         val mapRegex = try {
             Regex(mapPattern)
         } catch (e: PatternSyntaxException) {
-            throw InvalidRegexPatternException(e.message ?: "")
+            throw InvalidRegexPatternException(e.message!!)
         }
 
         channelNotificationDAO.save(ChannelNotification(channelId, mapRegex))

@@ -1,6 +1,6 @@
 package au.com.skater901.w3cconnect.core.dao.jdbi
 
-import au.com.skater901.w3cconnect.core.ChannelNotification
+import au.com.skater901.w3cconnect.core.domain.ChannelNotification
 import au.com.skater901.w3cconnect.utils.MySQLExtension
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat

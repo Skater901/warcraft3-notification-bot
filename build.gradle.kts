@@ -8,6 +8,7 @@ val liquibase_version: String by project
 val liquibase_logging_version: String by project
 val logback_version: String by project
 val guice_version: String by project
+val resilience4j_version: String by project
 
 // Testing library versions
 val assertj_version: String by project
@@ -44,6 +45,11 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     implementation("com.google.inject:guice:$guice_version")
+
+    // Resilience Libraries
+    implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4j_version")
+    implementation("io.github.resilience4j:resilience4j-retry:$resilience4j_version")
+    implementation("io.github.resilience4j:resilience4j-circuitbreaker:$resilience4j_version")
 
     testImplementation(kotlin("test"))
 

@@ -6,8 +6,10 @@ import au.com.skater901.w3cconnect.api.commands.RegisterNotification
 import au.com.skater901.w3cconnect.api.commands.StopNotification
 import au.com.skater901.w3cconnect.application.database.MigrationsManager
 import au.com.skater901.w3cconnect.application.module.AppModule
+import au.com.skater901.w3cconnect.application.module.ClientModule
 import au.com.skater901.w3cconnect.application.module.ConfigModule
 import au.com.skater901.w3cconnect.application.module.DatabaseModule
+import au.com.skater901.w3cconnect.core.job.NotifyGamesJob
 import com.google.inject.Guice
 import com.google.inject.Injector
 import dev.minn.jda.ktx.events.listener
@@ -20,7 +22,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.requests.GatewayIntent
 
 fun main() {
-    val injector = Guice.createInjector(AppModule(), ConfigModule(), DatabaseModule())
+    val injector = Guice.createInjector(AppModule(), ClientModule(), ConfigModule(), DatabaseModule())
 
     // Run database migrations
     injector.getInstance(MigrationsManager::class.java).runMigrations()
@@ -41,6 +43,8 @@ fun main() {
         intents += GatewayIntent.GUILD_MESSAGES
     }
         .registerCommands(commands)
+
+    injector.getInstance(NotifyGamesJob::class.java).start()
 }
 
 private inline fun <reified T : Command> Injector.getCommand(): T = getInstance(T::class.java)

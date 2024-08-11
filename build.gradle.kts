@@ -9,6 +9,7 @@ val liquibase_logging_version: String by project
 val logback_version: String by project
 val guice_version: String by project
 val resilience4j_version: String by project
+val jackson_version: String by project
 
 // Testing library versions
 val assertj_version: String by project
@@ -50,6 +51,9 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4j_version")
     implementation("io.github.resilience4j:resilience4j-retry:$resilience4j_version")
     implementation("io.github.resilience4j:resilience4j-circuitbreaker:$resilience4j_version")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
 
     testImplementation(kotlin("test"))
 

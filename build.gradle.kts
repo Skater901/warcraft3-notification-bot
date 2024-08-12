@@ -15,6 +15,8 @@ val jackson_version: String by project
 val assertj_version: String by project
 val mockito_version: String by project
 val mysql_test_container_version: String by project
+val wiremock_version: String by project
+val wiremock_kotlin_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -63,6 +65,8 @@ dependencies {
 
     // Integration/end to end testing libraries
     testImplementation("org.testcontainers:mysql:$mysql_test_container_version")
+    testImplementation("org.wiremock:wiremock:$wiremock_version")
+    testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
 }
 
 jacoco {

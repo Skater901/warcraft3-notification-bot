@@ -6,11 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.inject.Inject
 import jakarta.inject.Named
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.net.http.HttpClient
@@ -25,11 +22,12 @@ class NotifyGamesJob @Inject constructor(
     private val mapper: ObjectMapper,
     @Named("refreshInterval")
     private val refreshInterval: Long
-) {
+) : AutoCloseable {
     companion object {
         private val logger = LoggerFactory.getLogger(NotifyGamesJob::class.java)
     }
 
+    private var dispatcher: CloseableCoroutineDispatcher? = null
     private var started = false
 
     fun start() {
@@ -38,9 +36,12 @@ class NotifyGamesJob @Inject constructor(
 
             started = true
 
-            CoroutineScope(newSingleThreadContext("game-notification")).launch {
-                while (true) {
-                    try {// refresh
+            dispatcher = newSingleThreadContext("game-notification")
+
+            CoroutineScope(dispatcher!!).launch {
+                while (started) {
+                    try {
+                        // refresh
                         client.sendAsync(
                             HttpRequest.newBuilder(gamesUrl)
                                 .header("Accept", "application/json")
@@ -48,7 +49,16 @@ class NotifyGamesJob @Inject constructor(
                             BodyHandlers.ofInputStream()
                         )
                             .await()
-                            .let { mapper.readValue<List<Game>>(it.body()) }
+                            .let {
+                                if (it.statusCode() >= 400) {
+                                    throw RuntimeException(
+                                        "HTTP error: ${it.statusCode()}, ${
+                                            it.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
+                                        }")
+                                }
+
+                                mapper.readValue<List<Game>>(it.body())
+                            }
                             .let { gameNotificationService.notifyGames(it) }
                     } catch (t: Throwable) {
                         logger.error("Error when fetching games list.", t)
@@ -58,5 +68,12 @@ class NotifyGamesJob @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun close() {
+        started = false
+
+        dispatcher?.close()
+        dispatcher = null
     }
 }

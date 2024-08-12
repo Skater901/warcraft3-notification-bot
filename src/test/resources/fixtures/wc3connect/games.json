@@ -1,0 +1,57 @@
+[
+  {
+    "id": 4747,
+    "bot_id": 2,
+    "location": "Montreal",
+    "name": "[ENT] HELLHALT TD v80 #55",
+    "map": "HELLHALT v5.0.80",
+    "host": "",
+    "slots_taken": 2,
+    "slots_total": 6,
+    "uptime": "54:17"
+  },
+  {
+    "id": 4176,
+    "bot_id": 3,
+    "location": "Montreal",
+    "name": "[ENT] HELLHALT TD v84 #25",
+    "map": "HELLHALT v5.0.84",
+    "host": "",
+    "slots_taken": 0,
+    "slots_total": 6,
+    "uptime": "7507:36"
+  },
+  {
+    "id": 4746,
+    "bot_id": 11,
+    "location": "Montreal",
+    "name": "[ENT] DotA apem us/ca #23",
+    "map": "DotA v6.83d fixed v5 by h3rmit",
+    "host": "",
+    "slots_taken": 0,
+    "slots_total": 10,
+    "uptime": "130:27"
+  },
+  {
+    "id": 4745,
+    "bot_id": 35,
+    "location": "Montreal",
+    "name": "[ENT] Legion TD Mega 1v1 #65",
+    "map": "Legion TD Mega 3.43d6",
+    "host": "",
+    "slots_taken": 0,
+    "slots_total": 2,
+    "uptime": "133:47"
+  },
+  {
+    "id": 3286,
+    "bot_id": 65,
+    "location": "Montreal",
+    "name": "[ENT] Castle Fight 1v1 #30",
+    "map": "p1l1s-CF-2040",
+    "host": "",
+    "slots_taken": 0,
+    "slots_total": 2,
+    "uptime": "19191:24"
+  }
+]

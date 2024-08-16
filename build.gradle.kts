@@ -1,13 +1,9 @@
-val discord_version: String by project
-val ktx_version: String by project
-val coroutines_version: String by project
 val mysql_version: String by project
 val jdbi_version: String by project
 val hikari_version: String by project
 val liquibase_version: String by project
 val liquibase_logging_version: String by project
 val logback_version: String by project
-val guice_version: String by project
 val resilience4j_version: String by project
 val jackson_version: String by project
 
@@ -23,7 +19,7 @@ plugins {
     jacoco
 }
 
-group = "au.com.skater901"
+group = "au.com.skater901.wc3connect"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -31,11 +27,7 @@ repositories {
 }
 
 dependencies {
-    // Discord API
-    implementation("net.dv8tion:JDA:$discord_version")
-    implementation("club.minnced:jda-ktx:$ktx_version")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
+    implementation(libs.coroutines)
 
     // Database libraries
     implementation("com.mysql:mysql-connector-j:$mysql_version")
@@ -47,7 +39,7 @@ dependencies {
     // Logging libraries
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
-    implementation("com.google.inject:guice:$guice_version")
+    implementation(libs.guice)
 
     // Resilience Libraries
     implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4j_version")
@@ -56,6 +48,9 @@ dependencies {
 
     implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
+
+    // Notification Modules
+    runtimeOnly(project(":discord-module")) // TODO make run depend on compile
 
     testImplementation(kotlin("test"))
 
@@ -69,11 +64,27 @@ dependencies {
     testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
 }
 
+sourceSets {
+    main {
+        kotlin { srcDir("src/main/kotlin") }
+        resources { srcDir("src/main/resources") }
+    }
+
+    test {
+        kotlin { srcDir("src/test/kotlin") }
+        resources { srcDir("src/test/resources") }
+    }
+}
+
 jacoco {
     reportsDirectory = file("$buildDir/coverage-reports")
 }
 
 tasks {
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE // TODO review this
+    }
+
     test {
         useJUnitPlatform()
     }
@@ -96,4 +107,6 @@ tasks {
 
 kotlin {
     jvmToolchain(21)
+
+    explicitApi()
 }

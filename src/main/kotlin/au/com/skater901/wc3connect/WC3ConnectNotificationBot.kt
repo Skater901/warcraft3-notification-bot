@@ -3,6 +3,7 @@ package au.com.skater901.wc3connect
 import au.com.skater901.wc3connect.application.database.MigrationsManager
 import au.com.skater901.wc3connect.application.module.*
 import au.com.skater901.wc3connect.core.job.NotifyGamesJob
+import au.com.skater901.wc3connect.core.job.TaskRunner
 import au.com.skater901.wc3connect.core.service.NotificationService
 import au.com.skater901.wc3connect.utils.ifNotEmpty
 import com.google.inject.Guice
@@ -50,6 +51,8 @@ public fun main() {
     }
 
     injector.getInstance(NotifyGamesJob::class.java).start()
+
+    TaskRunner(notificationModules).start()
 
     // Hack to keep the app running
     while (true) {

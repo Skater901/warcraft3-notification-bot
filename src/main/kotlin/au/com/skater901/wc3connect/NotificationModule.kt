@@ -98,6 +98,12 @@ public interface NotificationModule<T : Any, C : Any> {
     )
 
     /**
+     * An optional scheduled task that you want to be run. Can be used for registering code that polls for something.
+     */
+    public val scheduledTask: ScheduledTask?
+        get() = null
+
+    /**
      * The class you have created that implements [GameNotifier], and is used for notifying on new games, updating
      * existing games that get modified, and closing off games that have started or been unhosted.
      */

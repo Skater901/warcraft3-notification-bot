@@ -19,7 +19,7 @@ public class NotificationService @Inject internal constructor(
         channelNotificationDAO.save(ChannelNotification(id, mapRegex, "regex"))  // TODO
     }
 
-    public suspend fun deleteNotification(channelId: Long) {
+    public suspend fun deleteNotification(channelId: String) {
         channelNotificationDAO.delete(channelId)
     }
 }

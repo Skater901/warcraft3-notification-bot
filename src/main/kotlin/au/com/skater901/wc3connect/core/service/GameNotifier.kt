@@ -13,6 +13,8 @@ public interface GameNotifier {
      * implementation.
      *
      * @param game The details about the Warcraft 3 game hosted on WC3Connect.
+     *
+     * @throws [au.com.skater901.wc3connect.core.domain.exceptions.InvalidNotificationException]
      */
     public suspend fun notifyNewGame(notificationId: String, game: Game)
 

@@ -7,5 +7,5 @@ internal interface ChannelNotificationDAO {
 
     suspend fun find(): List<ChannelNotification>
 
-    suspend fun delete(channelId: Long)
+    suspend fun delete(channelId: String)
 }

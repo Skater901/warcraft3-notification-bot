@@ -2,6 +2,7 @@ package au.com.skater901.wc3connect.core.service
 
 import au.com.skater901.wc3connect.core.dao.ChannelNotificationDAO
 import au.com.skater901.wc3connect.core.domain.Game
+import au.com.skater901.wc3connect.core.domain.exceptions.InvalidNotificationException
 import au.com.skater901.wc3connect.utils.forEachAsync
 import au.com.skater901.wc3connect.utils.mapAsync
 import jakarta.inject.Inject
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 @Singleton
 internal class GameNotificationService @Inject constructor(
     private val channelNotificationDAO: ChannelNotificationDAO,
-    private val gameNotifiers: Map<String, @JvmSuppressWildcards GameNotifier>
+    private val gameNotifiers: Map<String, @JvmSuppressWildcards GameNotifier>,
 ) {
     private val hostedGames = mutableMapOf<Int, Pair<Game, List<GameNotifier>>>()
 
@@ -47,8 +48,13 @@ internal class GameNotificationService @Inject constructor(
         return newGames.mapAsync { game ->
             game to channelNotifications.filter { it.mapRegex.containsMatchIn(game.map) }
                 .mapAsync {
-                    gameNotifiers[it.type]?.apply {
-                        notifyNewGame(it.id, game)
+                    try {
+                        gameNotifiers[it.type]?.apply {
+                            notifyNewGame(it.id, game)
+                        }
+                    } catch (e: InvalidNotificationException) {
+                        channelNotificationDAO.delete(it.id)
+                        null
                     }
                 }
                 .filterNotNull()

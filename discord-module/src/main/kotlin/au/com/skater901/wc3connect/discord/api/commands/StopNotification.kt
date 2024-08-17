@@ -11,7 +11,7 @@ internal class StopNotification @Inject constructor(
     override val description: String = "Stop all game hosting notifications to this channel."
 
     override suspend fun handleCommand(command: SlashCommandInteractionEvent) {
-        notificationService.deleteNotification(command.channelIdLong)
+        notificationService.deleteNotification(command.channelId ?: "")
         command.replySuspended("Notification stopped for channel [ ${command.channel.name} (${command.channelIdLong}) ]")
     }
 }

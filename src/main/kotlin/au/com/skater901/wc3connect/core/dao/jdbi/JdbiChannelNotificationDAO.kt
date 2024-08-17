@@ -36,7 +36,7 @@ internal class JdbiChannelNotificationDAO @Inject constructor(
     }
 
     private val deleteWork = databaseUnitOfWork(::delete)
-    override suspend fun delete(channelId: Long) {
+    override suspend fun delete(channelId: String) {
         deleteWork {
             jdbi.usingHandle {
                 it.updateFromFile("sql/delete.sql")

@@ -1,3 +1,10 @@
 [libraries]
 coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
 guice = "com.google.inject:guice:7.0.0"
+
+# Testing Libraries
+assertj = "org.assertj:assertj-core:3.26.3"
+mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
+
+[plugins]
+kotlin = "org.jetbrains.kotlin.jvm:2.0.0"

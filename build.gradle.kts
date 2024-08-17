@@ -8,14 +8,12 @@ val resilience4j_version: String by project
 val jackson_version: String by project
 
 // Testing library versions
-val assertj_version: String by project
-val mockito_version: String by project
 val mysql_test_container_version: String by project
 val wiremock_version: String by project
 val wiremock_kotlin_version: String by project
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    alias(libs.plugins.kotlin)
     jacoco
 }
 
@@ -55,8 +53,8 @@ dependencies {
     testImplementation(kotlin("test"))
 
     // Testing/assertion libraries
-    testImplementation("org.assertj:assertj-core:$assertj_version")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockito_version")
+    testImplementation(libs.assertj)
+    testImplementation(libs.mockito.kotlin)
 
     // Integration/end to end testing libraries
     testImplementation("org.testcontainers:mysql:$mysql_test_container_version")

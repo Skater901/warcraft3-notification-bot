@@ -62,6 +62,14 @@ kotlin {
    `// Notification Modules`. In that section, add `runtimeOnly(project(":moduleName"))` This will include your module
    in the runtime classpath of the main application.
 
+## Tips
+
+In order to keep versions consistent across the whole project, if you have a dependency you require that is already used
+by the main project or by another module, you should instead declare that dependency
+in [gradle/libs.versions.toml](gradle/libs.versions.toml). This is a central location for declaring dependencies that
+makes them available to all projects. Remove the dependency from the other modules/main project, so that it's only
+specified in libs.versions.toml.
+
 ## Known Issues
 
 Currently, all notifications will be saved as Discord notifications. I'm working on a solution for this.

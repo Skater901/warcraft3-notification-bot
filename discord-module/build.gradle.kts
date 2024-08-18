@@ -20,6 +20,10 @@ dependencies {
     implementation("club.minnced:jda-ktx:$ktx_version")
 
     implementation(libs.guice)
+
+    testImplementation(kotlin("test"))
+
+    testImplementation(libs.mockito.kotlin)
 }
 
 sourceSets {
@@ -35,8 +39,8 @@ sourceSets {
 }
 
 tasks {
-    processResources {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE // TODO review this
+    test {
+        useJUnitPlatform()
     }
 }
 

@@ -79,10 +79,6 @@ jacoco {
 }
 
 tasks {
-    processResources {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE // TODO review this
-    }
-
     test {
         useJUnitPlatform()
     }

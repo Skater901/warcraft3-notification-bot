@@ -21,7 +21,7 @@ class JdbiChannelNotificationDAOITCase {
 
     @Test
     fun `should save, retrieve, update, and delete`(jdbi: Jdbi) {
-        val channelNotification = ChannelNotification(12345, Regex("any"))
+        val channelNotification = ChannelNotification("12345", Regex("any"), "mymodule")
 
         val channelNotificationDAO = JdbiChannelNotificationDAO(jdbi)
 
@@ -33,7 +33,7 @@ class JdbiChannelNotificationDAOITCase {
 
         assertThat(notifications).hasSize(1)
             .anyMatch {
-                it.channelId == channelNotification.channelId &&
+                it.id == channelNotification.id &&
                         it.mapRegex.pattern == channelNotification.mapRegex.pattern
             }
 
@@ -47,12 +47,12 @@ class JdbiChannelNotificationDAOITCase {
 
         assertThat(notifications).hasSize(1)
             .anyMatch {
-                it.channelId == newChannelNotification.channelId &&
+                it.id == newChannelNotification.id &&
                         it.mapRegex.pattern == newChannelNotification.mapRegex.pattern
             }
 
         notifications = runBlocking {
-            channelNotificationDAO.delete(newChannelNotification.channelId)
+            channelNotificationDAO.delete(newChannelNotification.id)
 
             channelNotificationDAO.find()
         }
@@ -62,8 +62,8 @@ class JdbiChannelNotificationDAOITCase {
 
     @Test
     fun `should save multiple notifications`(jdbi: Jdbi) {
-        val channelNotification1 = ChannelNotification(12345, Regex("patterna"))
-        val channelNotification2 = ChannelNotification(22222, Regex("patternb"))
+        val channelNotification1 = ChannelNotification("12345", Regex("patterna"), "mymodule")
+        val channelNotification2 = ChannelNotification("22222", Regex("patternb"), "mymodule")
 
         val channelNotificationDAO = JdbiChannelNotificationDAO(jdbi)
 
@@ -76,11 +76,11 @@ class JdbiChannelNotificationDAOITCase {
 
         assertThat(notifications).hasSize(2)
             .anyMatch {
-                it.channelId == channelNotification1.channelId &&
+                it.id == channelNotification1.id &&
                         it.mapRegex.pattern == channelNotification1.mapRegex.pattern
             }
             .anyMatch {
-                it.channelId == channelNotification2.channelId &&
+                it.id == channelNotification2.id &&
                         it.mapRegex.pattern == channelNotification2.mapRegex.pattern
             }
     }

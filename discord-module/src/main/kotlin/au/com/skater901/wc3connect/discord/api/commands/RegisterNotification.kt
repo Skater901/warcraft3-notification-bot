@@ -33,7 +33,7 @@ internal class RegisterNotification @Inject constructor(
         try {
             notificationService.createNotification(command.channelId!!, command.getOption("filter")!!.asString)
             command.replySuspended(
-                "Registering a notification for channel [ ${command.channel.name} (${command.channelIdLong}) ] for regex pattern [ ${
+                "Registering a notification for channel [ ${command.channel.name} (${command.channelId}) ] for regex pattern [ ${
                     command.getOption(
                         "filter"
                     )?.asString

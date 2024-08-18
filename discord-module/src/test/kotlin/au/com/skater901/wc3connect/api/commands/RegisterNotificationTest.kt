@@ -2,6 +2,7 @@ package au.com.skater901.wc3connect.api.commands
 
 import au.com.skater901.wc3connect.core.domain.exceptions.InvalidRegexPatternException
 import au.com.skater901.wc3connect.core.service.NotificationService
+import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -43,7 +44,7 @@ class RegisterNotificationTest {
 
     @Test
     fun `should handle invalid regex`() {
-        val channelId = 12345L
+        val channelId = "12345"
         val mapPattern = "bad regex"
 
         val notificationService = mock<NotificationService> {
@@ -59,7 +60,7 @@ class RegisterNotificationTest {
         }
 
         val command = mock<SlashCommandInteractionEvent> {
-            on { channelIdLong } doReturn channelId
+            on { this.channelId } doReturn channelId
             on { getOption("filter") } doReturn option
             on { reply(any<String>()) } doReturn restAction
         }
@@ -75,7 +76,7 @@ class RegisterNotificationTest {
 
     @Test
     fun `should create new notification`() {
-        val channelId = 12345L
+        val channelId = "12345"
         val mapPattern = "my cool regex pattern"
 
         val notificationService = mock<NotificationService>()
@@ -93,7 +94,7 @@ class RegisterNotificationTest {
         }
 
         val command = mock<SlashCommandInteractionEvent> {
-            on { channelIdLong } doReturn channelId
+            on { this.channelId } doReturn channelId
             on { this.channel } doReturn channel
             on { getOption("filter") } doReturn option
             on { reply(any<String>()) } doReturn restAction

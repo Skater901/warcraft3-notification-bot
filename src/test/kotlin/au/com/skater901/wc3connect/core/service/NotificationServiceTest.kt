@@ -13,7 +13,7 @@ class NotificationServiceTest {
     @Test
     fun `should throw InvalidRegexPatternException if regex is invalid`() {
         assertThatThrownBy {
-            runBlocking { NotificationService(mock()).createNotification(12345, "\\\\\\\\\\") }
+            runBlocking { NotificationService(mock()).createNotification("12345", "\\\\\\\\\\") }
         }
             .isInstanceOf(InvalidRegexPatternException::class.java)
     }
@@ -23,11 +23,11 @@ class NotificationServiceTest {
         val channelNotificationDAO = mock<ChannelNotificationDAO>()
 
         runBlocking {
-            NotificationService(channelNotificationDAO).createNotification(12345, "DotA")
+            NotificationService(channelNotificationDAO).createNotification("12345", "DotA")
         }
 
         verify(channelNotificationDAO) {
-            1 * { runBlocking { save(argThat { channelId == 12345L && mapRegex.pattern == "DotA" }) } }
+            1 * { runBlocking { save(argThat { id == "12345" && mapRegex.pattern == "DotA" }) } }
         }
     }
 }

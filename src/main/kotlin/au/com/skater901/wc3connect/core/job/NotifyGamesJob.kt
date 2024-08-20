@@ -25,6 +25,8 @@ internal class NotifyGamesJob @Inject constructor(
 ) : AutoCloseable {
     companion object {
         private val logger = LoggerFactory.getLogger(NotifyGamesJob::class.java)
+
+        private val userAgent = "WC3Connect Notification Bot - Java-http-client/${System.getProperty("java.version")}"
     }
 
     private var dispatcher: CloseableCoroutineDispatcher? = null
@@ -45,7 +47,7 @@ internal class NotifyGamesJob @Inject constructor(
                         val response = client.sendAsync(
                             HttpRequest.newBuilder(gamesUrl)
                                 .header("Accept", "application/json")
-                                .header("User-Agent", "WC3Connect Notification Bot - Java-http-client/21")
+                                .header("User-Agent", userAgent)
                                 .build(),
                             BodyHandlers.ofInputStream()
                         )

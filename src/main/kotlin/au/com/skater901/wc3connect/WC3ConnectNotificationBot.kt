@@ -11,7 +11,7 @@ import com.google.inject.Guice
 import java.io.File
 import java.util.*
 
-public fun main() {
+internal fun main() {
     val configFilePath = System.getProperty("configFile")
         ?: throw IllegalArgumentException("Required system property [ configFile ] has not been set. Please set it, with a path to a config file, using -DconfigFile=/path/to/config/file.properties")
 

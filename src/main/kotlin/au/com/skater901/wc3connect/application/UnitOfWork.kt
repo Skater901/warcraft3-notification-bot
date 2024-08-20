@@ -15,8 +15,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KCallable
 
-public class UnitOfWork(private val javaClass: Class<*>, private val name: String) {
-    internal companion object {
+internal class UnitOfWork(private val javaClass: Class<*>, private val name: String) {
+    companion object {
         private val RETRY_REGISTRY = AtomicReference(RetryRegistry.ofDefaults())
         private val CIRCUIT_BREAKER_REGISTRY = AtomicReference(CircuitBreakerRegistry.ofDefaults())
 
@@ -40,19 +40,19 @@ public class UnitOfWork(private val javaClass: Class<*>, private val name: Strin
     private var retry: Retry? = null
     private var circuitBreaker: CircuitBreaker? = null
 
-    internal var dispatcher: CoroutineDispatcher? = null
+    var dispatcher: CoroutineDispatcher? = null
         private set
 
     private fun name(type: String): String = "${javaClass.packageName}.$name.$type"
 
-    public fun retry(config: RetryConfig.() -> Unit = {}): UnitOfWork {
+    fun retry(config: RetryConfig.() -> Unit = {}): UnitOfWork {
         retry = retries.computeIfAbsent(name("retry")) { name ->
             RETRY_REGISTRY.get().retry(name, RetryConfig.ofDefaults().also(config))
         }
         return this
     }
 
-    public fun circuitBreaker(config: CircuitBreakerConfig.() -> Unit = {}): UnitOfWork {
+    fun circuitBreaker(config: CircuitBreakerConfig.() -> Unit = {}): UnitOfWork {
         circuitBreaker = circuitBreakers.computeIfAbsent(name("circuitBreaker")) { name ->
             CIRCUIT_BREAKER_REGISTRY.get().circuitBreaker(
                 name,
@@ -62,12 +62,12 @@ public class UnitOfWork(private val javaClass: Class<*>, private val name: Strin
         return this
     }
 
-    public fun withDispatcher(dispatcher: CoroutineDispatcher): UnitOfWork {
+    fun withDispatcher(dispatcher: CoroutineDispatcher): UnitOfWork {
         this.dispatcher = dispatcher
         return this
     }
 
-    public suspend fun <T> execute(block: suspend () -> T): T = decorate(block)
+    suspend fun <T> execute(block: suspend () -> T): T = decorate(block)
         .let {
             val d = dispatcher
             if (d != null) {
@@ -76,7 +76,7 @@ public class UnitOfWork(private val javaClass: Class<*>, private val name: Strin
                 it()
         }
 
-    public suspend operator fun <T> invoke(block: suspend () -> T): T = execute(block = block)
+    suspend operator fun <T> invoke(block: suspend () -> T): T = execute(block = block)
 
     private fun <T> decorate(block: suspend () -> T): suspend () -> T {
         val resilience = retry?.decorateSuspendFunction(block) ?: block
@@ -84,11 +84,11 @@ public class UnitOfWork(private val javaClass: Class<*>, private val name: Strin
     }
 }
 
-public inline fun <reified T : Any> T.unitOfWork(name: String): UnitOfWork = UnitOfWork(this::class.java, name)
+internal inline fun <reified T : Any> T.unitOfWork(name: String): UnitOfWork = UnitOfWork(this::class.java, name)
 
-public inline fun <reified T : Any> T.defaultUnitOfWork(function: KCallable<*>): UnitOfWork =
+internal inline fun <reified T : Any> T.defaultUnitOfWork(function: KCallable<*>): UnitOfWork =
     defaultUnitOfWork(function.name)
 
-public inline fun <reified T : Any> T.defaultUnitOfWork(name: String): UnitOfWork = unitOfWork(name)
+internal inline fun <reified T : Any> T.defaultUnitOfWork(name: String): UnitOfWork = unitOfWork(name)
     .retry()
     .circuitBreaker()

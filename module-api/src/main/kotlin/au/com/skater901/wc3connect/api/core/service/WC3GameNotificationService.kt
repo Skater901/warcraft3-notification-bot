@@ -3,7 +3,7 @@ package au.com.skater901.wc3connect.api.core.service
 /**
  * Service for managing notifications.
  */
-public interface NotificationService {
+public interface WC3GameNotificationService {
     /**
      * Create a new notification.
      *

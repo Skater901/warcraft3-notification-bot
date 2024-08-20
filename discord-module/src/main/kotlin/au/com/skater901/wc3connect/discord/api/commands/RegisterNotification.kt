@@ -1,14 +1,14 @@
 package au.com.skater901.wc3connect.discord.api.commands
 
 import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidRegexPatternException
-import au.com.skater901.wc3connect.api.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import dev.minn.jda.ktx.interactions.commands.option
 import jakarta.inject.Inject
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 internal class RegisterNotification @Inject constructor(
-    private val notificationService: NotificationService
+    private val wc3GameNotificationService: WC3GameNotificationService
 ) : Command {
     override val name: String = "notify"
     override val description: String =
@@ -31,7 +31,7 @@ internal class RegisterNotification @Inject constructor(
         }
 
         try {
-            notificationService.createNotification(command.channelId!!, command.getOption("filter")!!.asString)
+            wc3GameNotificationService.createNotification(command.channelId!!, command.getOption("filter")!!.asString)
             command.replySuspended(
                 "Registering a notification for channel [ ${command.channel.name} (${command.channelId}) ] for regex pattern [ ${
                     command.getOption(

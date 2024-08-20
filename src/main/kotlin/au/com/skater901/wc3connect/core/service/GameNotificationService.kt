@@ -3,7 +3,7 @@ package au.com.skater901.wc3connect.core.service
 import au.com.skater901.wc3connect.api.core.domain.Game
 import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidNotificationException
 import au.com.skater901.wc3connect.api.core.service.GameNotifier
-import au.com.skater901.wc3connect.core.dao.ChannelNotificationDAO
+import au.com.skater901.wc3connect.core.dao.NotificationDAO
 import au.com.skater901.wc3connect.utilities.collections.forEachAsync
 import au.com.skater901.wc3connect.utilities.collections.mapAsync
 import jakarta.inject.Inject
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 @Singleton
 internal class GameNotificationService @Inject constructor(
-    private val channelNotificationDAO: ChannelNotificationDAO,
+    private val notificationDAO: NotificationDAO,
     private val gameNotifiers: Map<String, @JvmSuppressWildcards GameNotifier>,
 ) {
     private val hostedGames = mutableMapOf<Int, Pair<Game, List<GameNotifier>>>()
@@ -44,17 +44,17 @@ internal class GameNotificationService @Inject constructor(
     }
 
     private suspend fun postNewGames(newGames: List<Game>): List<Pair<Game, List<GameNotifier>>> {
-        val channelNotifications = channelNotificationDAO.find()
+        val channelNotifications = notificationDAO.find()
 
         return newGames.mapAsync { game ->
-            game to channelNotifications.filter { it.mapRegex.containsMatchIn(game.map) }
+            game to channelNotifications.filter { it.mapNameRegexPattern.containsMatchIn(game.map) }
                 .mapAsync {
                     try {
                         gameNotifiers[it.type]?.apply {
                             notifyNewGame(it.id, game)
                         }
                     } catch (e: InvalidNotificationException) {
-                        channelNotificationDAO.delete(it.id)
+                        notificationDAO.delete(it.id)
                         null
                     }
                 }

@@ -1,7 +1,7 @@
 package au.com.skater901.wc3connect.core.service
 
-import au.com.skater901.wc3connect.core.dao.ChannelNotificationDAO
 import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidRegexPatternException
+import au.com.skater901.wc3connect.core.dao.NotificationDAO
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -9,25 +9,25 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.verify
 
-class NotificationServiceImplTest {
+class WC3GameNotificationServiceImplTest {
     @Test
     fun `should throw InvalidRegexPatternException if regex is invalid`() {
         assertThatThrownBy {
-            runBlocking { NotificationServiceImpl(mock()).createNotification("12345", "\\\\\\\\\\") }
+            runBlocking { WC3GameNotificationServiceImpl(mock(), "hello").createNotification("12345", "\\\\\\\\\\") }
         }
             .isInstanceOf(InvalidRegexPatternException::class.java)
     }
 
     @Test
     fun `should save new channel notification`() {
-        val channelNotificationDAO = mock<ChannelNotificationDAO>()
+        val notificationDAO = mock<NotificationDAO>()
 
         runBlocking {
-            NotificationServiceImpl(channelNotificationDAO).createNotification("12345", "DotA")
+            WC3GameNotificationServiceImpl(notificationDAO, "module1").createNotification("12345", "DotA")
         }
 
-        verify(channelNotificationDAO) {
-            1 * { runBlocking { save(argThat { id == "12345" && mapRegex.pattern == "DotA" }) } }
+        verify(notificationDAO) {
+            1 * { runBlocking { save(argThat { id == "12345" && type == "module1" && mapNameRegexPattern.pattern == "DotA" }) } }
         }
     }
 }

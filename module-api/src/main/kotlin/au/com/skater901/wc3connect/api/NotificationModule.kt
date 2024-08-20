@@ -1,7 +1,7 @@
 package au.com.skater901.wc3connect.api
 
 import au.com.skater901.wc3connect.api.core.service.GameNotifier
-import au.com.skater901.wc3connect.api.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3connect.api.scheduled.ScheduledTask
 import com.google.inject.AbstractModule
 import com.google.inject.Injector
@@ -81,13 +81,13 @@ public interface NotificationModule<C : Any> {
      * @param config An instance of your [configClass] populated with the configuration for this module.
      * @param injector A Guice [Injector] that can be used for instantiating your listeners via injection. As a quick
      * example, if you had a class called `FacebookRegisterNotification`, you would get an instance by going `injector.getInstance(FacebookRegisterNotification::class.java)`
-     * @param notificationService An instance of the [NotificationService]. This is provided in case you prefer to
+     * @param wc3GameNotificationService An instance of the [wc3GameNotificationService]. This is provided in case you prefer to
      * construct your classes directly, rather than using Guice's dependency injection method.
      */
     public fun initializeNotificationHandlers(
         config: C,
         injector: Injector,
-        notificationService: NotificationService
+        wc3GameNotificationService: WC3GameNotificationService
     )
 
     /**

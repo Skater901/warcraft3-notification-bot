@@ -2,7 +2,7 @@ package au.com.skater901.wc3connect.discord
 
 import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.api.core.service.GameNotifier
-import au.com.skater901.wc3connect.api.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3connect.discord.api.commands.Command
 import au.com.skater901.wc3connect.discord.api.commands.Help
 import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
@@ -42,7 +42,7 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
     override fun initializeNotificationHandlers(
         config: DiscordConfiguration,
         injector: Injector,
-        notificationService: NotificationService
+        wc3GameNotificationService: WC3GameNotificationService
     ) {
         val commands = listOf(
             injector.getCommand<RegisterNotification>(),

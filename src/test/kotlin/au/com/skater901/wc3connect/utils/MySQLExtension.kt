@@ -28,7 +28,7 @@ class MySQLExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, P
     override fun beforeAll(context: ExtensionContext) {
         val configuration: Configuration? = context.requiredTestClass.getAnnotation(Configuration::class.java)
 
-        mysqlContainer = MySQLContainer("mysql").withDatabaseName("w3c_bot")
+        mysqlContainer = MySQLContainer("mysql").withDatabaseName("wc3_bot")
             .configure(configuration)
             .apply { start() }
 
@@ -67,7 +67,16 @@ class MySQLExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, P
     }
 
     override fun afterEach(context: ExtensionContext) {
-        // TODO figure out how to clear all tables after each test
+        jdbi.usingHandle { handle ->
+            handle.createQuery("SHOW tables FROM wc3_bot")
+                .mapTo(String::class.java)
+                .list()
+                .filter { !it.startsWith("DATABASECHANGELOG") }
+                .forEach {
+                    handle.createUpdate("DELETE FROM $it;")
+                        .execute()
+                }
+        }
     }
 
     override fun afterAll(context: ExtensionContext) {

@@ -1,1 +1,1 @@
-DELETE FROM channel_notification WHERE channel_id = :channelId;
+DELETE FROM notification WHERE id = :id;

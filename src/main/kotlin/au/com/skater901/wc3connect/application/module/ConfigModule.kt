@@ -10,7 +10,6 @@ import com.google.inject.AbstractModule
 import com.google.inject.Key
 import com.google.inject.Provides
 import com.google.inject.Scopes
-import com.google.inject.internal.SingletonScope
 import com.google.inject.name.Names.named
 import jakarta.inject.Named
 import jakarta.inject.Singleton

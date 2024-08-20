@@ -53,7 +53,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
 
     // Notification Modules
-    implementation(project(":discord-module")) // TODO make run depend on compile
+    implementation(project(":discord-module"))
 
     testImplementation(kotlin("test"))
 

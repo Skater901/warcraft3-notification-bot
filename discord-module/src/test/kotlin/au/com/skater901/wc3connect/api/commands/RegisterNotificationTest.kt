@@ -1,7 +1,7 @@
 package au.com.skater901.wc3connect.api.commands
 
 import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidRegexPatternException
-import au.com.skater901.wc3connect.api.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 class RegisterNotificationTest {
     @Test
     fun `should reply with error if no valid channel included`() {
-        val notificationService = mock<NotificationService>()
+        val WC3GameNotificationService = mock<WC3GameNotificationService>()
 
         val restAction = mock<ReplyCallbackAction> {
             on { submit() } doReturn CompletableFuture.completedFuture(null)
@@ -32,10 +32,10 @@ class RegisterNotificationTest {
         }
 
         runBlocking {
-            RegisterNotification(notificationService).handleCommand(command)
+            RegisterNotification(WC3GameNotificationService).handleCommand(command)
         }
 
-        verifyNoInteractions(notificationService)
+        verifyNoInteractions(WC3GameNotificationService)
 
         verify(command) {
             1 * { reply("Notification requested from outside a channel. Please use a channel.") }
@@ -47,7 +47,7 @@ class RegisterNotificationTest {
         val channelId = "12345"
         val mapPattern = "bad regex"
 
-        val notificationService = mock<NotificationService> {
+        val WC3GameNotificationService = mock<WC3GameNotificationService> {
             onBlocking { createNotification(channelId, mapPattern) } doThrow InvalidRegexPatternException(mapPattern)
         }
 
@@ -66,7 +66,7 @@ class RegisterNotificationTest {
         }
 
         runBlocking {
-            RegisterNotification(notificationService).handleCommand(command)
+            RegisterNotification(WC3GameNotificationService).handleCommand(command)
         }
 
         verify(command) {
@@ -79,7 +79,7 @@ class RegisterNotificationTest {
         val channelId = "12345"
         val mapPattern = "my cool regex pattern"
 
-        val notificationService = mock<NotificationService>()
+        val WC3GameNotificationService = mock<WC3GameNotificationService>()
 
         val restAction = mock<ReplyCallbackAction> {
             on { submit() } doReturn CompletableFuture.completedFuture(null)
@@ -101,10 +101,10 @@ class RegisterNotificationTest {
         }
 
         runBlocking {
-            RegisterNotification(notificationService).handleCommand(command)
+            RegisterNotification(WC3GameNotificationService).handleCommand(command)
         }
 
-        verify(notificationService) {
+        verify(WC3GameNotificationService) {
             1 * { runBlocking { createNotification(channelId, mapPattern) } }
         }
 

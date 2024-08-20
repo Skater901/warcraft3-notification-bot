@@ -26,18 +26,6 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
 }
 
-sourceSets {
-    main {
-        kotlin { srcDir("src/main/kotlin") }
-        resources { srcDir("src/main/resources") }
-    }
-
-    test {
-        kotlin { srcDir("src/test/kotlin") }
-        resources { srcDir("src/test/resources") }
-    }
-}
-
 tasks {
     test {
         useJUnitPlatform()

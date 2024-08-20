@@ -62,18 +62,6 @@ dependencies {
     testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
 }
 
-sourceSets {
-    main {
-        kotlin { srcDir("src/main/kotlin") }
-        resources { srcDir("src/main/resources") }
-    }
-
-    test {
-        kotlin { srcDir("src/test/kotlin") }
-        resources { srcDir("src/test/resources") }
-    }
-}
-
 jacoco {
     reportsDirectory = file("$buildDir/coverage-reports")
 }

@@ -25,25 +25,6 @@ dependencies {
     implementation(libs.guice) // The main interface requires Guice
 }
 
-// I think this is optional, but probably good to include and not rely on convention
-sourceSets {
-    main {
-        kotlin { srcDir("src/main/kotlin") }
-        resources { srcDir("src/main/resources") }
-    }
-
-    test {
-        kotlin { srcDir("src/test/kotlin") }
-        resources { srcDir("src/test/resources") }
-    }
-}
-
-// I don't know why this is needed, will investigate. The build fails if you don't have it, though.
-tasks {
-    processResources {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE // TODO review this
-    }
-}
 
 kotlin {
     explicitApi() // This is optional. You can also use explicitApiWarning(), or nothing. This setting will make it an error to not explicitly specify the visibility of your classes, methods, etc.

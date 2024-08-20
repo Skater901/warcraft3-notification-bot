@@ -1,6 +1,6 @@
 package au.com.skater901.wc3connect.application.module
 
-import au.com.skater901.wc3connect.NotificationModule
+import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.application.config.ConfigParser
 import au.com.skater901.wc3connect.application.config.DatabaseConfig
 import au.com.skater901.wc3connect.application.config.GamesConfiguration
@@ -9,6 +9,8 @@ import au.com.skater901.wc3connect.application.logging.LoggingConfiguration
 import com.google.inject.AbstractModule
 import com.google.inject.Key
 import com.google.inject.Provides
+import com.google.inject.Scopes
+import com.google.inject.internal.SingletonScope
 import com.google.inject.name.Names.named
 import jakarta.inject.Named
 import jakarta.inject.Singleton
@@ -16,7 +18,7 @@ import java.io.File
 import java.util.*
 
 internal class ConfigModule(
-    private val modules: List<NotificationModule<Any, Any>>
+    private val modules: List<NotificationModule<Any>>
 ) : AbstractModule() {
     override fun configure() {
         val configProperties = getProvider(Key.get(Properties::class.java).withAnnotation(named("configProperties")))
@@ -28,6 +30,7 @@ internal class ConfigModule(
                 DatabaseConfig::class
             )
         )
+            .`in`(Scopes.SINGLETON)
         bind(GamesConfiguration::class.java).toProvider(
             ConfigParser(
                 configProperties,
@@ -35,6 +38,7 @@ internal class ConfigModule(
                 GamesConfiguration::class
             )
         )
+            .`in`(Scopes.SINGLETON)
         bind(LogConfiguration::class.java).toProvider(
             ConfigParser(
                 configProperties,
@@ -42,6 +46,7 @@ internal class ConfigModule(
                 LogConfiguration::class
             )
         )
+            .`in`(Scopes.SINGLETON)
 
         modules.forEach {
             bind(it.configClass.java).toProvider(
@@ -51,6 +56,7 @@ internal class ConfigModule(
                     it.configClass
                 )
             )
+                .`in`(Scopes.SINGLETON)
         }
 
         requestStaticInjection(LoggingConfiguration::class.java)

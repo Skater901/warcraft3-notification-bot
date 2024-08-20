@@ -1,6 +1,6 @@
 package au.com.skater901.wc3connect.core.job
 
-import au.com.skater901.wc3connect.NotificationModule
+import au.com.skater901.wc3connect.api.NotificationModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -10,7 +10,7 @@ import kotlinx.coroutines.sync.withPermit
 import org.slf4j.LoggerFactory
 
 internal class TaskRunner(
-    modules: List<NotificationModule<*, *>>
+    modules: List<NotificationModule<*>>
 ) : AutoCloseable {
     private val modulesWithScheduledTasks = modules.filter { it.scheduledTask != null }
     private val taskPool = newFixedThreadPoolContext(modulesWithScheduledTasks.size, "task-pool")

@@ -1,7 +1,10 @@
-package au.com.skater901.wc3connect.core.service
+package au.com.skater901.wc3connect.api.core.service
 
-import au.com.skater901.wc3connect.core.domain.Game
+import au.com.skater901.wc3connect.api.core.domain.Game
 
+/**
+ * The interface to implement to handle notification of WC3Connect games being hosted and unhosted.
+ */
 public interface GameNotifier {
     /**
      * Send a notification when a new game is hosted. You MUST store the ID of the created notification so that it can
@@ -14,7 +17,7 @@ public interface GameNotifier {
      *
      * @param game The details about the Warcraft 3 game hosted on WC3Connect.
      *
-     * @throws [au.com.skater901.wc3connect.core.domain.exceptions.InvalidNotificationException]
+     * @throws [au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidNotificationException]
      */
     public suspend fun notifyNewGame(notificationId: String, game: Game)
 

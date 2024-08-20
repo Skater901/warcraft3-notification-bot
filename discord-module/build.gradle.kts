@@ -13,7 +13,9 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":"))
+    implementation(project(":module-api"))
+
+    implementation(project(":utilities"))
 
     // Discord API
     implementation("net.dv8tion:JDA:$discord_version")

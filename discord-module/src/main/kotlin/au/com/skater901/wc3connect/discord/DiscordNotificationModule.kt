@@ -1,8 +1,8 @@
 package au.com.skater901.wc3connect.discord
 
-import au.com.skater901.wc3connect.NotificationModule
-import au.com.skater901.wc3connect.core.service.GameNotifier
-import au.com.skater901.wc3connect.core.service.NotificationService
+import au.com.skater901.wc3connect.api.NotificationModule
+import au.com.skater901.wc3connect.api.core.service.GameNotifier
+import au.com.skater901.wc3connect.api.core.service.NotificationService
 import au.com.skater901.wc3connect.discord.api.commands.Command
 import au.com.skater901.wc3connect.discord.api.commands.Help
 import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
@@ -23,9 +23,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.requests.GatewayIntent
 import kotlin.reflect.KClass
 
-public class DiscordNotificationModule : NotificationModule<JDA, DiscordConfiguration> {
+public class DiscordNotificationModule : NotificationModule<DiscordConfiguration> {
     override val moduleName: String = "discord"
-    override val mainSystemClass: KClass<JDA> = JDA::class
     override val configClass: KClass<DiscordConfiguration> = DiscordConfiguration::class
 
     override fun guiceModule(): AbstractModule = object : AbstractModule() {
@@ -41,7 +40,6 @@ public class DiscordNotificationModule : NotificationModule<JDA, DiscordConfigur
     }
 
     override fun initializeNotificationHandlers(
-        mainClass: JDA,
         config: DiscordConfiguration,
         injector: Injector,
         notificationService: NotificationService
@@ -52,15 +50,17 @@ public class DiscordNotificationModule : NotificationModule<JDA, DiscordConfigur
             injector.getCommand<Help>()
         )
 
+        val jda = injector.getInstance(JDA::class.java)
+
         commands.forEach {
-            mainClass.listener<SlashCommandInteractionEvent> { event ->
+            jda.listener<SlashCommandInteractionEvent> { event ->
                 if (event.name == it.name) {
                     it.handleCommand(event)
                 }
             }
         }
 
-        mainClass.updateCommands {
+        jda.updateCommands {
             commands.forEach { command ->
                 slash(command.name, command.description) {
                     command.options(this)

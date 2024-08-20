@@ -1,23 +1,20 @@
-package au.com.skater901.wc3connect
+package au.com.skater901.wc3connect.api
 
-import au.com.skater901.wc3connect.core.service.GameNotifier
-import au.com.skater901.wc3connect.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.service.GameNotifier
+import au.com.skater901.wc3connect.api.core.service.NotificationService
+import au.com.skater901.wc3connect.api.scheduled.ScheduledTask
 import com.google.inject.AbstractModule
 import com.google.inject.Injector
 import kotlin.reflect.KClass
 
-public interface NotificationModule<T : Any, C : Any> {
+/**
+ * The main class to implement when registering a module.
+ */
+public interface NotificationModule<C : Any> {
     /**
      * The unique name of this module. Recommendation is for this to be a single word with no special characters.
      */
     public val moduleName: String
-
-    /**
-     * The main instance of the library used for this module, assuming you have one. For example, the Discord module
-     * uses the JDA library, which has a JDA interface that acts as the main class to interact with Discord. An instance
-     * of this class will be provided to the [initializeNotificationHandlers] method.
-     */
-    public val mainSystemClass: KClass<T>
 
     /**
      * A simple class with a primary constructor listing all the configuration properties you need. The configuration
@@ -46,10 +43,7 @@ public interface NotificationModule<T : Any, C : Any> {
 
     /**
      * Provide a Guice module where all injection configurations required for your module are configured. This is
-     * technically optional, hence the default value being an empty [AbstractModule]. However, if you don't provide
-     * a configuration binding for your [mainSystemClass], the injection will fail when calling [initializeNotificationHandlers].
-     *
-     * This may need to be rectified... make main class nullable so it's not always injected? idk
+     * optional, hence the default value being an empty [AbstractModule].
      *
      * If you're unfamiliar with Guice, here's an easy way to provide your main class:
      * ```kotlin
@@ -74,6 +68,8 @@ public interface NotificationModule<T : Any, C : Any> {
      *     }
      * }
      * ```
+     *
+     * @return The configured [AbstractModule].
      */
     public fun guiceModule(): AbstractModule = object : AbstractModule() {}
 
@@ -82,8 +78,6 @@ public interface NotificationModule<T : Any, C : Any> {
      * receiving interactions via your protocol. At a minimum, you should be able to receive requests to add a new
      * notification listener, otherwise your module is useless.
      *
-     * @param mainClass An instance of your [mainSystemClass]. Generally this will be where you need to register your
-     * API listeners.
      * @param config An instance of your [configClass] populated with the configuration for this module.
      * @param injector A Guice [Injector] that can be used for instantiating your listeners via injection. As a quick
      * example, if you had a class called `FacebookRegisterNotification`, you would get an instance by going `injector.getInstance(FacebookRegisterNotification::class.java)`
@@ -91,7 +85,6 @@ public interface NotificationModule<T : Any, C : Any> {
      * construct your classes directly, rather than using Guice's dependency injection method.
      */
     public fun initializeNotificationHandlers(
-        mainClass: T,
         config: C,
         injector: Injector,
         notificationService: NotificationService

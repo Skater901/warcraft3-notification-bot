@@ -25,6 +25,11 @@ repositories {
 }
 
 dependencies {
+    // Core API library
+    implementation(project(":module-api"))
+
+    implementation(project(":utilities"))
+
     implementation(libs.coroutines)
 
     // Database libraries
@@ -48,7 +53,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
 
     // Notification Modules
-    runtimeOnly(project(":discord-module")) // TODO make run depend on compile
+    implementation(project(":discord-module")) // TODO make run depend on compile
 
     testImplementation(kotlin("test"))
 

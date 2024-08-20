@@ -1,7 +1,7 @@
 package au.com.skater901.wc3connect.api.commands
 
-import au.com.skater901.wc3connect.core.domain.exceptions.InvalidRegexPatternException
-import au.com.skater901.wc3connect.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidRegexPatternException
+import au.com.skater901.wc3connect.api.core.service.NotificationService
 import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion

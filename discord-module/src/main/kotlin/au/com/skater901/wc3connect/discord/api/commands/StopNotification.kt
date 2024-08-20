@@ -1,6 +1,6 @@
 package au.com.skater901.wc3connect.discord.api.commands
 
-import au.com.skater901.wc3connect.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.service.NotificationService
 import jakarta.inject.Inject
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 

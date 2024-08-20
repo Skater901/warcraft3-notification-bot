@@ -1,4 +1,4 @@
-package au.com.skater901.wc3connect.utils
+package au.com.skater901.wc3connect.utilities.collections
 
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge

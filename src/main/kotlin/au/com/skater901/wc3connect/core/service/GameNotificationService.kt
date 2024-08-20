@@ -1,10 +1,11 @@
 package au.com.skater901.wc3connect.core.service
 
+import au.com.skater901.wc3connect.api.core.domain.Game
+import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidNotificationException
+import au.com.skater901.wc3connect.api.core.service.GameNotifier
 import au.com.skater901.wc3connect.core.dao.ChannelNotificationDAO
-import au.com.skater901.wc3connect.core.domain.Game
-import au.com.skater901.wc3connect.core.domain.exceptions.InvalidNotificationException
-import au.com.skater901.wc3connect.utils.forEachAsync
-import au.com.skater901.wc3connect.utils.mapAsync
+import au.com.skater901.wc3connect.utilities.collections.forEachAsync
+import au.com.skater901.wc3connect.utilities.collections.mapAsync
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.coroutineScope

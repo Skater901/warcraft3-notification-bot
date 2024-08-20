@@ -1,7 +1,7 @@
 package au.com.skater901.wc3connect.discord.api.commands
 
-import au.com.skater901.wc3connect.core.domain.exceptions.InvalidRegexPatternException
-import au.com.skater901.wc3connect.core.service.NotificationService
+import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidRegexPatternException
+import au.com.skater901.wc3connect.api.core.service.NotificationService
 import dev.minn.jda.ktx.interactions.commands.option
 import jakarta.inject.Inject
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent

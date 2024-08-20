@@ -1,4 +1,4 @@
-package au.com.skater901.wc3connect.core.domain.exceptions
+package au.com.skater901.wc3connect.api.core.domain.exceptions
 
 /**
  * Indicates that the provided notificationId was invalid. IE, if a notification was registered for a Discord channel

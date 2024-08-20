@@ -1,11 +1,12 @@
 package au.com.skater901.wc3connect
 
+import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.application.database.MigrationsManager
 import au.com.skater901.wc3connect.application.module.*
 import au.com.skater901.wc3connect.core.job.NotifyGamesJob
 import au.com.skater901.wc3connect.core.job.TaskRunner
-import au.com.skater901.wc3connect.core.service.NotificationService
-import au.com.skater901.wc3connect.utils.ifNotEmpty
+import au.com.skater901.wc3connect.core.service.NotificationServiceImpl
+import au.com.skater901.wc3connect.utilities.collections.ifNotEmpty
 import com.google.inject.Guice
 import java.io.File
 import java.util.*
@@ -18,7 +19,7 @@ public fun main() {
     if (!File(configFilePath).exists()) throw IllegalArgumentException("Config file [ $configFilePath ] does not exist.")
 
     val notificationModules = ServiceLoader.load(NotificationModule::class.java)
-        .map { it as NotificationModule<Any, Any> }
+        .map { it as NotificationModule<Any> }
 
     notificationModules.groupBy { it.moduleName }
         .filter { it.value.size > 1 }
@@ -43,10 +44,9 @@ public fun main() {
 
     notificationModules.forEach {
         it.initializeNotificationHandlers(
-            injector.getInstance(it.mainSystemClass.java),
             injector.getInstance(it.configClass.java),
             injector,
-            injector.getInstance(NotificationService::class.java)
+            injector.getInstance(NotificationServiceImpl::class.java)
         )
     }
 

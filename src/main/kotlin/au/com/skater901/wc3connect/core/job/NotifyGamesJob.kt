@@ -1,6 +1,6 @@
 package au.com.skater901.wc3connect.core.job
 
-import au.com.skater901.wc3connect.core.domain.Game
+import au.com.skater901.wc3connect.core.domain.GameImpl
 import au.com.skater901.wc3connect.core.service.GameNotificationService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -57,7 +57,7 @@ internal class NotifyGamesJob @Inject constructor(
                                         }")
                                 }
 
-                                mapper.readValue<List<Game>>(it.body())
+                                mapper.readValue<List<GameImpl>>(it.body())
                             }
                             .let { gameNotificationService.notifyGames(it) }
                     } catch (t: Throwable) {

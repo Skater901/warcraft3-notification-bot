@@ -1,9 +1,9 @@
 package au.com.skater901.wc3connect.discord.core.handler
 
-import au.com.skater901.wc3connect.core.domain.Game
-import au.com.skater901.wc3connect.core.domain.exceptions.InvalidNotificationException
-import au.com.skater901.wc3connect.core.service.GameNotifier
-import au.com.skater901.wc3connect.utils.forEachAsync
+import au.com.skater901.wc3connect.api.core.domain.Game
+import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidNotificationException
+import au.com.skater901.wc3connect.api.core.service.GameNotifier
+import au.com.skater901.wc3connect.utilities.collections.forEachAsync
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.edit
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 @Singleton
-public class DiscordGameNotifier @Inject constructor(
+public class DiscordGameNotifier @Inject internal constructor(
     private val jda: JDA
 ) : GameNotifier {
     private val hostedGameMessages: ConcurrentMap<Int, MutableSet<Message>> = ConcurrentHashMap()

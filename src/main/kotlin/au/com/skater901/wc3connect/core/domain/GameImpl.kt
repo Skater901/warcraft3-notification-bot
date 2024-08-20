@@ -1,5 +1,6 @@
 package au.com.skater901.wc3connect.core.domain
 
+import au.com.skater901.wc3connect.api.core.domain.Game
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonParser
@@ -8,45 +9,18 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public data class Game internal constructor(
-    /**
-     * The unique identifier of the Warcraft 3 hosted game.
-     */
-    val id: Int,
-
-    /**
-     * The name of the hosted game.
-     */
-    val name: String,
-
-    /**
-     * The Warcraft 3 map that this game is hosting.
-     */
-    val map: String,
-
-    /**
-     * The WC3Connect user who hosted this game. For games automatically hosted by WC3Connect, this value will be an empty String.
-     */
-    val host: String,
-
-    /**
-     * The number of players currently in the lobby.
-     */
+internal data class GameImpl(
+    override val id: Int,
+    override val name: String,
+    override val map: String,
+    override val host: String,
     @JsonProperty("slots_taken")
-    val currentPlayers: Int,
-
-    /**
-     * The maximum number of players the hosted map supports.
-     */
+    override val currentPlayers: Int,
     @JsonProperty("slots_total")
-    val maxPlayers: Int,
-
-    /**
-     * The number of minutes, as a String, since the game was hosted.
-     */
+    override val maxPlayers: Int,
     @JsonDeserialize(using = WC3UptimeDeserializer::class)
-    val uptime: String
-) {
+    override val uptime: String
+) : Game {
     internal class WC3UptimeDeserializer : JsonDeserializer<String>() {
         override fun deserialize(parser: JsonParser, context: DeserializationContext): String = parser.valueAsString
             .split(":")

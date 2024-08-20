@@ -16,15 +16,14 @@ repositories {
 }
 
 plugins {
-   alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin)
 }
 
 dependencies {
-    implementation(project(":")) // This includes the root project as a dependency, which is required to implement the interfaces
+    implementation(project(":module-api"))
 
-    implementation(libs.guice) // The main interface requires Guice
+    implementation(libs.guice)
 }
-
 
 kotlin {
     explicitApi() // This is optional. You can also use explicitApiWarning(), or nothing. This setting will make it an error to not explicitly specify the visibility of your classes, methods, etc.

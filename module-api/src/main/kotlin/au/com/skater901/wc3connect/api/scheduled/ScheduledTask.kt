@@ -1,4 +1,4 @@
-package au.com.skater901.wc3connect
+package au.com.skater901.wc3connect.api.scheduled
 
 /**
  * A scheduled task that will be run on the provided schedule.

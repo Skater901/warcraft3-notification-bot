@@ -42,24 +42,25 @@ internal class NotifyGamesJob @Inject constructor(
                 while (started) {
                     try {
                         // refresh
-                        client.sendAsync(
+                        val response = client.sendAsync(
                             HttpRequest.newBuilder(gamesUrl)
                                 .header("Accept", "application/json")
+                                .header("User-Agent", "WC3Connect Notification Bot - Java-http-client/21")
                                 .build(),
                             BodyHandlers.ofInputStream()
                         )
                             .await()
-                            .let {
-                                if (it.statusCode() >= 400) {
-                                    throw RuntimeException(
-                                        "HTTP error: ${it.statusCode()}, ${
-                                            it.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
-                                        }")
-                                }
 
-                                mapper.readValue<List<GameImpl>>(it.body())
-                            }
-                            .let { gameNotificationService.notifyGames(it) }
+                        if (response.statusCode() >= 400) {
+                            throw RuntimeException(
+                                "HTTP error: ${response.statusCode()}, ${
+                                    response.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
+                                }")
+                        }
+
+                        val games = mapper.readValue<List<GameImpl>>(response.body())
+
+                        gameNotificationService.notifyGames(games)
                     } catch (t: Throwable) {
                         logger.error("Error when fetching games list.", t)
                     }

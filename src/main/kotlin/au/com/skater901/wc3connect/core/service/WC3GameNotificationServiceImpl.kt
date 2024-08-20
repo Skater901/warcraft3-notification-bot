@@ -20,7 +20,7 @@ internal class WC3GameNotificationServiceImpl @Inject constructor(
             throw InvalidRegexPatternException(e.message!!)
         }
 
-        notificationDAO.save(WC3GameNotification(id, type, mapRegex)) // TODO
+        notificationDAO.save(WC3GameNotification(id, type, mapRegex))
     }
 
     override suspend fun deleteNotification(id: String): Boolean = notificationDAO.delete(id)

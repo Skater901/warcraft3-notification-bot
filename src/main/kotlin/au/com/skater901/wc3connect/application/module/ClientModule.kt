@@ -12,7 +12,7 @@ import java.net.http.HttpClient
 internal class ClientModule : AbstractModule() {
     @Provides
     @Singleton
-    fun getClient(): HttpClient = HttpClient.newHttpClient() // TODO user agent
+    fun getClient(): HttpClient = HttpClient.newHttpClient()
 
     @Provides
     @Named("gamesURL")

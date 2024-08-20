@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 class RegisterNotificationTest {
     @Test
     fun `should reply with error if no valid channel included`() {
-        val WC3GameNotificationService = mock<WC3GameNotificationService>()
+        val wc3GameNotificationService = mock<WC3GameNotificationService>()
 
         val restAction = mock<ReplyCallbackAction> {
             on { submit() } doReturn CompletableFuture.completedFuture(null)
@@ -32,10 +32,10 @@ class RegisterNotificationTest {
         }
 
         runBlocking {
-            RegisterNotification(WC3GameNotificationService).handleCommand(command)
+            RegisterNotification(wc3GameNotificationService).handleCommand(command)
         }
 
-        verifyNoInteractions(WC3GameNotificationService)
+        verifyNoInteractions(wc3GameNotificationService)
 
         verify(command) {
             1 * { reply("Notification requested from outside a channel. Please use a channel.") }
@@ -47,7 +47,7 @@ class RegisterNotificationTest {
         val channelId = "12345"
         val mapPattern = "bad regex"
 
-        val WC3GameNotificationService = mock<WC3GameNotificationService> {
+        val wc3GameNotificationService = mock<WC3GameNotificationService> {
             onBlocking { createNotification(channelId, mapPattern) } doThrow InvalidRegexPatternException(mapPattern)
         }
 
@@ -66,7 +66,7 @@ class RegisterNotificationTest {
         }
 
         runBlocking {
-            RegisterNotification(WC3GameNotificationService).handleCommand(command)
+            RegisterNotification(wc3GameNotificationService).handleCommand(command)
         }
 
         verify(command) {
@@ -79,7 +79,7 @@ class RegisterNotificationTest {
         val channelId = "12345"
         val mapPattern = "my cool regex pattern"
 
-        val WC3GameNotificationService = mock<WC3GameNotificationService>()
+        val wc3GameNotificationService = mock<WC3GameNotificationService>()
 
         val restAction = mock<ReplyCallbackAction> {
             on { submit() } doReturn CompletableFuture.completedFuture(null)
@@ -101,10 +101,10 @@ class RegisterNotificationTest {
         }
 
         runBlocking {
-            RegisterNotification(WC3GameNotificationService).handleCommand(command)
+            RegisterNotification(wc3GameNotificationService).handleCommand(command)
         }
 
-        verify(WC3GameNotificationService) {
+        verify(wc3GameNotificationService) {
             1 * { runBlocking { createNotification(channelId, mapPattern) } }
         }
 

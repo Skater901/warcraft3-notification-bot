@@ -10,12 +10,17 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 
 @Singleton
 internal class GameNotificationService @Inject constructor(
     private val notificationDAO: NotificationDAO,
     private val gameNotifiers: Map<String, @JvmSuppressWildcards GameNotifier>,
 ) {
+    companion object {
+        private val logger = LoggerFactory.getLogger(GameNotificationService::class.java)
+    }
+
     private val hostedGames = mutableMapOf<Int, Pair<Game, List<GameNotifier>>>()
 
     suspend fun notifyGames(currentlyHostedGames: List<Game>) {
@@ -36,6 +41,7 @@ internal class GameNotificationService @Inject constructor(
         }
             .forEach { hostedGames[it.first.id] = it }
 
+        // Update the game info for hosted games
         currentlyHostedGames.forEach {
             val gameAndNotifiers = hostedGames[it.id]!!
 
@@ -48,13 +54,25 @@ internal class GameNotificationService @Inject constructor(
 
         return newGames.mapAsync { game ->
             game to channelNotifications.filter { it.mapNameRegexPattern.containsMatchIn(game.map) }
-                .mapAsync {
+                .mapAsync inner@{
+                    val gameNotifier = gameNotifiers[it.type] ?: return@inner null
                     try {
-                        gameNotifiers[it.type]?.apply {
+                        gameNotifier.apply {
                             notifyNewGame(it.id, game)
                         }
                     } catch (e: InvalidNotificationException) {
+                        logger.warn("Deleting invalid notification [ {}-{} ]", it.id, it.type)
                         notificationDAO.delete(it.id)
+                        null
+                    } catch (t: Throwable) {
+                        LoggerFactory.getLogger(gameNotifier.javaClass)
+                            .error(
+                                "Exception when notifying new game for id [ {} ] in module [ {} ]. Game: {}",
+                                it.id,
+                                it.type,
+                                game,
+                                t
+                            )
                         null
                     }
                 }
@@ -65,13 +83,27 @@ internal class GameNotificationService @Inject constructor(
     private suspend fun updateExistingGames() {
         hostedGames.values
             .forEachAsync { (game, notifiers) ->
-                notifiers.forEachAsync { it.updateExistingGame(game) }
+                notifiers.forEachAsync {
+                    try {
+                        it.updateExistingGame(game)
+                    } catch (t: Throwable) {
+                        LoggerFactory.getLogger(it.javaClass)
+                            .error("Exception when updating existing game [ {} ]", game, t)
+                    }
+                }
             }
     }
 
     private suspend fun closeExpiredGames(expiredGames: List<Pair<Game, List<GameNotifier>>>) {
         expiredGames.forEachAsync { (game, gameNotifiers) ->
-            gameNotifiers.forEachAsync { it.closeExpiredGame(game) }
+            gameNotifiers.forEachAsync {
+                try {
+                    it.closeExpiredGame(game)
+                } catch (t: Throwable) {
+                    LoggerFactory.getLogger(it.javaClass)
+                        .error("Exception when closing existing game [ {} ]", game, t)
+                }
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ internal class ConfigParser<T : Any>(
                     Int::class -> tryConvertProperty(param, property) { it.toInt() }
                     Long::class -> tryConvertProperty(param, property) { it.toLong() }
                     URI::class -> tryConvertProperty(param, property) { URI(it) }
-                    else -> throw IllegalArgumentException("Config class [ ${configClass.qualifiedName} ] has parameter [ ${param.name} ] of type [ ${param.type.jvmErasure} ] which is not currently supported by the config parser.")
+                    else -> throw IllegalArgumentException("Config class [ ${configClass.qualifiedName} ] has parameter [ ${param.name} ] of type [ ${param.type.jvmErasure.qualifiedName} ] which is not currently supported by the config parser.")
                 }
             }
 
@@ -39,7 +39,7 @@ internal class ConfigParser<T : Any>(
         val fullProperty = "$prefix.${parameter.name}"
 
         return getProperty(fullProperty)
-            ?: throw IllegalStateException("No config property provided for [ $fullProperty ]")
+            ?: throw IllegalArgumentException("No config property provided for [ $fullProperty ]")
     }
 
     private inline fun <reified T> tryConvertProperty(

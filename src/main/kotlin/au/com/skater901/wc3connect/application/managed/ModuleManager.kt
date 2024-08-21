@@ -11,6 +11,7 @@ import com.google.inject.Provides
 import jakarta.inject.Named
 import java.util.*
 
+// TODO refactor to use injection so it can be tested
 internal class ModuleManager {
     val notificationModules = loadModules()
     private var started = false

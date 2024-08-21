@@ -67,9 +67,27 @@ class TaskRunnerTest {
         }
     }
 
+    private val moduleWithoutTask = object : NotificationModule<Any> {
+        override val moduleName: String
+            get() = TODO("Not yet implemented")
+        override val configClass: KClass<Any>
+            get() = TODO("Not yet implemented")
+
+        override fun initializeNotificationHandlers(
+            config: Any,
+            injector: Injector,
+            wc3GameNotificationService: WC3GameNotificationService
+        ) {
+            TODO("Not yet implemented")
+        }
+
+        override val gameNotifier: KClass<out GameNotifier>
+            get() = TODO("Not yet implemented")
+    }
+
     @Test
-    fun `should run multiple tasks and not let them block each other`() {
-        TaskRunner(listOf(Module1(), Module2())).use {
+    fun `should ignore modules without tasks, run multiple tasks, and not let them block each other`() {
+        TaskRunner(listOf(Module1(), Module2(), moduleWithoutTask)).use {
             it.start()
 
             Thread.sleep(12_000)
@@ -77,5 +95,45 @@ class TaskRunnerTest {
 
         assertThat(module1Counter).isEqualTo(2)
         assertThat(module2Counter).isGreaterThan(10)
+    }
+
+    private var brokenModuleCounter = 0
+
+    inner class ModuleWithBrokenTask : NotificationModule<Any> {
+        override val moduleName: String
+            get() = TODO("Not yet implemented")
+        override val configClass: KClass<Any>
+            get() = TODO("Not yet implemented")
+
+        override fun initializeNotificationHandlers(
+            config: Any,
+            injector: Injector,
+            wc3GameNotificationService: WC3GameNotificationService
+        ) {
+            TODO("Not yet implemented")
+        }
+
+        override val gameNotifier: KClass<out GameNotifier>
+            get() = TODO("Not yet implemented")
+
+        override val scheduledTask: ScheduledTask = object : ScheduledTask {
+            override val schedule: Int = 1
+
+            override suspend fun task() {
+                brokenModuleCounter++
+                throw RuntimeException("oh no!")
+            }
+        }
+    }
+
+    @Test
+    fun `should handle exceptions when running scheduled tasks`() {
+        TaskRunner(listOf(ModuleWithBrokenTask())).use {
+            it.start()
+
+            Thread.sleep(5000)
+        }
+
+        assertThat(brokenModuleCounter).isGreaterThanOrEqualTo(4)
     }
 }

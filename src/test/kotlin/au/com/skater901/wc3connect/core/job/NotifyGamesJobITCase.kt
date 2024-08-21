@@ -140,4 +140,23 @@ class NotifyGamesJobITCase {
 
         verifyNoInteractions(gameNotificationService)
     }
+
+    @Test
+    fun `should handle being started twice, and being closed without being started`() {
+        val gameNotificationService = mock<GameNotificationService>()
+
+        val job = NotifyGamesJob(
+            gameNotificationService,
+            client,
+            URI("http://localhost:8080/games"),
+            mapper,
+            1_000
+        )
+
+        job.start()
+        job.start()
+
+        job.close()
+        job.close()
+    }
 }

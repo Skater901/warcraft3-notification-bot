@@ -1,8 +1,8 @@
 package au.com.skater901.wc3connect.discord
 
 import au.com.skater901.wc3connect.api.NotificationModule
-import au.com.skater901.wc3connect.api.core.service.GameNotifier
 import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
+import au.com.skater901.wc3connect.api.scheduled.ScheduledTask
 import au.com.skater901.wc3connect.discord.api.commands.Command
 import au.com.skater901.wc3connect.discord.api.commands.Help
 import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.requests.GatewayIntent
 import kotlin.reflect.KClass
 
-public class DiscordNotificationModule : NotificationModule<DiscordConfiguration> {
+public class DiscordNotificationModule : NotificationModule<DiscordConfiguration, DiscordGameNotifier, ScheduledTask> {
     override val moduleName: String = "discord"
     override val configClass: KClass<DiscordConfiguration> = DiscordConfiguration::class
 
@@ -72,5 +72,5 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
 
     private inline fun <reified T : Command> Injector.getCommand(): T = getInstance(T::class.java)
 
-    override val gameNotifier: KClass<out GameNotifier> = DiscordGameNotifier::class
+    override val gameNotifierClass: KClass<DiscordGameNotifier> = DiscordGameNotifier::class
 }

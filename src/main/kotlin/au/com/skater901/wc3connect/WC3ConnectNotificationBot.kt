@@ -1,28 +1,28 @@
 package au.com.skater901.wc3connect
 
-import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.application.database.MigrationsManager
 import au.com.skater901.wc3connect.application.managed.ModuleManager
 import au.com.skater901.wc3connect.application.module.*
 import au.com.skater901.wc3connect.core.job.NotifyGamesJob
+import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.Guice
 import com.google.inject.Injector
 import java.io.File
 
 internal class WC3ConnectNotificationBot {
-    internal fun run() {
+    fun run() {
         validateConfig()
 
-        val moduleManager = ModuleManager()
-
-        val injector = createInjector(moduleManager.notificationModules)
+        val injector = createInjector()
 
         // Run database migrations
-        injector.getInstance(MigrationsManager::class.java).runMigrations()
+        injector.getInstance<MigrationsManager>().runMigrations()
+
+        val moduleManager = injector.getInstance<ModuleManager>()
 
         moduleManager.initializeModules(injector)
 
-        injector.getInstance(NotifyGamesJob::class.java).start()
+        startGamesNotifyingJob(injector, moduleManager)
 
         // Hack to keep the app running
         while (true) {
@@ -38,17 +38,18 @@ internal class WC3ConnectNotificationBot {
         if (!File(configFilePath).exists()) throw IllegalArgumentException("Config file [ $configFilePath ] does not exist.")
     }
 
-    private fun createInjector(notificationModules: List<NotificationModule<Any>>): Injector {
-        val guiceModules = notificationModules.map { it.guiceModule() }
+    private fun createInjector(): Injector = Guice.createInjector(
+        AppModule(),
+        ClientModule(),
+        ConfigModule(),
+        DatabaseModule(),
+        NotificationModulesModule()
+    )
 
-        return Guice.createInjector(
-            AppModule(),
-            ClientModule(),
-            ConfigModule(notificationModules),
-            DatabaseModule(),
-            GameNotifierModule(notificationModules),
-            *guiceModules.toTypedArray()
-        )
+    private fun startGamesNotifyingJob(injector: Injector, moduleManager: ModuleManager) {
+        injector.createChildInjector(GameNotifierModule(moduleManager.getGameNotifiers()))
+            .getInstance<NotifyGamesJob>()
+            .start()
     }
 
     companion object {

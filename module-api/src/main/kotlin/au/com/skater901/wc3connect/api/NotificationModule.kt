@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 /**
  * The main class to implement when registering a module.
  */
-public interface NotificationModule<C : Any> {
+public interface NotificationModule<C : Any, G : GameNotifier, T : ScheduledTask> {
     /**
      * The unique name of this module. Recommendation is for this to be a single word with no special characters.
      */
@@ -91,14 +91,73 @@ public interface NotificationModule<C : Any> {
     )
 
     /**
-     * An optional scheduled task that you want to be run. Can be used for registering code that polls for something.
+     * The class of an optional [ScheduledTask] that you want to be run. Can be used for registering code that polls for
+     * something.
+     *
+     * Use this if you wish to use dependency injection with Guice. An instance of your class will be instantiated via
+     * Guice.
+     *
+     * If both a [scheduledTaskClass] and [scheduledTask] are provided, an [IllegalArgumentException] will be thrown.
+     * Please provide one or the other, or none, not both.
      */
-    public val scheduledTask: ScheduledTask?
+    public val scheduledTaskClass: KClass<T>?
         get() = null
+
+    /**
+     * An optional [ScheduledTask] that you want to be run. Can be used for registering code that polls for something.
+     *
+     * Use this if you wish to instantiate your own instance of your scheduled task, without using dependency injection.
+     *
+     * This function will be called multiple times by the application, so if your class is expensive to instantiate,
+     * you should lazily instantiate it and return the same instance every time this function is called. An easy way to
+     * do this is to use a private backing field with Kotlin's lazy delegate.
+     *
+     * ```kotlin
+     * private val myScheduledTask by lazy {
+     *     MyScheduledTask()
+     * }
+     *
+     * override fun scheduledTask(): MyScheduledTask = myScheduledTask
+     * ```
+     *
+     * If both a [scheduledTaskClass] and [scheduledTask] are provided, an [IllegalArgumentException] will be thrown.
+     * Please provide one or the other, or none, not both.
+     */
+    public fun scheduledTask(): T? = null
 
     /**
      * The class you have created that implements [GameNotifier], and is used for notifying on new games, updating
      * existing games that get modified, and closing off games that have started or been unhosted.
+     *
+     * Use this if you wish to use dependency injection with Guice. An instance of your class will be instantiated via
+     * Guice.
+     *
+     * You must implement either [gameNotifierClass] or [gameNotifier]. If both return null, or both return a value, an
+     * [IllegalArgumentException] will be thrown when initializing your module.
      */
-    public val gameNotifier: KClass<out GameNotifier>
+    public val gameNotifierClass: KClass<G>?
+        get() = null
+
+    /**
+     * An instance of the class you have created that implements [GameNotifier], and is used for notifying on new games,
+     * updating existing games that get modified, and closing off games that have started or been unhosted.
+     *
+     * Use this if you wish to instantiate your own instance of your [GameNotifier], without using dependency injection.
+     *
+     * This function will be called multiple times by the application, so if your class is expensive to instantiate,
+     * you should lazily instantiate it and return the same instance every time this function is called. An easy way to
+     * do this is to use a private backing field with Kotlin's lazy delegate.
+     *
+     * ```kotlin
+     * private val myGameNotifier by lazy {
+     *     MyGameNotifier()
+     * }
+     *
+     * override fun gameNotifier(): MyGameNotifier = myGameNotifier
+     * ```
+     *
+     * You must implement either [gameNotifierClass] or [gameNotifier]. If both return null, or both return a value, an
+     * [IllegalArgumentException] will be thrown when initializing your module.
+     */
+    public fun gameNotifier(): G? = null
 }

@@ -1,6 +1,7 @@
 package au.com.skater901.wc3connect.application.module
 
 import au.com.skater901.wc3connect.application.defaultUnitOfWork
+import au.com.skater901.wc3connect.utils.getInstance
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Guice
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
@@ -13,17 +14,17 @@ class AppModuleTest {
     fun `should configure registries and object mapper as singletons, and inject UnitOfWork`() {
         val injector = Guice.createInjector(AppModule())
 
-        val circuitBreakerRegistry = injector.getInstance(CircuitBreakerRegistry::class.java)
+        val circuitBreakerRegistry = injector.getInstance<CircuitBreakerRegistry>()
 
-        assertThat(circuitBreakerRegistry === injector.getInstance(CircuitBreakerRegistry::class.java)).isTrue()
+        assertThat(circuitBreakerRegistry === injector.getInstance<CircuitBreakerRegistry>()).isTrue()
 
-        val retryRegistry = injector.getInstance(RetryRegistry::class.java)
+        val retryRegistry = injector.getInstance<RetryRegistry>()
 
-        assertThat(retryRegistry === injector.getInstance(RetryRegistry::class.java)).isTrue()
+        assertThat(retryRegistry === injector.getInstance<RetryRegistry>()).isTrue()
 
-        val mapper = injector.getInstance(ObjectMapper::class.java)
+        val mapper = injector.getInstance<ObjectMapper>()
 
-        assertThat(mapper === injector.getInstance(ObjectMapper::class.java)).isTrue()
+        assertThat(mapper === injector.getInstance<ObjectMapper>()).isTrue()
 
         assertThat(mapper.registeredModuleIds).contains("com.fasterxml.jackson.module.kotlin.KotlinModule")
 

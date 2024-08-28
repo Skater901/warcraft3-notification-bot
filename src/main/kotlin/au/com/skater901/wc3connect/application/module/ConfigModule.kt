@@ -1,6 +1,5 @@
 package au.com.skater901.wc3connect.application.module
 
-import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.application.config.ConfigParser
 import au.com.skater901.wc3connect.application.config.DatabaseConfig
 import au.com.skater901.wc3connect.application.config.GamesConfiguration
@@ -16,9 +15,7 @@ import jakarta.inject.Singleton
 import java.io.File
 import java.util.*
 
-internal class ConfigModule(
-    private val modules: List<NotificationModule<Any>>
-) : AbstractModule() {
+internal class ConfigModule : AbstractModule() {
     override fun configure() {
         val configProperties = getProvider(Key.get(Properties::class.java).withAnnotation(named("configProperties")))
 
@@ -46,17 +43,6 @@ internal class ConfigModule(
             )
         )
             .`in`(Scopes.SINGLETON)
-
-        modules.forEach {
-            bind(it.configClass.java).toProvider(
-                ConfigParser(
-                    configProperties,
-                    it.moduleName,
-                    it.configClass
-                )
-            )
-                .`in`(Scopes.SINGLETON)
-        }
 
         requestStaticInjection(LoggingConfiguration::class.java)
     }

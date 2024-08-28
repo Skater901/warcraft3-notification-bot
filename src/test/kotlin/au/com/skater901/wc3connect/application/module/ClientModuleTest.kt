@@ -1,6 +1,7 @@
 package au.com.skater901.wc3connect.application.module
 
 import au.com.skater901.wc3connect.application.config.GamesConfiguration
+import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Provides
@@ -20,9 +21,9 @@ class ClientModuleTest {
             }
         )
 
-        val client = injector.getInstance(HttpClient::class.java)
+        val client = injector.getInstance<HttpClient>()
 
-        assertThat(client === injector.getInstance(HttpClient::class.java)).isTrue()
+        assertThat(client === injector.getInstance<HttpClient>()).isTrue()
 
         client.close()
     }

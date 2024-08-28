@@ -4,33 +4,33 @@ import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.api.core.service.GameNotifier
 import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3connect.api.scheduled.ScheduledTask
+import com.google.inject.AbstractModule
+import com.google.inject.Guice
 import com.google.inject.Injector
+import com.google.inject.Provides
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
 class TaskRunnerTest {
     private var module1Counter = 0
-    private var module2Counter = 0
+    private val module2Counter = AtomicInteger(0)
 
-    inner class Module1 : NotificationModule<Any> {
-        override val moduleName: String
-            get() = TODO("Not yet implemented")
-        override val configClass: KClass<Any>
-            get() = TODO("Not yet implemented")
+    inner class Module1 : NotificationModule<Any, GameNotifier, ScheduledTask> {
+        override val moduleName: String = "module1"
+        override val configClass: KClass<Any> = Any::class
 
         override fun initializeNotificationHandlers(
             config: Any,
             injector: Injector,
             wc3GameNotificationService: WC3GameNotificationService
         ) {
-            TODO("Not yet implemented")
         }
 
-        override val gameNotifier: KClass<out GameNotifier>
-            get() = TODO("Not yet implemented")
-
-        override val scheduledTask: ScheduledTask = object : ScheduledTask {
+        override fun scheduledTask(): ScheduledTask = object : ScheduledTask {
             override val schedule: Int = 1
 
             override suspend fun task() {
@@ -41,82 +41,77 @@ class TaskRunnerTest {
         }
     }
 
-    inner class Module2 : NotificationModule<Any> {
-        override val moduleName: String
-            get() = TODO("Not yet implemented")
-        override val configClass: KClass<Any>
-            get() = TODO("Not yet implemented")
+    class ScheduledTask2 @Inject constructor(
+        private val module2Counter: AtomicInteger
+    ) : ScheduledTask {
+        override val schedule: Int = 1
 
-        override fun initializeNotificationHandlers(
-            config: Any,
-            injector: Injector,
-            wc3GameNotificationService: WC3GameNotificationService
-        ) {
-            TODO("Not yet implemented")
-        }
-
-        override val gameNotifier: KClass<out GameNotifier>
-            get() = TODO("Not yet implemented")
-
-        override val scheduledTask: ScheduledTask = object : ScheduledTask {
-            override val schedule: Int = 1
-
-            override suspend fun task() {
-                module2Counter++
-            }
+        override suspend fun task() {
+            module2Counter.incrementAndGet()
         }
     }
 
-    private val moduleWithoutTask = object : NotificationModule<Any> {
-        override val moduleName: String
-            get() = TODO("Not yet implemented")
-        override val configClass: KClass<Any>
-            get() = TODO("Not yet implemented")
+    class Module2 : NotificationModule<Any, GameNotifier, ScheduledTask2> {
+        override val moduleName: String = "module2"
+        override val configClass: KClass<Any> = Any::class
 
         override fun initializeNotificationHandlers(
             config: Any,
             injector: Injector,
             wc3GameNotificationService: WC3GameNotificationService
         ) {
-            TODO("Not yet implemented")
         }
 
-        override val gameNotifier: KClass<out GameNotifier>
-            get() = TODO("Not yet implemented")
+        override val scheduledTaskClass = ScheduledTask2::class
+    }
+
+    private val moduleWithoutTask = object : NotificationModule<Any, GameNotifier, ScheduledTask> {
+        override val moduleName: String = "moduleWithoutTask"
+        override val configClass: KClass<Any> = Any::class
+
+        override fun initializeNotificationHandlers(
+            config: Any,
+            injector: Injector,
+            wc3GameNotificationService: WC3GameNotificationService
+        ) {
+        }
     }
 
     @Test
     fun `should ignore modules without tasks, run multiple tasks, and not let them block each other`() {
-        TaskRunner(listOf(Module1(), Module2(), moduleWithoutTask)).use {
-            it.start()
+        val injector = Guice.createInjector(
+            object : AbstractModule() {
+                @Provides
+                @Singleton
+                fun getCounter(): AtomicInteger = module2Counter
+            }
+        )
+        TaskRunner().use {
+            it.runTask(Module1(), injector)
+            it.runTask(Module2(), injector)
+            it.runTask(moduleWithoutTask, injector)
 
             Thread.sleep(12_000)
         }
 
         assertThat(module1Counter).isEqualTo(2)
-        assertThat(module2Counter).isGreaterThan(10)
+        assertThat(module2Counter.get()).isGreaterThan(10)
     }
 
     private var brokenModuleCounter = 0
 
-    inner class ModuleWithBrokenTask : NotificationModule<Any> {
-        override val moduleName: String
-            get() = TODO("Not yet implemented")
-        override val configClass: KClass<Any>
-            get() = TODO("Not yet implemented")
+    inner class ModuleWithBrokenTask : NotificationModule<Any, GameNotifier, ScheduledTask> {
+        override val moduleName: String = "moduleWithBrokenTask"
+        override val configClass: KClass<Any> = Any::class
 
         override fun initializeNotificationHandlers(
             config: Any,
             injector: Injector,
             wc3GameNotificationService: WC3GameNotificationService
         ) {
-            TODO("Not yet implemented")
         }
 
-        override val gameNotifier: KClass<out GameNotifier>
-            get() = TODO("Not yet implemented")
-
-        override val scheduledTask: ScheduledTask = object : ScheduledTask {
+        override fun scheduledTask(): ScheduledTask = object : ScheduledTask {
             override val schedule: Int = 1
 
             override suspend fun task() {
@@ -128,8 +123,9 @@ class TaskRunnerTest {
 
     @Test
     fun `should handle exceptions when running scheduled tasks`() {
-        TaskRunner(listOf(ModuleWithBrokenTask())).use {
-            it.start()
+        val injector = Guice.createInjector()
+        TaskRunner().use {
+            it.runTask(ModuleWithBrokenTask(), injector)
 
             Thread.sleep(5000)
         }

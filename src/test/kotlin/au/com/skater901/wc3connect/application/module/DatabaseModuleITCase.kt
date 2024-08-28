@@ -4,6 +4,7 @@ import au.com.skater901.wc3connect.application.config.DatabaseConfig
 import au.com.skater901.wc3connect.core.dao.jdbi.wHandle
 import au.com.skater901.wc3connect.utils.MySQLExtension
 import au.com.skater901.wc3connect.utils.MySQLExtension.Configuration
+import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Provides
@@ -44,13 +45,13 @@ class DatabaseModuleITCase {
             }
         )
 
-        val connectionPool = injector.getInstance(DataSource::class.java)
+        val connectionPool = injector.getInstance<DataSource>()
 
-        assertThat(connectionPool === injector.getInstance(DataSource::class.java)).isTrue()
+        assertThat(connectionPool === injector.getInstance<DataSource>()).isTrue()
 
-        val jdbi = injector.getInstance(Jdbi::class.java)
+        val jdbi = injector.getInstance<Jdbi>()
 
-        assertThat(jdbi === injector.getInstance(Jdbi::class.java)).isTrue()
+        assertThat(jdbi === injector.getInstance<Jdbi>()).isTrue()
 
         val tables = jdbi.wHandle {
             it.createQuery("SHOW TABLES FROM wc3_bot;")

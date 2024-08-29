@@ -4,13 +4,21 @@ import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.api.core.service.GameNotifier
 import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3connect.api.scheduled.ScheduledTask
+import au.com.skater901.wc3connect.application.module.AppModule
+import au.com.skater901.wc3connect.core.dao.NotificationDAO
 import au.com.skater901.wc3connect.core.job.TaskRunner
 import com.google.inject.AbstractModule
+import com.google.inject.Guice
 import com.google.inject.Injector
+import com.google.inject.Provides
+import jakarta.inject.Named
+import jakarta.inject.Singleton
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
+import java.util.*
 import kotlin.reflect.KClass
 
 class ModuleManagerTest {
@@ -405,5 +413,67 @@ class ModuleManagerTest {
         assertThat(gameNotifiers).hasSize(2)
             .containsEntry("module1", notifier)
             .containsEntry("module2", gameNotifier)
+    }
+
+    class DummyConfig(val dummyValue: String)
+
+    @Test
+    fun `should bind module name to different instances of WC3GameNotificationServiceImpl`() {
+        val dao = mock<NotificationDAO>()
+        val injector = Guice.createInjector(
+            AppModule(),
+            object : AbstractModule() {
+                override fun configure() {
+                    bind(NotificationDAO::class.java).toInstance(dao)
+                }
+
+                @Provides
+                @Named("configProperties")
+                @Singleton
+                fun properties(): Properties = Properties().apply {
+                    setProperty("module1.dummyValue", "dummy")
+                    setProperty("module2.dummyValue", "dummy")
+                }
+            }
+        )
+
+        val module1 = object : NotificationModule<DummyConfig, GameNotifier, ScheduledTask> {
+            override val moduleName: String = "module1"
+            override val configClass: KClass<DummyConfig> = DummyConfig::class
+
+            override fun initializeNotificationHandlers(
+                config: DummyConfig,
+                injector: Injector,
+                wc3GameNotificationService: WC3GameNotificationService
+            ) {
+                runBlocking { wc3GameNotificationService.createNotification("1234", "hello") }
+            }
+
+            override fun gameNotifier(): GameNotifier = mock()
+        }
+
+        val module2 = object : NotificationModule<DummyConfig, GameNotifier, ScheduledTask> {
+            override val moduleName: String = "module2"
+            override val configClass: KClass<DummyConfig> = DummyConfig::class
+
+            override fun initializeNotificationHandlers(
+                config: DummyConfig,
+                injector: Injector,
+                wc3GameNotificationService: WC3GameNotificationService
+            ) {
+                runBlocking { wc3GameNotificationService.createNotification("1234", "hello") }
+            }
+
+            override fun gameNotifier(): GameNotifier = mock()
+        }
+
+        ModuleManager(listOf(module1, module2) as List<NotificationModule<Any, *, *>>, mock()).initializeModules(
+            injector
+        )
+
+        verify(dao) {
+            1 * { runBlocking { save(argThat { id == "1234" && mapNameRegexPattern.pattern == "hello" && type == "module1" }) } }
+            1 * { runBlocking { save(argThat { id == "1234" && mapNameRegexPattern.pattern == "hello" && type == "module2" }) } }
+        }
     }
 }

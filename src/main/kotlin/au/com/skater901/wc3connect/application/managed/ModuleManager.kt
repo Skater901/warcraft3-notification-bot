@@ -72,7 +72,7 @@ internal class ModuleManager @Inject constructor(
 
     private fun NotificationModule<Any, *, *>.makeGuiceModule(): AbstractModule = object : AbstractModule() {
         override fun configure() {
-            bind(WC3GameNotificationService::class.java).to(WC3GameNotificationServiceImpl::class.java) // TODO can this live in parent module?
+            bind(WC3GameNotificationService::class.java).to(WC3GameNotificationServiceImpl::class.java)
 
             val configProperties = getProvider(
                 Key.get(Properties::class.java)

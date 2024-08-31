@@ -25,6 +25,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
 
+    testImplementation(libs.assertj)
     testImplementation(libs.mockito.kotlin)
 }
 
@@ -32,6 +33,25 @@ tasks {
     test {
         useJUnitPlatform()
     }
+
+    jacocoTestReport {
+        dependsOn(test)
+    }
+
+    jacocoTestCoverageVerification {
+        dependsOn(jacocoTestReport)
+        violationRules {
+            rule {
+                limit {
+                    minimum = BigDecimal("0.5")
+                }
+            }
+        }
+    }
+}
+
+jacoco {
+    reportsDirectory = file("$buildDir/coverage-reports")
 }
 
 kotlin {

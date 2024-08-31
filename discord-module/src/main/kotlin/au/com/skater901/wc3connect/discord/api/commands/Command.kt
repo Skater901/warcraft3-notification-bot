@@ -1,6 +1,7 @@
 package au.com.skater901.wc3connect.discord.api.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 internal interface Command {
@@ -8,6 +9,8 @@ internal interface Command {
     val description: String
     val options: SlashCommandData.() -> Unit
         get() = {}
+    val defaultPermissions: DefaultMemberPermissions
+        get() = DefaultMemberPermissions.ENABLED
 
     suspend fun handleCommand(command: SlashCommandInteractionEvent)
 }

@@ -1,8 +1,7 @@
-package au.com.skater901.wc3connect.api.commands
+package au.com.skater901.wc3connect.discord.api.commands
 
 import au.com.skater901.wc3connect.api.core.domain.exceptions.InvalidRegexPatternException
 import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
-import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -109,7 +108,7 @@ class RegisterNotificationTest {
         }
 
         verify(command) {
-            1 * { reply("Registering a notification for channel [ cool channel ($channelId) ] for regex pattern [ $mapPattern ]") }
+            1 * { reply("Registering a notification for channel **cool channel** for regex pattern **$mapPattern**") }
         }
     }
 }

@@ -35,7 +35,7 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
             config.privateToken,
             enableCoroutines = true
         ) {
-            intents += GatewayIntent.GUILD_MESSAGES
+            intents -= GatewayIntent.entries // disable all intents, none are needed
         }
     }
 
@@ -64,6 +64,8 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
             commands.forEach { command ->
                 slash(command.name, command.description) {
                     command.options(this)
+
+                    defaultPermissions = command.defaultPermissions
                 }
             }
         }

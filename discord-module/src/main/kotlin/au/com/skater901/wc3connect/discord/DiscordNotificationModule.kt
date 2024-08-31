@@ -3,10 +3,7 @@ package au.com.skater901.wc3connect.discord
 import au.com.skater901.wc3connect.api.NotificationModule
 import au.com.skater901.wc3connect.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3connect.api.scheduled.ScheduledTask
-import au.com.skater901.wc3connect.discord.api.commands.Command
-import au.com.skater901.wc3connect.discord.api.commands.Help
-import au.com.skater901.wc3connect.discord.api.commands.RegisterNotification
-import au.com.skater901.wc3connect.discord.api.commands.StopNotification
+import au.com.skater901.wc3connect.discord.api.commands.*
 import au.com.skater901.wc3connect.discord.core.handler.DiscordGameNotifier
 import com.google.inject.AbstractModule
 import com.google.inject.Injector
@@ -47,7 +44,8 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
         val commands = listOf(
             injector.getCommand<RegisterNotification>(),
             injector.getCommand<StopNotification>(),
-            injector.getCommand<Help>()
+            injector.getCommand<Help>(),
+            injector.getCommand<About>()
         )
 
         val jda = injector.getInstance(JDA::class.java)

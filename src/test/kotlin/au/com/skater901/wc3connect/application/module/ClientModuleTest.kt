@@ -1,6 +1,6 @@
 package au.com.skater901.wc3connect.application.module
 
-import au.com.skater901.wc3connect.application.config.GamesConfiguration
+import au.com.skater901.wc3connect.application.config.GamesSourceConfiguration
 import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -17,7 +17,7 @@ class ClientModuleTest {
             ClientModule(),
             object : AbstractModule() {
                 @Provides
-                fun getConfig() = GamesConfiguration(URI("http://localhost"), 5)
+                fun getConfig() = GamesSourceConfiguration(URI("http://localhost"), 5)
             }
         )
 

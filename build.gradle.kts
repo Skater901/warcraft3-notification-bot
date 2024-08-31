@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3connect"
-version = "1.0-SNAPSHOT"
+version = "0.1.0"
 
 repositories {
     mavenCentral()

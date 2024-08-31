@@ -1,7 +1,7 @@
 package au.com.skater901.wc3connect.application.module
 
 import au.com.skater901.wc3connect.application.config.DatabaseConfig
-import au.com.skater901.wc3connect.application.config.GamesConfiguration
+import au.com.skater901.wc3connect.application.config.GamesSourceConfiguration
 import au.com.skater901.wc3connect.application.config.LogConfiguration
 import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.Guice
@@ -46,12 +46,12 @@ class ConfigModuleTest {
         assertThat(databaseConfig.username).isEqualTo("myuser")
         assertThat(databaseConfig.password).isEqualTo("mypassword")
 
-        val gamesConfiguration = injector.getInstance<GamesConfiguration>()
+        val gamesSourceConfiguration = injector.getInstance<GamesSourceConfiguration>()
 
-        assertThat(gamesConfiguration === injector.getInstance<GamesConfiguration>()).isTrue()
+        assertThat(gamesSourceConfiguration === injector.getInstance<GamesSourceConfiguration>()).isTrue()
 
-        assertThat(gamesConfiguration.gamesURL.toString()).isEqualTo("http://localhost")
-        assertThat(gamesConfiguration.refreshInterval).isEqualTo(30)
+        assertThat(gamesSourceConfiguration.url.toString()).isEqualTo("http://localhost")
+        assertThat(gamesSourceConfiguration.refreshInterval).isEqualTo(30)
 
         val logConfiguration = injector.getInstance<LogConfiguration>()
 

@@ -2,7 +2,7 @@ package au.com.skater901.wc3connect.application.module
 
 import au.com.skater901.wc3connect.application.config.ConfigParser
 import au.com.skater901.wc3connect.application.config.DatabaseConfig
-import au.com.skater901.wc3connect.application.config.GamesConfiguration
+import au.com.skater901.wc3connect.application.config.GamesSourceConfiguration
 import au.com.skater901.wc3connect.application.config.LogConfiguration
 import au.com.skater901.wc3connect.application.logging.LoggingConfiguration
 import com.google.inject.AbstractModule
@@ -27,11 +27,11 @@ internal class ConfigModule : AbstractModule() {
             )
         )
             .`in`(Scopes.SINGLETON)
-        bind(GamesConfiguration::class.java).toProvider(
+        bind(GamesSourceConfiguration::class.java).toProvider(
             ConfigParser(
                 configProperties,
-                "gamesConfiguration",
-                GamesConfiguration::class
+                "gamesSource",
+                GamesSourceConfiguration::class
             )
         )
             .`in`(Scopes.SINGLETON)

@@ -101,6 +101,7 @@ class ConfigParserTest {
     }
 
     class NullableConfig(val myProperty: String?)
+    class NullableConfigWithNonString(val myProperty: Int?)
 
     @Test
     fun `should handle nullable properties`() {
@@ -117,9 +118,22 @@ class ConfigParserTest {
         config = ConfigParser({ properties }, "myModule", NullableConfig::class).get()
 
         assertThat(config.myProperty).isNull()
+
+        properties.setProperty("myModule.myProperty", "5")
+
+        var configWithNonString = ConfigParser({ properties }, "myModule", NullableConfigWithNonString::class).get()
+
+        assertThat(configWithNonString.myProperty).isEqualTo(5)
+
+        properties.clear()
+
+        configWithNonString = ConfigParser({ properties }, "myModule", NullableConfigWithNonString::class).get()
+
+        assertThat(configWithNonString.myProperty).isNull()
     }
 
     class DefaultConfig(val myProperty: String = "hello")
+    class DefaultConfigWithNonString(val myProperty: Int = 1)
 
     @Test
     fun `should handle properties with default values`() {
@@ -136,5 +150,17 @@ class ConfigParserTest {
         config = ConfigParser({ properties }, "myModule", DefaultConfig::class).get()
 
         assertThat(config.myProperty).isEqualTo("hello")
+
+        properties.setProperty("myModule.myProperty", "4")
+
+        var configWithNonString = ConfigParser({ properties }, "myModule", DefaultConfigWithNonString::class).get()
+
+        assertThat(configWithNonString.myProperty).isEqualTo(4)
+
+        properties.clear()
+
+        configWithNonString = ConfigParser({ properties }, "myModule", DefaultConfigWithNonString::class).get()
+
+        assertThat(configWithNonString.myProperty).isEqualTo(1)
     }
 }

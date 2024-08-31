@@ -23,8 +23,8 @@ class ConfigModuleTest {
             setProperty("database.username", "myuser")
             setProperty("database.password", "mypassword")
 
-            setProperty("gamesConfiguration.gamesURL", "http://localhost")
-            setProperty("gamesConfiguration.refreshInterval", "30")
+            setProperty("gamesSource.url", "http://localhost")
+            setProperty("gamesSource.refreshInterval", "30")
 
             setProperty("logging.consoleLoggingLevel", "DEBUG")
             setProperty("logging.fileLoggingLevel", "WARN")

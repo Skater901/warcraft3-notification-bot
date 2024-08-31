@@ -29,12 +29,14 @@ internal class ConfigParser<T : Any>(
                 }
             }
             .associate { (param, property) ->
-                param to when (param.type.jvmErasure) {
-                    String::class -> property
-                    Int::class -> tryConvertProperty(param, property) { it.toInt() }
-                    Long::class -> tryConvertProperty(param, property) { it.toLong() }
-                    URI::class -> tryConvertProperty(param, property) { URI(it) }
-                    else -> throw IllegalArgumentException("Config class [ ${configClass.qualifiedName} ] has parameter [ ${param.name} ] of type [ ${param.type.jvmErasure.qualifiedName} ] which is not currently supported by the config parser.")
+                param to property?.let { p ->
+                    when (param.type.jvmErasure) {
+                        String::class -> p
+                        Int::class -> tryConvertProperty(param, p) { it.toInt() }
+                        Long::class -> tryConvertProperty(param, p) { it.toLong() }
+                        URI::class -> tryConvertProperty(param, p) { URI(it) }
+                        else -> throw IllegalArgumentException("Config class [ ${configClass.qualifiedName} ] has parameter [ ${param.name} ] of type [ ${param.type.jvmErasure.qualifiedName} ] which is not currently supported by the config parser.")
+                    }
                 }
             }
 

@@ -90,10 +90,10 @@ internal class LoggingConfiguration : Configurator, ContextAwareBase() {
         @Inject
         @JvmStatic
         fun configure(configuration: LogConfiguration) {
-            consoleLogLevel = Level.toLevel(configuration.consoleLoggingLevel, Level.OFF)
-            fileLogLevel = Level.toLevel(configuration.fileLoggingLevel, Level.INFO)
-            logsDirectory = configuration.logFileDirectory
-            logFileArchiveCount = configuration.logFileArchiveCount
+            configuration.consoleLoggingLevel?.also { consoleLogLevel = Level.toLevel(it, Level.OFF) }
+            configuration.fileLoggingLevel?.also { fileLogLevel = Level.toLevel(it, Level.INFO) }
+            configuration.logFileDirectory?.also { logsDirectory = it }
+            configuration.logFileArchiveCount?.also { logFileArchiveCount = it }
         }
     }
 }

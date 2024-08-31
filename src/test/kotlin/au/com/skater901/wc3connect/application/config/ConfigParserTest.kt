@@ -99,4 +99,42 @@ class ConfigParserTest {
         assertThat(config.myLongProperty).isEqualTo(111111111111111)
         assertThat(config.myURIProperty.toString()).isEqualTo("http://localhost")
     }
+
+    class NullableConfig(val myProperty: String?)
+
+    @Test
+    fun `should handle nullable properties`() {
+        val properties = Properties().apply {
+            setProperty("myModule.myProperty", "Hello World")
+        }
+
+        var config = ConfigParser({ properties }, "myModule", NullableConfig::class).get()
+
+        assertThat(config.myProperty).isEqualTo("Hello World")
+
+        properties.clear()
+
+        config = ConfigParser({ properties }, "myModule", NullableConfig::class).get()
+
+        assertThat(config.myProperty).isNull()
+    }
+
+    class DefaultConfig(val myProperty: String = "hello")
+
+    @Test
+    fun `should handle properties with default values`() {
+        val properties = Properties().apply {
+            setProperty("myModule.myProperty", "Hello World")
+        }
+
+        var config = ConfigParser({ properties }, "myModule", DefaultConfig::class).get()
+
+        assertThat(config.myProperty).isEqualTo("Hello World")
+
+        properties.clear()
+
+        config = ConfigParser({ properties }, "myModule", DefaultConfig::class).get()
+
+        assertThat(config.myProperty).isEqualTo("hello")
+    }
 }

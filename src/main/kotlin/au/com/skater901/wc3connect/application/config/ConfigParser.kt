@@ -13,7 +13,7 @@ internal class ConfigParser<T : Any>(
     private val propertiesProvider: Provider<Properties>,
     private val moduleName: String,
     private val configClass: KClass<out T>
-): Provider<T> {
+) : Provider<T> {
     override fun get(): T {
         val primaryConstructor = configClass.primaryConstructor
             ?: throw IllegalArgumentException("Config class [ ${configClass.qualifiedName} ] must have primary constructor")
@@ -21,7 +21,13 @@ internal class ConfigParser<T : Any>(
         val properties = propertiesProvider.get()
 
         val parameters = primaryConstructor.parameters
-            .map { it to properties.getPropertyOrThrow(moduleName, it) }
+            .mapNotNull {
+                when {
+                    it.isOptional -> properties.getProperty(propertyWithModulePrefix(it))?.let { v -> it to v }
+                    it.type.isMarkedNullable -> it to properties.getProperty(propertyWithModulePrefix(it))
+                    else -> it to properties.getPropertyOrThrow(it)
+                }
+            }
             .associate { (param, property) ->
                 param to when (param.type.jvmErasure) {
                     String::class -> property
@@ -35,11 +41,13 @@ internal class ConfigParser<T : Any>(
         return primaryConstructor.callBy(parameters)
     }
 
-    private fun Properties.getPropertyOrThrow(prefix: String, parameter: KParameter): String {
-        val fullProperty = "$prefix.${parameter.name}"
+    private fun propertyWithModulePrefix(parameter: KParameter): String = "$moduleName.${parameter.name}"
 
-        return getProperty(fullProperty)
-            ?: throw IllegalArgumentException("No config property provided for [ $fullProperty ]")
+    private fun Properties.getPropertyOrThrow(parameter: KParameter): String {
+        val propertyWithModulePrefix = propertyWithModulePrefix(parameter)
+
+        return getProperty(propertyWithModulePrefix)
+            ?: throw IllegalArgumentException("No config property provided for [ $propertyWithModulePrefix ]")
     }
 
     private inline fun <reified T> tryConvertProperty(

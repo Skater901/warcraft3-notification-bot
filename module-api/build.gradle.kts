@@ -9,7 +9,9 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.guice)
+    implementation(libs.guice) {
+        exclude("com.google.guava", "guava")
+    }
 }
 
 kotlin {

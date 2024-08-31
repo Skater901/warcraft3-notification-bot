@@ -21,7 +21,9 @@ dependencies {
     implementation("net.dv8tion:JDA:$discord_version")
     implementation("club.minnced:jda-ktx:$ktx_version")
 
-    implementation(libs.guice)
+    implementation(libs.guice) {
+        exclude("com.google.guava", "guava")
+    }
 
     testImplementation(kotlin("test"))
 

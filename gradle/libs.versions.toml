@@ -1,6 +1,7 @@
 [libraries]
 coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
 guice = "com.google.inject:guice:7.0.0"
+guava = "com.google.guava:guava:32.0.1-jre" # Guava brought in by Guice has a vulnerability, so we exclude Guava from Guice, and bring in the newer Guava with the vulnerability fix.
 
 # Testing Libraries
 assertj = "org.assertj:assertj-core:3.26.3"

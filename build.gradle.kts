@@ -14,6 +14,8 @@ val wiremock_kotlin_version: String by project
 
 plugins {
     alias(libs.plugins.kotlin)
+    application
+
     jacoco
 }
 
@@ -42,7 +44,10 @@ dependencies {
     // Logging libraries
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
-    implementation(libs.guice)
+    implementation(libs.guice) {
+        exclude("com.google.guava", "guava")
+    }
+    implementation(libs.guava)
 
     // Resilience Libraries
     implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4j_version")
@@ -96,4 +101,12 @@ kotlin {
     jvmToolchain(21)
 
     explicitApi()
+}
+
+application {
+    mainClass = "au.com.skater901.wc3connect.WC3ConnectNotificationBot"
+
+    val configFile: String? by project
+
+    applicationDefaultJvmArgs = listOfNotNull(configFile?.let { "-DconfigFile=$it" })
 }

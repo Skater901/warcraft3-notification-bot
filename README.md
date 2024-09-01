@@ -10,7 +10,7 @@ different systems. Currently supported systems are:
 
 To run this application, you'll need to do the following steps:
 
-1. Create a MySQL database, with a `wc3_bot` schema.
+1. Create a MariaDB database, with a `wc3_bot` schema.
 2. Create a user with full access to the `wc3_bot` schema.
 3. Create a Java properties file with configuration values. Configuration will be discussed below.
 4. Run the application using the following command: `./gradlew run -PconfigFile=path/to/properties/file.properties`
@@ -31,8 +31,8 @@ Database configuration consists of four properties:
   Properties file.
 - `database.port` is the port of the database. This value defaults to `3306` if not specified in the config Properties
   file.
-- `database.username` is the username of the MySQL user this application will use to connect to the database.
-- `database.password` is the password of the MySQL user this application will use to connect to the database.
+- `database.username` is the username of the MariaDB user this application will use to connect to the database.
+- `database.password` is the password of the MariaDB user this application will use to connect to the database.
 
 ### Games Notification Configuration
 

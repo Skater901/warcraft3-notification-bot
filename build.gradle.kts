@@ -1,4 +1,4 @@
-val mysql_version: String by project
+val mariadb_version: String by project
 val jdbi_version: String by project
 val hikari_version: String by project
 val liquibase_version: String by project
@@ -8,7 +8,7 @@ val resilience4j_version: String by project
 val jackson_version: String by project
 
 // Testing library versions
-val mysql_test_container_version: String by project
+val mariadb_test_container_version: String by project
 val wiremock_version: String by project
 val wiremock_kotlin_version: String by project
 
@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3connect"
-version = "0.1.2"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
@@ -35,7 +35,7 @@ dependencies {
     implementation(libs.coroutines)
 
     // Database libraries
-    implementation("com.mysql:mysql-connector-j:$mysql_version")
+    implementation("org.mariadb.jdbc:mariadb-java-client:$mariadb_version")
     implementation("org.jdbi:jdbi3-core:$jdbi_version")
     implementation("com.zaxxer:HikariCP:$hikari_version")
     implementation("org.liquibase:liquibase-core:$liquibase_version")
@@ -67,7 +67,7 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
 
     // Integration/end to end testing libraries
-    testImplementation("org.testcontainers:mysql:$mysql_test_container_version")
+    testImplementation("org.testcontainers:mariadb:$mariadb_test_container_version")
     testImplementation("org.wiremock:wiremock:$wiremock_version")
     testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
 }

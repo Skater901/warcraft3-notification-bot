@@ -2,8 +2,8 @@ package au.com.skater901.wc3connect.application.module
 
 import au.com.skater901.wc3connect.application.config.DatabaseConfig
 import au.com.skater901.wc3connect.core.dao.jdbi.wHandle
-import au.com.skater901.wc3connect.utils.MySQLExtension
-import au.com.skater901.wc3connect.utils.MySQLExtension.Configuration
+import au.com.skater901.wc3connect.utils.MariaDBExtension
+import au.com.skater901.wc3connect.utils.MariaDBExtension.Configuration
 import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -24,14 +24,14 @@ class DatabaseModuleITCase {
     companion object {
         @RegisterExtension
         @JvmStatic
-        val mySQL = MySQLExtension()
+        val mariaDB = MariaDBExtension()
     }
 
     @Test
     fun `should create singleton connection pool and singleton jdbi`() {
         val databaseConfig = DatabaseConfig(
             "localhost",
-            mySQL.port,
+            mariaDB.port,
             "wc3connect",
             "mypassword"
         )

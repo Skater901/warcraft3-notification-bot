@@ -1,15 +1,14 @@
 package au.com.skater901.wc3connect.core.dao.jdbi
 
 import au.com.skater901.wc3connect.core.domain.WC3GameNotification
-import au.com.skater901.wc3connect.utils.MySQLExtension
+import au.com.skater901.wc3connect.utils.MariaDBExtension
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.jdbi.v3.core.Jdbi
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(MySQLExtension::class)
+@ExtendWith(MariaDBExtension::class)
 class JdbiWC3GameNotificationDAOITCase {
     @Test
     fun `should save, retrieve, update, and delete`(jdbi: Jdbi) {

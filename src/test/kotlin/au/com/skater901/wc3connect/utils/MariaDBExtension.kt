@@ -8,27 +8,27 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.extension.*
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.containers.MariaDBContainer
 import java.sql.DriverManager
 
-class MySQLExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, ParameterResolver {
-    private lateinit var mysqlContainer: MySQLContainer<*>
+class MariaDBExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, ParameterResolver {
+    private lateinit var mariadbContainer: MariaDBContainer<*>
 
     val jdbi: Jdbi by lazy {
         Jdbi.create(
-            mysqlContainer.jdbcUrl,
-            mysqlContainer.username,
-            mysqlContainer.password
+            mariadbContainer.jdbcUrl,
+            mariadbContainer.username,
+            mariadbContainer.password
         )
     }
 
     val port: Int
-        get() = mysqlContainer.getMappedPort(3306)
+        get() = mariadbContainer.getMappedPort(3306)
 
     override fun beforeAll(context: ExtensionContext) {
         val configuration: Configuration? = context.requiredTestClass.getAnnotation(Configuration::class.java)
 
-        mysqlContainer = MySQLContainer("mysql").withDatabaseName("wc3_bot")
+        mariadbContainer = MariaDBContainer("mariadb").withDatabaseName("wc3_bot")
             .configure(configuration)
             .apply { start() }
 
@@ -37,9 +37,9 @@ class MySQLExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, P
                 .findCorrectDatabaseImplementation(
                     JdbcConnection(
                         DriverManager.getConnection(
-                            mysqlContainer.jdbcUrl,
-                            mysqlContainer.username,
-                            mysqlContainer.password
+                            mariadbContainer.jdbcUrl,
+                            mariadbContainer.username,
+                            mariadbContainer.password
                         )
                     )
                 )
@@ -58,7 +58,7 @@ class MySQLExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, P
         }
     }
 
-    private fun MySQLContainer<*>.configure(configuration: Configuration?): MySQLContainer<*> {
+    private fun MariaDBContainer<*>.configure(configuration: Configuration?): MariaDBContainer<*> {
         if (configuration == null)
             return this
 
@@ -80,7 +80,7 @@ class MySQLExtension : BeforeAllCallback, AfterAllCallback, AfterEachCallback, P
     }
 
     override fun afterAll(context: ExtensionContext) {
-        mysqlContainer.stop()
+        mariadbContainer.stop()
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean =

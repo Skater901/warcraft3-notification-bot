@@ -21,8 +21,8 @@ internal class DatabaseModule : AbstractModule() {
     @Singleton
     fun provideDataSource(databaseConfig: DatabaseConfig): DataSource {
         return HikariDataSource().apply {
-            jdbcUrl = "jdbc:mysql://${databaseConfig.host}:${databaseConfig.port}/wc3_bot"
-            driverClassName = "com.mysql.cj.jdbc.Driver"
+            jdbcUrl = "jdbc:mariadb://${databaseConfig.host}:${databaseConfig.port}/wc3_bot"
+            driverClassName = "org.mariadb.jdbc.Driver"
             username = databaseConfig.username
             password = databaseConfig.password
         }

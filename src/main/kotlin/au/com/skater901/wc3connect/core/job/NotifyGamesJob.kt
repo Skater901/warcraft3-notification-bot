@@ -17,7 +17,7 @@ internal class NotifyGamesJob @Inject constructor(
     private val gameNotificationService: GameNotificationService,
     private val client: HttpClient,
     private val mapper: ObjectMapper,
-    private val gameProviders: List<GameProvider>,
+    private val gameProviders: Set<@JvmSuppressWildcards GameProvider>,
     @Named("refreshInterval")
     private val refreshInterval: Long
 ) : AutoCloseable {

@@ -421,7 +421,7 @@ class ModuleManagerTest {
     fun `should bind module name to different instances of WC3GameNotificationServiceImpl`() {
         val dao = mock<NotificationDAO>()
         val injector = Guice.createInjector(
-            AppModule(),
+//            AppModule(), TODO not needed?
             object : AbstractModule() {
                 override fun configure() {
                     bind(NotificationDAO::class.java).toInstance(dao)

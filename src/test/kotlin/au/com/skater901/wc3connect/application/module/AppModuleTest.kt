@@ -1,9 +1,14 @@
 package au.com.skater901.wc3connect.application.module
 
 import au.com.skater901.wc3connect.application.defaultUnitOfWork
+import au.com.skater901.wc3connect.core.gameProvider.GameProvider
+import au.com.skater901.wc3connect.core.gameProvider.WC3ConnectGameProvider
+import au.com.skater901.wc3connect.core.gameProvider.WC3MapsGameProvider
 import au.com.skater901.wc3connect.utils.getInstance
+import au.com.skater901.wc3connect.utils.scanResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Guice
+import com.google.inject.Key
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.retry.RetryRegistry
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +17,7 @@ import org.junit.jupiter.api.Test
 class AppModuleTest {
     @Test
     fun `should configure registries and object mapper as singletons, and inject UnitOfWork`() {
-        val injector = Guice.createInjector(AppModule())
+        val injector = scanResult { Guice.createInjector(AppModule(it)) }
 
         val circuitBreakerRegistry = injector.getInstance<CircuitBreakerRegistry>()
 
@@ -35,5 +40,9 @@ class AppModuleTest {
 
         assertThat(circuitBreakerRegistry.allCircuitBreakers).hasSize(1)
         assertThat(retryRegistry.allRetries).hasSize(1)
+
+        assertThat(injector.getInstance(object : Key<Set<@JvmSuppressWildcards GameProvider>>() {})).hasSize(2)
+            .anyMatch { it is WC3ConnectGameProvider }
+            .anyMatch { it is WC3MapsGameProvider }
     }
 }

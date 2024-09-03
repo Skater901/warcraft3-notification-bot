@@ -12,6 +12,8 @@ import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
@@ -59,6 +61,7 @@ public class DiscordGameNotifier @Inject internal constructor(
                 name = game.host
             }
             title = game.map
+            // TODO Ent or BNet
             field {
                 name = "Game Name"
                 // TODO country flag?
@@ -67,7 +70,8 @@ public class DiscordGameNotifier @Inject internal constructor(
             }
             field {
                 name = if (gameRemoved) "Started" else "Created"
-                value = if (gameRemoved) "After ${game.uptime} minutes" else "${game.uptime} minutes ago"
+                val minutes = Duration.between(game.created, Instant.now()).toMinutes()
+                value = if (gameRemoved) "After $minutes minutes" else "$minutes minutes ago"
                 inline = false
             }
         }

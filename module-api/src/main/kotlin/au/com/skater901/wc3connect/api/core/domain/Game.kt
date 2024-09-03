@@ -1,16 +1,18 @@
 package au.com.skater901.wc3connect.api.core.domain
 
+import java.time.Instant
+
 /**
- * A WC3Connect hosted game. Represents the current state of the game in lobby.
+ * A Warcraft 3 hosted game. Represents the current state of the game in lobby.
  */
 public interface Game {
     /**
-     * The unique identifier of the WC3Connect hosted game.
+     * The unique identifier of the Warcraft 3 hosted game.
      */
     public val id: Int
 
     /**
-     * The name of the WC3Connect hosted game.
+     * The name of the Warcraft 3 hosted game.
      */
     public val name: String
 
@@ -20,7 +22,7 @@ public interface Game {
     public val map: String
 
     /**
-     * The WC3Connect user who hosted this game. For games automatically hosted by WC3Connect, this value will be an empty String.
+     * The user who hosted this game. For games automatically hosted by WC3Connect, this value will be an empty String.
      */
     public val host: String
 
@@ -35,7 +37,17 @@ public interface Game {
     public val maxPlayers: Int
 
     /**
-     * The number of minutes, as a String, since the game was hosted.
+     * The timestamp when this game was created.
      */
-    public val uptime: String
+    public val created: Instant
+
+    /**
+     * Where in the world the game server is located.
+     */
+    public val region: Region
+
+    /**
+     * Where this game is hosted, Battle.Net, WC3Connect, etc.
+     */
+    public val gameSource: GameSource
 }

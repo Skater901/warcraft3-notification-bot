@@ -7,7 +7,6 @@ import com.google.inject.Guice
 import com.google.inject.Provides
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.net.URI
 import java.net.http.HttpClient
 
 class ClientModuleTest {
@@ -17,7 +16,7 @@ class ClientModuleTest {
             ClientModule(),
             object : AbstractModule() {
                 @Provides
-                fun getConfig() = GamesSourceConfiguration(URI("http://localhost"), 5)
+                fun getConfig() = GamesSourceConfiguration(5)
             }
         )
 

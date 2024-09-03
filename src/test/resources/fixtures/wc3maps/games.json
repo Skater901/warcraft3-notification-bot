@@ -1,0 +1,54 @@
+{
+  "error": false,
+  "results": [
+    {
+      "id": 146776957,
+      "name": "-phccqgx3",
+      "region": "eu",
+      "slots_taken": 1,
+      "slots_total": 8,
+      "host": "HaBu#2300",
+      "created": 1725265364,
+      "path": "Legion_TD_6.2b_Team_OZE (1).w3x",
+      "map_id": 183056,
+      "preview": 1
+    },
+    {
+      "id": 146776956,
+      "name": "PHCCX3!!!!",
+      "region": "usw",
+      "slots_taken": 7,
+      "slots_total": 16,
+      "host": "iWinson#1520",
+      "created": 1725265475,
+      "path": "Legion_TD_11.0k_TeamOZE.w3x",
+      "map_id": 0,
+      "preview": 0
+    },
+    {
+      "id": 146776955,
+      "name": "Pokemon World",
+      "region": "eu",
+      "slots_taken": 1,
+      "slots_total": 20,
+      "host": "Mysticer#2447",
+      "created": 1725265561,
+      "path": "Pokemon World V1.37.w3x",
+      "map_id": 0,
+      "preview": 0
+    },
+    {
+      "id": 146776954,
+      "name": "쥬라기 ㄱㄱㄱ",
+      "region": "kr",
+      "slots_taken": 1,
+      "slots_total": 7,
+      "host": "SoloSlayerK#3469",
+      "created": 1725265502,
+      "path": "Jurassic Survival F23.w3x",
+      "map_id": 313534,
+      "preview": 1
+    }
+  ],
+  "message": ""
+}

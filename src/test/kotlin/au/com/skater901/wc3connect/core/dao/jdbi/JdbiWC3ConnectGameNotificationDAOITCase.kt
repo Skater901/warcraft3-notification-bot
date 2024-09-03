@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MariaDBExtension::class)
-class JdbiWC3GameNotificationDAOITCase {
+class JdbiWC3ConnectGameNotificationDAOITCase {
     @Test
     fun `should save, retrieve, update, and delete`(jdbi: Jdbi) {
         val wc3GameNotification = WC3GameNotification("12345", "mymodule", Regex("any"))

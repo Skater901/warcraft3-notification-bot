@@ -4,6 +4,7 @@ val hikari_version: String by project
 val liquibase_version: String by project
 val liquibase_logging_version: String by project
 val logback_version: String by project
+val classgraph_version: String by project
 val resilience4j_version: String by project
 val jackson_version: String by project
 
@@ -32,6 +33,8 @@ dependencies {
 
     implementation(project(":utilities"))
 
+    implementation(libs.kotlin.bom)
+    implementation(libs.kotlin.reflect)
     implementation(libs.coroutines)
 
     // Database libraries
@@ -44,10 +47,12 @@ dependencies {
     // Logging libraries
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
+    // DI/reflection libraries
     implementation(libs.guice) {
         exclude("com.google.guava", "guava")
     }
     implementation(libs.guava)
+    implementation("io.github.classgraph:classgraph:$classgraph_version")
 
     // Resilience Libraries
     implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4j_version")
@@ -73,7 +78,7 @@ dependencies {
 }
 
 jacoco {
-    reportsDirectory = file("$buildDir/coverage-reports")
+    reportsDirectory = layout.buildDirectory.dir("coverage-reports")
 }
 
 tasks {

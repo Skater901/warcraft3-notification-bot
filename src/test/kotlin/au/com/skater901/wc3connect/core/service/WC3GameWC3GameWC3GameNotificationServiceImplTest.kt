@@ -9,7 +9,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.verify
 
-class WC3GameNotificationServiceImplTest {
+class WC3ConnectGameNotificationServiceImplTest {
     @Test
     fun `should throw InvalidRegexPatternException if regex is invalid`() {
         assertThatThrownBy {

@@ -6,18 +6,12 @@ import com.google.inject.Provides
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.inject.Singleton
-import java.net.URI
 import java.net.http.HttpClient
 
 internal class ClientModule : AbstractModule() {
     @Provides
     @Singleton
     fun getClient(): HttpClient = HttpClient.newHttpClient()
-
-    @Provides
-    @Named("gamesURL")
-    @Inject
-    fun getGamesURL(config: GamesSourceConfiguration): URI = config.url
 
     @Provides
     @Named("refreshInterval")

@@ -1,15 +1,14 @@
 package au.com.skater901.wc3connect.core.job
 
-import au.com.skater901.wc3connect.core.domain.GameImpl
+import au.com.skater901.wc3connect.core.gameProvider.GameProvider
 import au.com.skater901.wc3connect.core.service.GameNotificationService
+import au.com.skater901.wc3connect.utilities.collections.mapAsync
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import org.slf4j.LoggerFactory
-import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
@@ -17,9 +16,8 @@ import java.net.http.HttpResponse.BodyHandlers
 internal class NotifyGamesJob @Inject constructor(
     private val gameNotificationService: GameNotificationService,
     private val client: HttpClient,
-    @Named("gamesURL")
-    private val gamesUrl: URI,
     private val mapper: ObjectMapper,
+    private val gameProviders: List<GameProvider>,
     @Named("refreshInterval")
     private val refreshInterval: Long
 ) : AutoCloseable {
@@ -44,23 +42,26 @@ internal class NotifyGamesJob @Inject constructor(
                 while (started) {
                     try {
                         // refresh
-                        val response = client.sendAsync(
-                            HttpRequest.newBuilder(gamesUrl)
-                                .header("Accept", "application/json")
-                                .header("User-Agent", userAgent)
-                                .build(),
-                            BodyHandlers.ofInputStream()
-                        )
-                            .await()
+                        val games = gameProviders.mapAsync {
+                            val response = client.sendAsync(
+                                HttpRequest.newBuilder(it.sourceURL)
+                                    .header("Accept", "application/json")
+                                    .header("User-Agent", userAgent)
+                                    .build(),
+                                BodyHandlers.ofInputStream()
+                            )
+                                .await()
 
-                        if (response.statusCode() >= 400) {
-                            throw RuntimeException(
-                                "HTTP error: ${response.statusCode()}, ${
-                                    response.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
-                                }")
+                            if (response.statusCode() >= 400) {
+                                throw RuntimeException(
+                                    "HTTP error: ${response.statusCode()}, ${
+                                        response.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
+                                    }")
+                            }
+
+                            it.gamesProvider(mapper, response.body())
                         }
-
-                        val games = mapper.readValue<List<GameImpl>>(response.body())
+                            .flatten()
 
                         gameNotificationService.notifyGames(games)
                     } catch (t: Throwable) {

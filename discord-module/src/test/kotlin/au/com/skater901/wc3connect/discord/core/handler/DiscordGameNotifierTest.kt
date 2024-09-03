@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
 class DiscordGameNotifierTest {
@@ -52,7 +54,7 @@ class DiscordGameNotifierTest {
             on { host } doReturn "IceFrog"
             on { currentPlayers } doReturn 3
             on { maxPlayers } doReturn 10
-            on { uptime } doReturn "1"
+            on { created } doReturn Instant.now().minusMinutes(1).minusSeconds(5)
         }
 
         val updatedGame = mock<Game> {
@@ -62,7 +64,7 @@ class DiscordGameNotifierTest {
             on { host } doReturn "IceFrog"
             on { currentPlayers } doReturn 5
             on { maxPlayers } doReturn 10
-            on { uptime } doReturn "2"
+            on { created } doReturn Instant.now().minusMinutes(2).minusSeconds(5)
         }
 
         val startedGame = mock<Game> {
@@ -72,7 +74,7 @@ class DiscordGameNotifierTest {
             on { host } doReturn "IceFrog"
             on { currentPlayers } doReturn 8
             on { maxPlayers } doReturn 10
-            on { uptime } doReturn "4"
+            on { created } doReturn Instant.now().minusMinutes(4).minusSeconds(5)
         }
 
         runBlocking {
@@ -201,4 +203,6 @@ class DiscordGameNotifierTest {
             notifier.closeExpiredGame(game)
         }
     }
+
+    private fun Instant.minusMinutes(amount: Long): Instant = minus(amount, ChronoUnit.MINUTES)
 }

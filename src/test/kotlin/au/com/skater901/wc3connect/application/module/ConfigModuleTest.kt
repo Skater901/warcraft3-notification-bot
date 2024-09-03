@@ -4,6 +4,7 @@ import au.com.skater901.wc3connect.application.config.DatabaseConfig
 import au.com.skater901.wc3connect.application.config.GamesSourceConfiguration
 import au.com.skater901.wc3connect.application.config.LogConfiguration
 import au.com.skater901.wc3connect.utils.getInstance
+import au.com.skater901.wc3connect.utils.scanResult
 import com.google.inject.Guice
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -35,7 +36,7 @@ class ConfigModuleTest {
         File(configFileName).outputStream()
             .use { configProperties.store(it, null) }
 
-        val injector = Guice.createInjector(ConfigModule())
+        val injector = scanResult { Guice.createInjector(ConfigModule(it)) }
 
         val databaseConfig = injector.getInstance<DatabaseConfig>()
 
@@ -50,7 +51,6 @@ class ConfigModuleTest {
 
         assertThat(gamesSourceConfiguration === injector.getInstance<GamesSourceConfiguration>()).isTrue()
 
-        assertThat(gamesSourceConfiguration.url.toString()).isEqualTo("http://localhost")
         assertThat(gamesSourceConfiguration.refreshInterval).isEqualTo(30)
 
         val logConfiguration = injector.getInstance<LogConfiguration>()

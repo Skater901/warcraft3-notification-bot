@@ -7,13 +7,18 @@ import au.com.skater901.wc3connect.core.job.NotifyGamesJob
 import au.com.skater901.wc3connect.utils.getInstance
 import com.google.inject.Guice
 import com.google.inject.Injector
+import io.github.classgraph.ClassGraph
+import io.github.classgraph.ScanResult
 import java.io.File
 
 internal class WC3ConnectNotificationBot {
     fun run() {
         validateConfig()
 
-        val injector = createInjector()
+        val injector = ClassGraph().acceptPackages(this.javaClass.packageName)
+            .enableAnnotationInfo()
+            .scan()
+            .use { createInjector(it) }
 
         // Run database migrations
         injector.getInstance<MigrationsManager>().runMigrations()
@@ -38,10 +43,10 @@ internal class WC3ConnectNotificationBot {
         if (!File(configFilePath).exists()) throw IllegalArgumentException("Config file [ $configFilePath ] does not exist.")
     }
 
-    private fun createInjector(): Injector = Guice.createInjector(
-        AppModule(),
+    private fun createInjector(scanResult: ScanResult): Injector = Guice.createInjector(
+        AppModule(scanResult),
         ClientModule(),
-        ConfigModule(),
+        ConfigModule(scanResult),
         DatabaseModule(),
         NotificationModulesModule()
     )

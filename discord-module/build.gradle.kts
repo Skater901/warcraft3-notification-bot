@@ -53,7 +53,7 @@ tasks {
 }
 
 jacoco {
-    reportsDirectory = file("$buildDir/coverage-reports")
+    reportsDirectory = layout.buildDirectory.dir("coverage-reports")
 }
 
 kotlin {

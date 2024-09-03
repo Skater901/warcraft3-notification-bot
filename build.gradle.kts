@@ -61,6 +61,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
 
     // Notification Modules
     implementation(project(":discord-module"))

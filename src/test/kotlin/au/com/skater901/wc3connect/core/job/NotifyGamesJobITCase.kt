@@ -63,7 +63,7 @@ class NotifyGamesJobITCase {
             gameNotificationService,
             client,
             mapper,
-            listOf(
+            setOf(
                 WC3ConnectGameProvider(WC3ConnectConfig(URI("http://localhost:${wireMock.httpPort}/allgames"))),
                 WC3MapsGameProvider(WC3MapsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
             ),
@@ -206,7 +206,7 @@ class NotifyGamesJobITCase {
             gameNotificationService,
             client,
             mapper,
-            listOf(
+            setOf(
                 WC3ConnectGameProvider(WC3ConnectConfig(URI("http://localhost:${wireMock.httpPort}/allgames"))),
                 WC3MapsGameProvider(WC3MapsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
             ),
@@ -232,7 +232,7 @@ class NotifyGamesJobITCase {
             gameNotificationService,
             client,
             mapper,
-            listOf(),
+            emptySet(),
             1_000
         )
 

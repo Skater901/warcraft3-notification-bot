@@ -3,6 +3,7 @@ package au.com.skater901.wc3connect.application.module
 import au.com.skater901.wc3connect.application.UnitOfWork
 import au.com.skater901.wc3connect.core.gameProvider.GameProvider
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
@@ -36,4 +37,5 @@ internal class AppModule(
     @Provides
     @Singleton
     fun getObjectMapper(): ObjectMapper = ObjectMapper().registerKotlinModule()
+        .registerModule(JavaTimeModule())
 }

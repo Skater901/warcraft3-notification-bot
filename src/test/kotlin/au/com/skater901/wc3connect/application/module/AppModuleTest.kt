@@ -3,7 +3,7 @@ package au.com.skater901.wc3connect.application.module
 import au.com.skater901.wc3connect.application.defaultUnitOfWork
 import au.com.skater901.wc3connect.core.gameProvider.GameProvider
 import au.com.skater901.wc3connect.core.gameProvider.WC3ConnectGameProvider
-import au.com.skater901.wc3connect.core.gameProvider.WC3MapsGameProvider
+import au.com.skater901.wc3connect.core.gameProvider.WC3StatsGameProvider
 import au.com.skater901.wc3connect.utils.getInstance
 import au.com.skater901.wc3connect.utils.scanResult
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -43,6 +43,6 @@ class AppModuleTest {
 
         assertThat(injector.getInstance(object : Key<Set<@JvmSuppressWildcards GameProvider>>() {})).hasSize(2)
             .anyMatch { it is WC3ConnectGameProvider }
-            .anyMatch { it is WC3MapsGameProvider }
+            .anyMatch { it is WC3StatsGameProvider }
     }
 }

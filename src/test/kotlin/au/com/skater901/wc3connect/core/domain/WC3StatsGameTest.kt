@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
-class WC3MapsGameTest {
+class WC3StatsGameTest {
     @Test
     fun `should deserialize US region`() {
         val parser = mock<JsonParser> {
             on { valueAsString } doReturn "usw"
         }
 
-        val region = WC3MapsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.US)
     }
@@ -25,7 +25,7 @@ class WC3MapsGameTest {
             on { valueAsString } doReturn "eu"
         }
 
-        val region = WC3MapsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.EU)
     }
@@ -36,7 +36,7 @@ class WC3MapsGameTest {
             on { valueAsString } doReturn "kr"
         }
 
-        val region = WC3MapsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.Asia)
     }
@@ -47,7 +47,7 @@ class WC3MapsGameTest {
             on { valueAsString } doReturn "Arctic"
         }
 
-        val region = WC3MapsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.Unknown)
     }

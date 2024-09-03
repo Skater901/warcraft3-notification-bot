@@ -3,9 +3,9 @@ package au.com.skater901.wc3connect.core.job
 import au.com.skater901.wc3connect.api.core.domain.GameSource
 import au.com.skater901.wc3connect.api.core.domain.Region
 import au.com.skater901.wc3connect.application.config.WC3ConnectConfig
-import au.com.skater901.wc3connect.application.config.WC3MapsConfig
+import au.com.skater901.wc3connect.application.config.WC3StatsConfig
 import au.com.skater901.wc3connect.core.gameProvider.WC3ConnectGameProvider
-import au.com.skater901.wc3connect.core.gameProvider.WC3MapsGameProvider
+import au.com.skater901.wc3connect.core.gameProvider.WC3StatsGameProvider
 import au.com.skater901.wc3connect.core.service.GameNotificationService
 import au.com.skater901.wc3connect.utils.fixture
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -54,7 +54,7 @@ class NotifyGamesJobITCase {
 
             headers contains "Accept" equalTo "application/json"
         } returnsJson {
-            body = fixture("fixtures/wc3maps/games.json")
+            body = fixture("fixtures/wc3stats/games.json")
         }
 
         val gameNotificationService = mock<GameNotificationService>()
@@ -65,7 +65,7 @@ class NotifyGamesJobITCase {
             mapper,
             setOf(
                 WC3ConnectGameProvider(WC3ConnectConfig(URI("http://localhost:${wireMock.httpPort}/allgames"))),
-                WC3MapsGameProvider(WC3MapsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
+                WC3StatsGameProvider(WC3StatsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
             ),
             1_000
         )
@@ -133,43 +133,43 @@ class NotifyGamesJobITCase {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == 146776957 &&
-                                        it.name == "-phccqgx3" &&
-                                        it.map == "Legion_TD_6.2b_Team_OZE (1).w3x" &&
-                                        it.host == "HaBu#2300" &&
-                                        it.currentPlayers == 1 &&
-                                        it.maxPlayers == 8 &&
+                                it.id == 19342 &&
+                                        it.name == "x hero" &&
+                                        it.map == "X_Hero_Reborn_1.2_ENG_fix~1.w3x" &&
+                                        it.host == "Nyxiz#2980" &&
+                                        it.currentPlayers == 8 &&
+                                        it.maxPlayers == 9 &&
                                         it.region == Region.EU &&
                                         it.gameSource == GameSource.BattleNet
                             } &&
                             any {
-                                it.id == 146776956 &&
-                                        it.name == "PHCCX3!!!!" &&
+                                it.id == 21541 &&
+                                        it.name == "greenTD" &&
+                                        it.map == "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x" &&
+                                        it.host == "RoDac90#2504" &&
+                                        it.currentPlayers == 4 &&
+                                        it.maxPlayers == 9 &&
+                                        it.region == Region.EU &&
+                                        it.gameSource == GameSource.BattleNet
+                            } &&
+                            any {
+                                it.id == 56252 &&
+                                        it.name == "-phccezlg" &&
                                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
-                                        it.host == "iWinson#1520" &&
-                                        it.currentPlayers == 7 &&
-                                        it.maxPlayers == 16 &&
-                                        it.region == Region.US &&
-                                        it.gameSource == GameSource.BattleNet
-                            } &&
-                            any {
-                                it.id == 146776955 &&
-                                        it.name == "Pokemon World" &&
-                                        it.map == "Pokemon World V1.37.w3x" &&
-                                        it.host == "Mysticer#2447" &&
+                                        it.host == "JosipBukal#2996" &&
                                         it.currentPlayers == 1 &&
-                                        it.maxPlayers == 20 &&
+                                        it.maxPlayers == 16 &&
                                         it.region == Region.EU &&
                                         it.gameSource == GameSource.BattleNet
                             } &&
                             any {
-                                it.id == 146776954 &&
-                                        it.name == "쥬라기 ㄱㄱㄱ" &&
-                                        it.map == "Jurassic Survival F23.w3x" &&
-                                        it.host == "SoloSlayerK#3469" &&
+                                it.id == 56258 &&
+                                        it.name == "-prccezlg" &&
+                                        it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
+                                        it.host == "JosipBukal#2996" &&
                                         it.currentPlayers == 1 &&
-                                        it.maxPlayers == 7 &&
-                                        it.region == Region.Asia &&
+                                        it.maxPlayers == 16 &&
+                                        it.region == Region.EU &&
                                         it.gameSource == GameSource.BattleNet
                             }
                 }
@@ -208,7 +208,7 @@ class NotifyGamesJobITCase {
             mapper,
             setOf(
                 WC3ConnectGameProvider(WC3ConnectConfig(URI("http://localhost:${wireMock.httpPort}/allgames"))),
-                WC3MapsGameProvider(WC3MapsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
+                WC3StatsGameProvider(WC3StatsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
             ),
             1_000
         )

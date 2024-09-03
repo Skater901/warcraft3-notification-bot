@@ -1,0 +1,63 @@
+{
+  "status": "OK",
+  "code": 200,
+  "queryTime": 0.0007,
+  "body": [
+    {
+      "id": 19342,
+      "name": "x hero",
+      "hash": "eb637b6ab0cf53dc88c95c048fa45ce6ce51c9e3",
+      "server": "eu",
+      "host": "Nyxiz#2980",
+      "map": "X_Hero_Reborn_1.2_ENG_fix~1.w3x",
+      "created": 1725173795,
+      "firstSeen": 1725176514,
+      "isOfficial": false,
+      "uptime": 2719,
+      "slotsTaken": 8,
+      "slotsTotal": 9
+    },
+    {
+      "id": 21541,
+      "name": "greenTD",
+      "hash": "003da674e50b63983a70e64f0e050c921f04293e",
+      "server": "eu",
+      "host": "RoDac90#2504",
+      "map": "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x",
+      "created": 1725180519,
+      "firstSeen": 1725182089,
+      "isOfficial": false,
+      "uptime": 1571,
+      "slotsTaken": 4,
+      "slotsTotal": 9
+    },
+    {
+      "id": 56252,
+      "name": "-phccezlg",
+      "hash": "3bdd7665f2e0ba3f013bc310b451e331d909b228",
+      "server": "eu",
+      "host": "JosipBukal#2996",
+      "map": "Legion_TD_11.0k_TeamOZE.w3x",
+      "created": 1725278870,
+      "firstSeen": 1725278871,
+      "isOfficial": false,
+      "uptime": 2,
+      "slotsTaken": 1,
+      "slotsTotal": 16
+    },
+    {
+      "id": 56258,
+      "name": "-prccezlg",
+      "hash": "b8111cf56aa85a9d7394bbb4b6ad3f5198d5e8dd",
+      "server": "eu",
+      "host": "JosipBukal#2996",
+      "map": "Legion_TD_11.0k_TeamOZE.w3x",
+      "created": 1725278895,
+      "firstSeen": 1725278896,
+      "isOfficial": false,
+      "uptime": 2,
+      "slotsTaken": 1,
+      "slotsTotal": 16
+    }
+  ]
+}

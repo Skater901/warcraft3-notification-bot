@@ -1,4 +1,4 @@
-group = "au.com.skater901.wc3connect.utilities"
+group = "au.com.skater901.wc3.utilities"
 
 repositories {
     mavenCentral()

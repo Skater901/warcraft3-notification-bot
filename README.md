@@ -1,6 +1,7 @@
-# WC3Connect Notification Bot
+# WC3 Notification Bot
 
-This application can be used to poll for Warcraft 3 games hosted on WC3Connect, and send notifications about the games.
+This application can be used to poll for Warcraft 3 games hosted on WC3Connect, Battle.Net, and potentially other
+systems, and send notifications about the games.
 This application supports modules which can be developed for different systems to allow notifications to be sent to
 different systems. Currently supported systems are:
 
@@ -17,11 +18,18 @@ To run this application, you'll need to do the following steps:
 
 ## Configuration
 
-Configuration for the main application consists of three parts; database configuration, games notification
-configuration, and logging configuration.
+Configuration for the main application consists of four parts; application configuration, database configuration,
+games provider configuration, and logging configuration.
 
 Additionally, all used modules will require configuration to be specified as well. Read the documentation for the
 modules to see what configuration they require.
+
+### Application Configuration
+
+Application configuration consists of one property:
+
+- `application.refreshInterval` is how often (in milliseconds) the various game sources will be polled to retrieve the
+  list of hosted games. This value defaults to `10_000` if not specified in the config Properties file.
 
 ### Database Configuration
 
@@ -34,14 +42,18 @@ Database configuration consists of four properties:
 - `database.username` is the username of the MariaDB user this application will use to connect to the database.
 - `database.password` is the password of the MariaDB user this application will use to connect to the database.
 
-### Games Notification Configuration
+### Games Provider Configuration
 
-Games Notification configuration consists of two properties:
+Games Provider configuration currently consists of two values. However, more values will be added here if and when more
+game providers are added.
 
-- `gamesSource.url` is the URL that will be used to retrieve the list of hosted games. This value defaults to
-  `https://host.entgaming.net/allgames` if not specified in the config Properties file. This value must be a valid URI.
-- `gamesSource.refreshInterval` is how often (in milliseconds) the provided URL will be polled to retrieve the list of
-  hosted games. This value defaults to `30_000` if not specified in the config Properties file.
+These configuration properties all have default values, and most likely will never need to be set. It's highly unlikely
+that the game providers will ever change their URLs.
+
+- `wc3connect.url` is the URL of the list of games hosted on WC3Connect. This value defaults to
+  `https://host.entgaming.net/allgames` if not set.
+- `wc3stats.url` is the URL of the list of games hosted on Battle.Net, provided by WC3Stats' API. This value defaults to
+  `https://api.wc3stats.com/gamelist` if not set.
 
 ### Logging Configuration
 
@@ -96,10 +108,10 @@ kotlin {
 
 ```
 
-4. Create a class implementing the `au.com.skater901.wc3connect.api.NotificationModule` interface. (Standard practice is
+4. Create a class implementing the `au.com.skater901.wc3.api.NotificationModule` interface. (Standard practice is
    to create your classes under `src/main/kotlin/your/package`)
 5. Create a configuration class. This must be a class with a primary constructor.
-6. Create a file called `au.com.skater901.wc3connect.api.NotificationModule` in `src/main/resources/META-INF/services`.
+6. Create a file called `au.com.skater901.wc3.api.NotificationModule` in `src/main/resources/META-INF/services`.
    Inside this file, put the fully qualified name of your class that implements `NotificationModule`. This file is the
    special sauce that makes your module available to the main app. It's using Java's
    [Service Provider Interface](https://www.baeldung.com/java-spi) mechanism to find and load the class at runtime.

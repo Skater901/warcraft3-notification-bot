@@ -1,7 +1,7 @@
 val discord_version: String by project
 val ktx_version: String by project
 
-group = "au.com.skater901.wc3connect.discord"
+group = "au.com.skater901.wc3.discord"
 
 repositories {
     mavenCentral()

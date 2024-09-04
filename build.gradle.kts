@@ -20,8 +20,8 @@ plugins {
     jacoco
 }
 
-group = "au.com.skater901.wc3connect"
-version = "0.3.0"
+group = "au.com.skater901.wc3"
+version = "0.3.1"
 
 repositories {
     mavenCentral()
@@ -110,7 +110,7 @@ kotlin {
 }
 
 application {
-    mainClass = "au.com.skater901.wc3connect.WC3ConnectNotificationBot"
+    mainClass = "au.com.skater901.wc3.WC3NotificationBot"
 
     val configFile: String? by project
 

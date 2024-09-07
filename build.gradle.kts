@@ -21,7 +21,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3"
-version = "0.4.2"
+version = "0.4.3"
 
 repositories {
     mavenCentral()
@@ -114,5 +114,5 @@ application {
 
     val configFile: String? by project
 
-    applicationDefaultJvmArgs = listOfNotNull(configFile?.let { "-DconfigFile=$it" })
+    applicationDefaultJvmArgs = listOfNotNull(configFile?.let { "-DconfigFile=$it" }, "-DappVersion=${project.version}")
 }

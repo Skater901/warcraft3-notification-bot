@@ -17,7 +17,9 @@ import com.marcinziolo.kotlin.wiremock.contains
 import com.marcinziolo.kotlin.wiremock.equalTo
 import com.marcinziolo.kotlin.wiremock.get
 import com.marcinziolo.kotlin.wiremock.returnsJson
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
@@ -74,11 +76,11 @@ class NotifyGamesJobITCase {
         )
 
         runBlocking {
-            job.use {
-                it.start()
+            val j = launch { job.start() }
 
-                delay(5_000)
-            }
+            delay(5_000)
+
+            j.cancelAndJoin()
         }
 
         runBlocking {
@@ -212,34 +214,15 @@ class NotifyGamesJobITCase {
         )
 
         runBlocking {
-            job.use {
-                it.start()
+            val j = launch { job.start() }
 
-                delay(5_000)
-            }
+            delay(5_000)
+
+            j.cancelAndJoin()
         }
 
         runBlocking {
             verify(gameNotificationService, atLeastOnce()).notifyGames(argThat { size == 4 })
         }
-    }
-
-    @Test
-    fun `should handle being started twice, and being closed without being started`() {
-        val gameNotificationService = mock<GameNotificationService>()
-
-        val job = NotifyGamesJob(
-            gameNotificationService,
-            client,
-            mapper,
-            emptySet(),
-            1_000
-        )
-
-        job.start()
-        job.start()
-
-        job.close()
-        job.close()
     }
 }

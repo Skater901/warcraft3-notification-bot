@@ -9,6 +9,7 @@ import com.google.inject.Guice
 import com.google.inject.Injector
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 internal class WC3NotificationBot {
@@ -27,12 +28,7 @@ internal class WC3NotificationBot {
 
         moduleManager.initializeModules(injector)
 
-        startGamesNotifyingJob(injector, moduleManager)
-
-        // Hack to keep the app running
-        while (true) {
-
-        }
+        runBlocking { startGamesNotifyingJob(injector, moduleManager) }
     }
 
     private fun validateConfig() {
@@ -51,7 +47,7 @@ internal class WC3NotificationBot {
         NotificationModulesModule()
     )
 
-    private fun startGamesNotifyingJob(injector: Injector, moduleManager: ModuleManager) {
+    private suspend fun startGamesNotifyingJob(injector: Injector, moduleManager: ModuleManager) {
         injector.createChildInjector(GameNotifierModule(moduleManager.getGameNotifiers()))
             .getInstance<NotifyGamesJob>()
             .start()

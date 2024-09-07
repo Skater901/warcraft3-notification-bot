@@ -1,7 +1,8 @@
-# WC3 Notification Bot
+# Warcraft 3 Game Notification Bot
 
 This application can be used to poll for Warcraft 3 games hosted on WC3Connect, Battle.Net, and potentially other
 systems, and send notifications about the games.
+
 This application supports modules which can be developed for different systems to allow notifications to be sent to
 different systems. Currently supported systems are:
 

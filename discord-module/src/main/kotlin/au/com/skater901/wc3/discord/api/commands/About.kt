@@ -8,6 +8,6 @@ internal class About : Command {
 
     override suspend fun handleCommand(command: SlashCommandInteractionEvent) {
         // TODO how the HECK do you link to a profile on Discord????????????
-        command.replySuspended("This bot was created by @Skater901. For help with the bot, please contact him. The source code for the bot can be found [here](https://github.com/Skater901/wc3-notification-bot), if you are curious.")
+        command.replySuspended("This bot was created by @Skater901. For help with the bot, please contact him. The source code for the bot can be found [here](https://github.com/Skater901/warcraft3-notification-bot), if you are curious.")
     }
 }

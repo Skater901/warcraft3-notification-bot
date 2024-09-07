@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
+import java.time.Duration
 
 internal class NotifyGamesJob @Inject constructor(
     private val gameNotificationService: GameNotificationService,
@@ -25,6 +26,8 @@ internal class NotifyGamesJob @Inject constructor(
         private val logger = LoggerFactory.getLogger(NotifyGamesJob::class.java)
 
         private val userAgent = "WC3 Notification Bot - Java-http-client/${System.getProperty("java.version")}"
+
+        private val requestTimeout = Duration.ofSeconds(10)
     }
 
     private var dispatcher: CloseableCoroutineDispatcher? = null
@@ -48,6 +51,7 @@ internal class NotifyGamesJob @Inject constructor(
                                     HttpRequest.newBuilder(it.sourceURL)
                                         .header("Accept", "application/json")
                                         .header("User-Agent", userAgent)
+                                        .timeout(requestTimeout)
                                         .build(),
                                     BodyHandlers.ofInputStream()
                                 )

@@ -7,11 +7,14 @@ import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.inject.Singleton
 import java.net.http.HttpClient
+import java.time.Duration
 
 internal class ClientModule : AbstractModule() {
     @Provides
     @Singleton
-    fun getClient(): HttpClient = HttpClient.newHttpClient()
+    fun getClient(): HttpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .build()
 
     @Provides
     @Named("refreshInterval")

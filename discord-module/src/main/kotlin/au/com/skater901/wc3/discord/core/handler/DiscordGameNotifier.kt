@@ -14,6 +14,7 @@ import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import java.net.URI
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -67,8 +68,8 @@ public class DiscordGameNotifier @Inject internal constructor(
                 GameSource.WC3Connect -> game.map
             }
             url = when (game.gameSource) {
-                GameSource.BattleNet -> "https://wc3maps.com/maps?query=${game.map}"
-                GameSource.WC3Connect -> null
+                GameSource.BattleNet -> battleNetMap(game.map)
+                GameSource.WC3Connect -> wc3ConnectMap(game.map)
             }
             field {
                 name = "Hosted On"
@@ -110,4 +111,22 @@ public class DiscordGameNotifier @Inject internal constructor(
         Region.Asia -> ":flag_kr:"
         Region.Unknown -> ":earth_americas:"
     }
+
+    private fun battleNetMap(mapName: String): String = URI(
+        "https",
+        "wc3maps.com",
+        "/maps",
+        "query=$mapName",
+        null
+    )
+        .toString()
+
+    private fun wc3ConnectMap(mapName: String): String = URI(
+        "https",
+        "entgaming.net",
+        "/link/host_add.php",
+        "filter=$mapName",
+        null
+    )
+        .toString()
 }

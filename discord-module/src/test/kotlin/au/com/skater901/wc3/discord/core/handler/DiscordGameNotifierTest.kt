@@ -260,11 +260,11 @@ class DiscordGameNotifierTest {
     }
 
     @Test
-    fun `should not have link to map for WC3Connect game`() {
+    fun `should have link to map for WC3Connect game`() {
         verifyMessageSent(game {
             gameSource = GameSource.WC3Connect
         }) {
-            url == null
+            url == "https://entgaming.net/link/host_add.php?filter=Best_Map.w3x"
         }
     }
 
@@ -366,6 +366,21 @@ class DiscordGameNotifierTest {
         }) {
             footer?.text == "Powered by https://entgaming.net/" &&
                     footer?.iconUrl == "https://entgaming.net/favicon.ico"
+        }
+    }
+
+    @Test
+    fun `should handle map names with spaces in them when creating links`() {
+        verifyMessageSent(game {
+            map = "My cool map.w3x"
+        }) {
+            url == "https://wc3maps.com/maps?query=My%20cool%20map.w3x"
+        }
+        verifyMessageSent(game {
+            map = "My cool map.w3x"
+            gameSource = GameSource.WC3Connect
+        }) {
+            url == "https://entgaming.net/link/host_add.php?filter=My%20cool%20map.w3x"
         }
     }
 

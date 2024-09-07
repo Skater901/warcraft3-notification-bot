@@ -21,7 +21,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import java.net.URI
 import java.net.http.HttpClient
 
@@ -192,12 +195,7 @@ class NotifyGamesJobITCase {
 
             headers contains "Accept" equalTo "application/json"
         } returnsJson {
-            body = """
-                {
-                  "error": false,
-                  "results": [],
-                  "message": ""
-            """.trimIndent()
+            body = fixture("fixtures/wc3stats/games.json")
         }
 
         val gameNotificationService = mock<GameNotificationService>()
@@ -221,7 +219,9 @@ class NotifyGamesJobITCase {
             }
         }
 
-        verifyNoInteractions(gameNotificationService)
+        runBlocking {
+            verify(gameNotificationService, atLeastOnce()).notifyGames(argThat { size == 4 })
+        }
     }
 
     @Test

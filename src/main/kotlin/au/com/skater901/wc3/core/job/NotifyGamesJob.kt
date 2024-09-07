@@ -43,23 +43,28 @@ internal class NotifyGamesJob @Inject constructor(
                     try {
                         // refresh
                         val games = gameProviders.mapAsync {
-                            val response = client.sendAsync(
-                                HttpRequest.newBuilder(it.sourceURL)
-                                    .header("Accept", "application/json")
-                                    .header("User-Agent", userAgent)
-                                    .build(),
-                                BodyHandlers.ofInputStream()
-                            )
-                                .await()
+                            try {
+                                val response = client.sendAsync(
+                                    HttpRequest.newBuilder(it.sourceURL)
+                                        .header("Accept", "application/json")
+                                        .header("User-Agent", userAgent)
+                                        .build(),
+                                    BodyHandlers.ofInputStream()
+                                )
+                                    .await()
 
-                            if (response.statusCode() >= 400) {
-                                throw RuntimeException(
-                                    "HTTP error: ${response.statusCode()}, ${
-                                        response.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
-                                    }")
+                                if (response.statusCode() >= 400) {
+                                    throw RuntimeException(
+                                        "HTTP error: ${response.statusCode()}, ${
+                                            response.body().use { r -> r.use { r.reader().use { i -> i.readText() } } }
+                                        }")
+                                }
+
+                                it.gamesProvider(mapper, response.body())
+                            } catch (t: Throwable) {
+                                logger.error("Error when fetching games for {}", it.name, t)
+                                emptyList()
                             }
-
-                            it.gamesProvider(mapper, response.body())
                         }
                             .flatten()
 

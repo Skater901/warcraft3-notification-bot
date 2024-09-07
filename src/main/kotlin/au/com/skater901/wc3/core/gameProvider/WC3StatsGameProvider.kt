@@ -13,6 +13,7 @@ import java.net.URI
 internal class WC3StatsGameProvider @Inject constructor(
     wc3StatsConfig: WC3StatsConfig
 ) : GameProvider {
+    override val name: String = "Battle.Net"
     override val sourceURL: URI = wc3StatsConfig.url
     override val gamesProvider: ObjectMapper.(InputStream) -> List<Game> = {
         readValue<Games>(it).body

@@ -6,6 +6,8 @@ import java.io.InputStream
 import java.net.URI
 
 internal interface GameProvider {
+    val name: String
+
     val sourceURL: URI
 
     val gamesProvider: ObjectMapper.(InputStream) -> List<Game>

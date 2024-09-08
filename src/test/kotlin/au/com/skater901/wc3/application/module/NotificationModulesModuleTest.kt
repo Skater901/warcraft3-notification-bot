@@ -23,4 +23,43 @@ class NotificationModulesModuleTest {
                 (it as? NotificationModule<DiscordConfiguration, DiscordGameNotifier, ScheduledTask>) is DiscordNotificationModule
             }
     }
+
+    @Test
+    fun `should not filter modules if no filter provided`() {
+        System.clearProperty("enabledModules")
+
+        val injector = Guice.createInjector(NotificationModulesModule())
+
+        val modules = injector.getInstance(object : Key<List<@JvmSuppressWildcards NotificationModule<Any, *, *>>>() {})
+
+        // This will have to be updated as more modules are added
+        assertThat(modules).hasSize(1)
+    }
+
+    @Test
+    fun `should exclude modules that don't match filter`() {
+        System.setProperty("enabledModules", "mymodule")
+
+        val injector = Guice.createInjector(NotificationModulesModule())
+
+        val modules = injector.getInstance(object : Key<List<@JvmSuppressWildcards NotificationModule<Any, *, *>>>() {})
+
+        assertThat(modules).isEmpty()
+
+        System.clearProperty("enabledModules")
+    }
+
+    @Test
+    fun `should include modules that match filter, and trim names`() {
+        System.setProperty("enabledModules", "mymodule,     discord      ")
+
+        val injector = Guice.createInjector(NotificationModulesModule())
+
+        val modules = injector.getInstance(object : Key<List<@JvmSuppressWildcards NotificationModule<Any, *, *>>>() {})
+
+        // This will have to be updated as more modules are added
+        assertThat(modules).hasSize(1)
+
+        System.clearProperty("enabledModules")
+    }
 }

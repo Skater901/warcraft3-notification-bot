@@ -17,6 +17,10 @@ To run this application, you'll need to do the following steps:
 3. Create a Java properties file with configuration values. Configuration will be discussed below.
 4. Run the application using the following command: `./gradlew run -PconfigFile=path/to/properties/file.properties`
 
+You can optionally provide a system property `-PenabledModules` to provide a comma-separated list of modules you wish to
+enable. For example, if you wanted to enable the Discord module and XMPP module, you would provide a property like this:
+`-PenabledModules=discord,xmpp` This property is optional; if not provided, all available modules will be used.
+
 ## Configuration
 
 Configuration for the main application consists of four parts; application configuration, database configuration,

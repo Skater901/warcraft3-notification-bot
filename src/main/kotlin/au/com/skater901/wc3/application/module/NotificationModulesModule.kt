@@ -10,5 +10,13 @@ internal class NotificationModulesModule : AbstractModule() {
     @Provides
     @Singleton
     fun getModules(): List<NotificationModule<Any, *, *>> = ServiceLoader.load(NotificationModule::class.java)
-        .map { it as NotificationModule<Any, *, *> } // TODO add filtering to only enable specified modules
+        .map { it as NotificationModule<Any, *, *> }
+        .let {
+            val enabledModules = System.getProperty("enabledModules")
+                ?.split(",")
+                ?.map { n -> n.trim() }
+                ?.toSet()
+                ?: return@let it
+            it.filter { m -> m.moduleName in enabledModules }
+        }
 }

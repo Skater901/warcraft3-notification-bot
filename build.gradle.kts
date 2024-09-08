@@ -21,7 +21,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3"
-version = "0.4.4"
+version = "0.4.5"
 
 repositories {
     mavenCentral()
@@ -113,6 +113,11 @@ application {
     mainClass = "au.com.skater901.wc3.WC3NotificationBot"
 
     val configFile: String? by project
+    val enabledModules: String? by project
 
-    applicationDefaultJvmArgs = listOfNotNull(configFile?.let { "-DconfigFile=$it" }, "-DappVersion=${project.version}")
+    applicationDefaultJvmArgs = listOfNotNull(
+        configFile?.let { "-DconfigFile=$it" },
+        "-DappVersion=${project.version}",
+        enabledModules?.let { "-DenabledModules=$it" }
+    )
 }

@@ -14,7 +14,8 @@ import kotlin.reflect.KClass
 
 abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINER>> : BeforeAllCallback,
     AfterAllCallback,
-    AfterEachCallback, ParameterResolver {
+    AfterEachCallback,
+    ParameterResolver {
     private lateinit var container: CONTAINER
 
     private val jdbi: Jdbi by lazy {
@@ -31,6 +32,12 @@ abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINE
 
     val port: Int
         get() = container.getMappedPort(3306)
+
+    val username: String
+        get() = container.username
+
+    val password: String
+        get() = container.password
 
     override fun beforeAll(context: ExtensionContext) {
         val configuration: Configuration? = context.requiredTestClass.getAnnotation(Configuration::class.java)

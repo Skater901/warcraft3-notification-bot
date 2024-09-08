@@ -21,9 +21,18 @@ internal class DatabaseModule : AbstractModule() {
     @Singleton
     fun provideDataSource(databaseConfig: DatabaseConfig): DataSource {
         return HikariDataSource().apply {
-            // TODO support MySQL and MariaDB
-            jdbcUrl = "jdbc:mariadb://${databaseConfig.host}:${databaseConfig.port}/wc3_bot"
-            driverClassName = "org.mariadb.jdbc.Driver"
+            when (databaseConfig.type) {
+                DatabaseConfig.DatabaseType.MySQL -> {
+                    jdbcUrl = "jdbc:mysql://${databaseConfig.host}:${databaseConfig.port}/wc3_bot"
+                    driverClassName = com.mysql.cj.jdbc.Driver::class.qualifiedName
+                }
+
+                DatabaseConfig.DatabaseType.MariaDB -> {
+                    jdbcUrl = "jdbc:mariadb://${databaseConfig.host}:${databaseConfig.port}/wc3_bot"
+                    driverClassName = org.mariadb.jdbc.Driver::class.qualifiedName
+                }
+            }
+
             username = databaseConfig.username
             password = databaseConfig.password
         }

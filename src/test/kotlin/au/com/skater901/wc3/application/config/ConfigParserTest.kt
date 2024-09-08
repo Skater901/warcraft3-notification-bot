@@ -54,6 +54,7 @@ class ConfigParserTest {
     private class MyIntConfig(val myProperty: Int)
     private class MyLongConfig(val myProperty: Long)
     private class MyURIConfig(val myProperty: URI)
+    private class MyEnumConfig(val myProperty: MyEnum)
 
     @Test
     fun `should raise error when provided config value can't be converted to type on config class`() {
@@ -74,13 +75,27 @@ class ConfigParserTest {
         }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Config property [ myModule.myProperty ] could not be converted to [ java.net.URI ], value was [ ha ha not a number or URI SUCKERS ]")
+        assertThatThrownBy {
+            ConfigParser({ properties }, "myModule", MyEnumConfig::class).get()
+        }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Config property [ myModule.myProperty ] could not be converted to [ au.com.skater901.wc3.application.config.ConfigParserTest.MyEnum ], value was [ ha ha not a number or URI SUCKERS ]")
+            .cause()
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Property value [ ha ha not a number or URI SUCKERS ] is not one of [ Hello, Goodbye ]")
+    }
+
+    enum class MyEnum {
+        Hello,
+        Goodbye
     }
 
     class MyValidConfigWithAllTypes(
         val myStringProperty: String,
         val myIntProperty: Int,
         val myLongProperty: Long,
-        val myURIProperty: URI
+        val myURIProperty: URI,
+        val myEnumProperty: MyEnum
     )
 
     @Test
@@ -90,6 +105,7 @@ class ConfigParserTest {
             setProperty("myModule.myIntProperty", "12345")
             setProperty("myModule.myLongProperty", "111111111111111")
             setProperty("myModule.myURIProperty", "http://localhost")
+            setProperty("myModule.myEnumProperty", "heLLo")
         }
 
         val config = ConfigParser({ properties }, "myModule", MyValidConfigWithAllTypes::class).get()
@@ -98,6 +114,7 @@ class ConfigParserTest {
         assertThat(config.myIntProperty).isEqualTo(12345)
         assertThat(config.myLongProperty).isEqualTo(111111111111111)
         assertThat(config.myURIProperty.toString()).isEqualTo("http://localhost")
+        assertThat(config.myEnumProperty).isEqualTo(MyEnum.Hello)
     }
 
     class NullableConfig(val myProperty: String?)

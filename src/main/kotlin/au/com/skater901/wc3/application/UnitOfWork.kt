@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.reflect.KCallable
 
 internal class UnitOfWork(private val javaClass: Class<*>, private val name: String) {
     companion object {
@@ -40,8 +39,7 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
     private var retry: Retry? = null
     private var circuitBreaker: CircuitBreaker? = null
 
-    var dispatcher: CoroutineDispatcher? = null
-        private set
+    private var dispatcher: CoroutineDispatcher? = null
 
     private fun name(type: String): String = "${javaClass.packageName}.$name.$type"
 
@@ -67,7 +65,7 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
         return this
     }
 
-    suspend fun <T> execute(block: suspend () -> T): T = decorate(block)
+    private suspend fun <T> execute(block: suspend () -> T): T = decorate(block)
         .let {
             val d = dispatcher
             if (d != null) {
@@ -85,9 +83,6 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
 }
 
 internal inline fun <reified T : Any> T.unitOfWork(name: String): UnitOfWork = UnitOfWork(this::class.java, name)
-
-internal inline fun <reified T : Any> T.defaultUnitOfWork(function: KCallable<*>): UnitOfWork =
-    defaultUnitOfWork(function.name)
 
 internal inline fun <reified T : Any> T.defaultUnitOfWork(name: String): UnitOfWork = unitOfWork(name)
     .retry()

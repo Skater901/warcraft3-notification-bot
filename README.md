@@ -38,8 +38,10 @@ Application configuration consists of one property:
 
 ### Database Configuration
 
-Database configuration consists of four properties:
+Database configuration consists of five properties:
 
+- `database.type` is the type of SQL database to connect to. The allowed values are `MariaDB` and `MySQL`. This value
+  defaults to `MySQL` if not specified in the config Properties file.
 - `database.host` is the address of the database. This value defaults to `localhost` if not specified in the config
   Properties file.
 - `database.port` is the port of the database. This value defaults to `3306` if not specified in the config Properties

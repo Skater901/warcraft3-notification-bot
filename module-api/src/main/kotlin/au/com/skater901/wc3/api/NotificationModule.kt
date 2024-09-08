@@ -9,6 +9,16 @@ import kotlin.reflect.KClass
 
 /**
  * The main class to implement when registering a module.
+ *
+ * [C], [G], and [T] are type parameters that represent the classes your module provides.
+ *
+ * [C] is the class you create for your config. See the [configClass] property for more information.
+ *
+ * [G] is the class you create to notify on games being hosted and unhosted. As the syntax shows, [G] must implement
+ * [GameNotifier].
+ *
+ * [T] is the class you create to hook into the existing event loop, if you wish to. As the syntax shows, [T] must
+ * implement [ScheduledTask]. If you do not wish to provide a [ScheduledTask], set [T] to [ScheduledTask].
  */
 public interface NotificationModule<C : Any, G : GameNotifier, T : ScheduledTask> {
     /**

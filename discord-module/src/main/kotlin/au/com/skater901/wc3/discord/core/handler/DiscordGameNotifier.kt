@@ -97,9 +97,8 @@ public class DiscordGameNotifier @Inject internal constructor(
                 inline = false
             }
             val (icon, url) = when (game.gameSource) {
-                // TODO why don't these icon links work??
-                GameSource.BattleNet -> "https://wc3stats.com/assets/favicon.ico" to "https://wc3stats.com/"
-                GameSource.WC3Connect -> "https://entgaming.net/favicon.ico" to "https://entgaming.net/"
+                GameSource.BattleNet -> "https://github.com/Skater901/warcraft3-notification-bot/tree/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
+                GameSource.WC3Connect -> "https://github.com/Skater901/warcraft3-notification-bot/tree/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
             }
             footer("Powered by $url", icon)
         }

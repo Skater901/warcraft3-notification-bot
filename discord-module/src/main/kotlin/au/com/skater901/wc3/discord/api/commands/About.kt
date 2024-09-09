@@ -24,9 +24,8 @@ internal class About : Command {
 
                     field {
                         name = "Who Created This Bot?"
-                        // TODO how the HECK do you link to a profile on Discord????????????
                         value =
-                            "This bot was created by @Skater901. For help with the bot, please contact him. The source code for the bot can be found [here](https://github.com/Skater901/warcraft3-notification-bot). Contributions are always welcome!"
+                            "This bot was created by [Skater901](https://discord.com/users/20170773821495705). For help with the bot, please contact him. The source code for the bot can be found [here](https://github.com/Skater901/warcraft3-notification-bot). Contributions are always welcome!"
                         inline = false
                     }
 

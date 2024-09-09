@@ -62,8 +62,6 @@ class ConfigModuleTest {
         assertThat(logConfiguration.logFileDirectory).isEqualTo("build/logs")
         assertThat(logConfiguration.logFileArchiveCount).isEqualTo(5)
 
-        // TODO validate LoggingConfiguration was injected?
-
         val wc3ConnectConfiguration = injector.getInstance<WC3ConnectConfig>()
 
         assertThat(wc3ConnectConfiguration === injector.getInstance<WC3ConnectConfig>()).isTrue()

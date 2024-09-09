@@ -97,8 +97,8 @@ public class DiscordGameNotifier @Inject internal constructor(
                 inline = false
             }
             val (icon, url) = when (game.gameSource) {
-                GameSource.BattleNet -> "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
-                GameSource.WC3Connect -> "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
+                GameSource.BattleNet -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
+                GameSource.WC3Connect -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
             }
             footer("Powered by $url", icon)
         }

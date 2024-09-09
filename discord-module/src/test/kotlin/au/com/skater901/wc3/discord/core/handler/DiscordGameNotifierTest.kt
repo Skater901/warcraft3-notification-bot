@@ -124,7 +124,7 @@ class DiscordGameNotifierTest {
                                                     field.value == "1 minute ago" &&
                                                     !field.isInline
                                         } &&
-                                        footer?.iconUrl == "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3connect_favicon.png" &&
+                                        footer?.iconUrl == "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" &&
                                         footer?.text == "Powered by https://entgaming.net/"
                             }
                 })
@@ -158,7 +158,7 @@ class DiscordGameNotifierTest {
                                                     field.value == "2 minutes ago" &&
                                                     !field.isInline
                                         } &&
-                                        footer?.iconUrl == "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3connect_favicon.png" &&
+                                        footer?.iconUrl == "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" &&
                                         footer?.text == "Powered by https://entgaming.net/"
                             }
                 })
@@ -190,7 +190,7 @@ class DiscordGameNotifierTest {
                                                     field.value == "After 4 minutes" &&
                                                     !field.isInline
                                         } &&
-                                        footer?.iconUrl == "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3connect_favicon.png" &&
+                                        footer?.iconUrl == "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" &&
                                         footer?.text == "Powered by https://entgaming.net/"
                             }
                 })
@@ -355,7 +355,7 @@ class DiscordGameNotifierTest {
     fun `footer should show powered by WC3Stats for BattleNet game`() {
         verifyMessageSent(game()) {
             footer?.text == "Powered by https://wc3stats.com/" &&
-                    footer?.iconUrl == "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3stats_favicon.png"
+                    footer?.iconUrl == "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png"
         }
     }
 
@@ -365,7 +365,7 @@ class DiscordGameNotifierTest {
             gameSource = GameSource.WC3Connect
         }) {
             footer?.text == "Powered by https://entgaming.net/" &&
-                    footer?.iconUrl == "https://github.com/Skater901/warcraft3-notification-bot/blob/main/assets/wc3connect_favicon.png"
+                    footer?.iconUrl == "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png"
         }
     }
 

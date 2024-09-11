@@ -50,7 +50,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     // DI/reflection libraries
-    implementation(libs.guice) {
+    implementation(libs.guice) { // TODO kotlinguice?
         exclude("com.google.guava", "guava")
     }
     implementation(libs.guava)
@@ -88,14 +88,36 @@ jacoco {
 tasks {
     test {
         useJUnitPlatform()
+
+        filter {
+            excludeTestsMatching("*ITCase")
+        }
+    }
+
+    register<Test>("integrationTest") {
+        group = "verification"
+
+        useJUnitPlatform()
+
+        dependsOn(test)
+
+        filter {
+            excludeTestsMatching("*Test")
+            includeTestsMatching("*ITCase")
+        }
     }
 
     jacocoTestReport {
-        dependsOn(test)
+        dependsOn("integrationTest")
+
+        executionData(test.get(), named("integrationTest").get())
     }
 
     jacocoTestCoverageVerification {
         dependsOn(jacocoTestReport)
+
+        executionData(test.get(), named("integrationTest").get())
+
         violationRules {
             rule {
                 limit {
@@ -108,6 +130,10 @@ tasks {
     wrapper {
         gradleVersion = "8.10"
         distributionType = Wrapper.DistributionType.ALL
+    }
+
+    check {
+        dependsOn("integrationTest")
     }
 }
 

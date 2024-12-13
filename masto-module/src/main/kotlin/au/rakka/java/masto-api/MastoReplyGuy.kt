@@ -32,6 +32,8 @@ public class MastoReplyGuy @Inject constructor(private val conf:MastoConfig, pri
 	private val clearurl = "${baseurl}notifications/clear"
 	private val statusurl = "${baseurl}statuses"
 	
+	private var is_pleroma:Boolean? = null
+	
 	override val schedule: Int = 30
 	override suspend fun task()
 	{
@@ -55,7 +57,16 @@ public class MastoReplyGuy @Inject constructor(private val conf:MastoConfig, pri
 	{
 		logger.debug("Processing notif {}",post.get("id"))
 		if (post.get("type").asText()!="mention") {logger.debug("Was not a mention");return}
-		val text= post.get("status").get("pleroma").get("content").get("text/plain").asText()
+		if (is_pleroma==null)
+			{is_pleroma=post.get("status").get("pleroma")!=null}
+		val text=if (is_pleroma!!)
+		{
+			post.get("status").get("pleroma").get("content").get("text/plain").asText()
+		}
+		else
+		{
+			post.get("status").get("content").asText().replace(Regex("<.*?>"),"")
+		}
 		val (tag,regex)=process_post_contents(text)
 		if (tag=="") {logger.debug("tag: {} was null",tag);return}
 		if (regex=="")
@@ -69,7 +80,8 @@ public class MastoReplyGuy @Inject constructor(private val conf:MastoConfig, pri
 		{
 			logger.debug("Adding {} with {}",tag,regex)
 			wc3GameNotificationService.createNotification(tag,regex)
-			val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"Registered ${tag} with pattern ${regex}.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await() // .get("id") returns a string with quotes: Deleted 400 "AotNh4gQIua2IPvPN2", so don't need to put new quotes on it.
+			val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"Registered ${tag} with pattern ${regex.replace("\\","\\\\")}.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await() // .get("id") returns a string with quotes: Deleted 400 "AotNh4gQIua2IPvPN2", so don't need to put new quotes on it.
+			// Why do I have to replace \ with \\? I have no idea. Pleromer gets mad about a lone backslash in post contents apparently. Does mastodon? Dunno.
 			logger.debug("Created {} {}",response.statusCode().toString(),post.get("status").get("id"))
 		}
 	}

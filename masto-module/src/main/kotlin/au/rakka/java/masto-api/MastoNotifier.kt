@@ -24,8 +24,7 @@ import org.slf4j.LoggerFactory
 
 public class MastoNotifier @Inject constructor(private val conf:MastoConfig) : GameNotifier
 {
-	private val hostedGameMessages: ConcurrentMap<Int, String> = ConcurrentHashMap()
-	private val hostedGameTags: ConcurrentMap<Int, String> = ConcurrentHashMap()
+	private val hostedGames: ConcurrentMap<Int,GameMessage> = ConcurrentHashMap()
 	
 	private val logger = LoggerFactory.getLogger(MastoNotifier::class.java)
 	private val mapper = ObjectMapper()
@@ -40,29 +39,32 @@ public class MastoNotifier @Inject constructor(private val conf:MastoConfig) : G
 	override suspend fun notifyNewGame(notificationId: String, game: Game)
 	{
 		logger.debug("Notifying new game")
-		hostedGameTags[game.id]=notificationId
-		val response = client.sendAsync(builder.uri(URI.create(statusurl)).POST(game_to_string(game,hostedGameTags[game.id])).build(),HttpResponse.BodyHandlers.ofString()).await()
+		val response = client.sendAsync(builder.uri(URI.create(statusurl)).POST(game_to_string(game,notificationId)).build(),HttpResponse.BodyHandlers.ofString()).await()
 		logger.debug(response.statusCode().toString())
 		val node=mapper.readTree(response.body())
 		logger.debug(response.body())
-		hostedGameMessages[game.id]=node.get("id").asText()
-		logger.debug("Saved ID {}: {}",game.id,hostedGameMessages[game.id])
+		hostedGames[game.id]=GameMessage(node.get("id").asText(),notificationId,game.name,game.currentPlayers)
+		logger.debug("Saved ID {}: {}",game.id,hostedGames[game.id]!!.message_id)
 	}
 	
 	override suspend fun updateExistingGame(game: Game)
 	{
-		logger.debug("Updating {}",hostedGameMessages[game.id])
-		val response=client.sendAsync(builder.uri(URI.create(statusurl+"/"+hostedGameMessages[game.id])).PUT(game_to_string(game,hostedGameTags[game.id])).build(),HttpResponse.BodyHandlers.ofString()).await()
+		logger.debug("Update function called")
+		val gm=hostedGames[game.id]!!
+		logger.debug("Might update {}",gm.message_id)
+		if (!gm.update(game)) { return }
+		logger.debug("Updating {}",gm.message_id)
+		val response=client.sendAsync(builder.uri(URI.create(statusurl+"/"+gm.message_id)).PUT(game_to_string(game,gm.game_tag)).build(),HttpResponse.BodyHandlers.ofString()).await()
 		logger.debug(response.statusCode().toString())
 		logger.debug(response.body())
 	}
 	
 	override suspend fun closeExpiredGame(game: Game)
 	{
-		val response=client.sendAsync(builder.uri(URI.create(statusurl+"/"+hostedGameMessages[game.id])).PUT(game_to_string(game,hostedGameTags[game.id],true)).build(),HttpResponse.BodyHandlers.ofString()).await()
+		val gm=hostedGames[game.id]!!
+		val response=client.sendAsync(builder.uri(URI.create(statusurl+"/"+gm.message_id)).PUT(game_to_string(game,gm.game_tag,true)).build(),HttpResponse.BodyHandlers.ofString()).await()
 		logger.debug("{} {}",response.statusCode(),response.body())
-		hostedGameMessages.remove(game.id)
-		hostedGameTags.remove(game.id)
+		hostedGames.remove(game.id)
 	}
 	
 	// Copied from discord module. It makes a lot of sense.
@@ -79,5 +81,21 @@ public class MastoNotifier @Inject constructor(private val conf:MastoConfig) : G
 		"\"}"
 		logger.info(body)
 		return HttpRequest.BodyPublishers.ofString(body)
+	}
+}
+
+private class GameMessage(val message_id:String, val game_tag:String, var game_name:String, var player_count:Int)
+{
+	public fun has_changed(game:Game):Boolean
+	{
+		return !(game_name==game.name && player_count==game.currentPlayers)
+	}
+	
+	public fun update(game:Game):Boolean
+	{
+		val changed=has_changed(game)
+		game_name=game.name
+		player_count=game.currentPlayers
+		return changed
 	}
 }

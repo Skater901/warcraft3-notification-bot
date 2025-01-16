@@ -1,10 +1,10 @@
 package au.com.skater901.wc3.application.module
 
 import au.com.skater901.wc3.application.config.ApplicationConfiguration
-import au.com.skater901.wc3.utils.getInstance
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Provides
+import dev.misfitlabs.kotlinguice4.getInstance
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.net.http.HttpClient
@@ -20,10 +20,9 @@ class ClientModuleTest {
             }
         )
 
-        val client = injector.getInstance<HttpClient>()
-
-        assertThat(client === injector.getInstance<HttpClient>()).isTrue()
-
-        client.close()
+        injector.getInstance<HttpClient>()
+            .use { client ->
+                assertThat(client === injector.getInstance<HttpClient>()).isTrue()
+            }
     }
 }

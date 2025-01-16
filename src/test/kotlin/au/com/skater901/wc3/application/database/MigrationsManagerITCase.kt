@@ -1,8 +1,10 @@
 package au.com.skater901.wc3.application.database
 
 import au.com.skater901.wc3.application.config.DatabaseConfig
-import au.com.skater901.wc3.utils.MariaDBExtension
-import au.com.skater901.wc3.utils.MySQLDBExtension
+import au.com.skater901.wc3.test.utilities.MariaDBExtension
+import au.com.skater901.wc3.test.utilities.MySQLDBExtension
+import au.com.skater901.wc3.test.utilities.SQLDBExtension
+import au.com.skater901.wc3.test.utilities.SQLDBExtension.Configuration
 import com.zaxxer.hikari.HikariDataSource
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
@@ -10,6 +12,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import javax.sql.DataSource
 
+@Configuration(module = false)
 class MigrationsManagerITCase {
     companion object {
         @RegisterExtension

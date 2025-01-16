@@ -1,0 +1,1 @@
+SELECT role_id FROM discord_notification_role WHERE channel_id = :channelId

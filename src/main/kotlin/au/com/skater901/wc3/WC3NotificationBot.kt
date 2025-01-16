@@ -4,9 +4,9 @@ import au.com.skater901.wc3.application.database.MigrationsManager
 import au.com.skater901.wc3.application.managed.ModuleManager
 import au.com.skater901.wc3.application.module.*
 import au.com.skater901.wc3.core.job.NotifyGamesJob
-import au.com.skater901.wc3.utils.getInstance
 import com.google.inject.Guice
 import com.google.inject.Injector
+import dev.misfitlabs.kotlinguice4.getInstance
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ScanResult
 import kotlinx.coroutines.runBlocking

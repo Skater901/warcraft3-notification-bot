@@ -24,8 +24,11 @@ dependencies {
     implementation(libs.guice) {
         exclude("com.google.guava", "guava")
     }
+    implementation(libs.jdbi)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
+    testImplementation(project(":test-utilities"))
 
     testImplementation(libs.assertj)
     testImplementation(libs.mockito.kotlin)
@@ -36,16 +39,34 @@ tasks {
         useJUnitPlatform()
     }
 
-    jacocoTestReport {
+    register<Test>("integrationTest") {
+        group = "verification"
+
+        useJUnitPlatform()
+
         dependsOn(test)
+
+        filter {
+            excludeTestsMatching("*Test")
+            includeTestsMatching("*ITCase")
+        }
+    }
+
+    jacocoTestReport {
+        dependsOn("integrationTest")
+
+        executionData(test.get(), named("integrationTest").get())
     }
 
     jacocoTestCoverageVerification {
         dependsOn(jacocoTestReport)
+
+        executionData(test.get(), named("integrationTest").get())
+
         violationRules {
             rule {
                 limit {
-                    minimum = BigDecimal("0.5")
+                    minimum = BigDecimal("0.6")
                 }
             }
         }

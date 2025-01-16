@@ -1,9 +1,9 @@
 package au.com.skater901.wc3.application.module
 
 import au.com.skater901.wc3.application.config.*
-import au.com.skater901.wc3.utils.getInstance
 import au.com.skater901.wc3.utils.scanResult
 import com.google.inject.Guice
+import dev.misfitlabs.kotlinguice4.getInstance
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File

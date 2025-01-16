@@ -4,6 +4,8 @@ import au.com.skater901.wc3.api.NotificationModule
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
 import au.com.skater901.wc3.discord.api.commands.*
+import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
+import au.com.skater901.wc3.discord.core.dao.jdbi.JdbiRoleNotificationDAO
 import au.com.skater901.wc3.discord.core.handler.DiscordGameNotifier
 import com.google.inject.AbstractModule
 import com.google.inject.Injector
@@ -13,6 +15,7 @@ import dev.minn.jda.ktx.interactions.commands.slash
 import dev.minn.jda.ktx.interactions.commands.updateCommands
 import dev.minn.jda.ktx.jdabuilder.intents
 import dev.minn.jda.ktx.jdabuilder.light
+import dev.misfitlabs.kotlinguice4.KotlinModule
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
@@ -24,7 +27,11 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
     override val moduleName: String = "discord"
     override val configClass: KClass<DiscordConfiguration> = DiscordConfiguration::class
 
-    override fun guiceModule(): AbstractModule = object : AbstractModule() {
+    override fun guiceModule(): AbstractModule = object : KotlinModule() {
+        override fun configure() {
+            bind<RoleNotificationDAO>().to<JdbiRoleNotificationDAO>()
+        }
+
         @Provides
         @Singleton
         @Inject

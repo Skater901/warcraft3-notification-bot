@@ -5,6 +5,7 @@ import au.com.skater901.wc3.api.core.domain.GameSource
 import au.com.skater901.wc3.api.core.domain.Region
 import au.com.skater901.wc3.api.core.domain.exceptions.InvalidNotificationException
 import au.com.skater901.wc3.api.core.service.GameNotifier
+import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import au.com.skater901.wc3.utilities.collections.forEachAsync
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.MessageCreate
@@ -22,9 +23,10 @@ import java.util.concurrent.ConcurrentMap
 
 @Singleton
 public class DiscordGameNotifier @Inject internal constructor(
-    private val jda: JDA
+    private val jda: JDA,
+    private val roleNotificationDAO: RoleNotificationDAO
 ) : GameNotifier {
-    private val hostedGameMessages: ConcurrentMap<Int, MutableSet<Message>> = ConcurrentHashMap()
+    private val hostedGameMessages: ConcurrentMap<Int, MutableSet<Pair<Message, String?>>> = ConcurrentHashMap()
     override suspend fun notifyNewGame(notificationId: String, game: Game) {
         val channel = try {
             jda.getTextChannelById(notificationId)
@@ -33,76 +35,80 @@ public class DiscordGameNotifier @Inject internal constructor(
             throw InvalidNotificationException()
         }
 
-        channel.sendMessage(createGameMessage(game, false))
+        val roleToNotify = roleNotificationDAO.find(notificationId)
+
+        channel.sendMessage(createGameMessage(game, false, roleToNotify))
             .await()
             .let {
                 hostedGameMessages.computeIfAbsent(game.id) { mutableSetOf() }
-                    .add(it)
+                    .add(it to roleToNotify)
             }
     }
 
     override suspend fun updateExistingGame(game: Game) {
-        hostedGameMessages[game.id]?.forEachAsync {
-            it.edit(embeds = createGameMessage(game, false).embeds)
+        hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
+            message.edit(embeds = createGameMessage(game, false, roleToNotify).embeds)
                 .await()
         }
     }
 
     override suspend fun closeExpiredGame(game: Game) {
-        hostedGameMessages[game.id]?.forEachAsync { message ->
-            message.edit(embeds = createGameMessage(game, true).embeds)
+        hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
+            message.edit(embeds = createGameMessage(game, true, roleToNotify).embeds)
                 .await()
         }
 
         hostedGameMessages.remove(game.id)
     }
 
-    private fun createGameMessage(game: Game, gameRemoved: Boolean): MessageCreateData = MessageCreate {
-        embed {
-            color = if (gameRemoved) 0x1e1f22 else 0x22FF00
-            author(iconUrl = "https://wow.zamimg.com/uploads/screenshots/normal/875650.jpg") {
-                name = game.host
-            }
-            title = when (game.gameSource) {
-                GameSource.BattleNet -> game.map.dropLast(4) // BattleNet games have .w3x at the end of the map name.
-                GameSource.WC3Connect -> game.map
-            }
-            url = when (game.gameSource) {
-                GameSource.BattleNet -> battleNetMap(game.map)
-                GameSource.WC3Connect -> wc3ConnectMap(game.map)
-            }
-            field {
-                name = "Hosted On"
-                value = when (game.gameSource) {
-                    GameSource.BattleNet -> "Battle.Net"
-                    GameSource.WC3Connect -> game.gameSource.name
+    private fun createGameMessage(game: Game, gameRemoved: Boolean, roleToNotify: String?): MessageCreateData =
+        MessageCreate {
+            roleToNotify?.also { content = "<@&$it>" }
+            embed {
+                color = if (gameRemoved) 0x1e1f22 else 0x22FF00
+                author(iconUrl = "https://wow.zamimg.com/uploads/screenshots/normal/875650.jpg") {
+                    name = game.host
                 }
-                inline = false
-            }
-            field {
-                name = "Game Name"
-                value = "${game.region.flag()} ${game.name} (${game.currentPlayers}/${game.maxPlayers})"
-                inline = false
-            }
-            field {
-                name = if (gameRemoved) "Started" else "Created"
-                val timeSinceGameStarted = Duration.between(game.created, Instant.now())
-                val minutesSinceGameStarted = timeSinceGameStarted.toMinutes()
-                val timeString = when {
-                    minutesSinceGameStarted < 1 -> "${timeSinceGameStarted.seconds} seconds"
-                    minutesSinceGameStarted < 2 -> "$minutesSinceGameStarted minute"
-                    else -> "$minutesSinceGameStarted minutes"
+                title = when (game.gameSource) {
+                    GameSource.BattleNet -> game.map.dropLast(4) // BattleNet games have .w3x at the end of the map name.
+                    GameSource.WC3Connect -> game.map
                 }
-                value = if (gameRemoved) "After $timeString" else "$timeString ago"
-                inline = false
+                url = when (game.gameSource) {
+                    GameSource.BattleNet -> battleNetMap(game.map)
+                    GameSource.WC3Connect -> wc3ConnectMap(game.map)
+                }
+                field {
+                    name = "Hosted On"
+                    value = when (game.gameSource) {
+                        GameSource.BattleNet -> "Battle.Net"
+                        GameSource.WC3Connect -> game.gameSource.name
+                    }
+                    inline = false
+                }
+                field {
+                    name = "Game Name"
+                    value = "${game.region.flag()} ${game.name} (${game.currentPlayers}/${game.maxPlayers})"
+                    inline = false
+                }
+                field {
+                    name = if (gameRemoved) "Started" else "Created"
+                    val timeSinceGameStarted = Duration.between(game.created, Instant.now())
+                    val minutesSinceGameStarted = timeSinceGameStarted.toMinutes()
+                    val timeString = when {
+                        minutesSinceGameStarted < 1 -> "${timeSinceGameStarted.seconds} seconds"
+                        minutesSinceGameStarted < 2 -> "$minutesSinceGameStarted minute"
+                        else -> "$minutesSinceGameStarted minutes"
+                    }
+                    value = if (gameRemoved) "After $timeString" else "$timeString ago"
+                    inline = false
+                }
+                val (icon, url) = when (game.gameSource) {
+                    GameSource.BattleNet -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
+                    GameSource.WC3Connect -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
+                }
+                footer("Powered by $url", icon)
             }
-            val (icon, url) = when (game.gameSource) {
-                GameSource.BattleNet -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
-                GameSource.WC3Connect -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
-            }
-            footer("Powered by $url", icon)
         }
-    }
 
     private fun Region.flag(): String = when (this) {
         Region.EU -> ":flag_eu:"

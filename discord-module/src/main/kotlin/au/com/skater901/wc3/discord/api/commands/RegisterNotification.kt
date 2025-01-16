@@ -14,11 +14,11 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 internal class RegisterNotification @Inject constructor(
     private val wc3GameNotificationService: WC3GameNotificationService,
-//    private val roleNotificationDAO: RoleNotificationDAO
+    private val roleNotificationDAO: RoleNotificationDAO
 ) : Command {
     override val name: String = "notify"
     override val description: String =
-        "Set the Warcraft III maps that you want to be announced to this channel when hosted"
+        "Set the Warcraft III maps that you want to be announced to this channel when hosted, and optionally a role to be tagged every time a game is hosted."
 
     override val options: SlashCommandData.() -> Unit = {
         option<String>(
@@ -27,10 +27,10 @@ internal class RegisterNotification @Inject constructor(
             required = true
         )
 
-//        option<Role>(
-//            "notified-role",
-//            "A Discord role that you want to be notified every time a new game is hosted."
-//        )
+        option<Role>(
+            "notified-role",
+            "A Discord role that you want to be notified every time a new game is hosted."
+        )
     }
 
     override val defaultPermissions: DefaultMemberPermissions = DefaultMemberPermissions.DISABLED
@@ -43,6 +43,9 @@ internal class RegisterNotification @Inject constructor(
         }
 
         try {
+            val notifiedRole = command.getOption("notified-role")
+                ?.asRole
+
             coroutineScope {
                 launch {
                     wc3GameNotificationService.createNotification(
@@ -51,17 +54,14 @@ internal class RegisterNotification @Inject constructor(
                     )
                 }
                 launch {
-                    command.getOption("notified-role")
-                        ?.let { notifiedRole ->
-//                            roleNotificationDAO.save(command.channelIdLong, notifiedRole.asRole)
-                        }
+                    notifiedRole?.let { roleNotificationDAO.save(command.channelId!!, it.id) }
                 }
             }
 
             command.replySuspended(
                 "Registering a notification for channel **${command.channel.name}** for regex pattern **${
                     command.getOption("filter")?.asString
-                }**"
+                }**${if (notifiedRole != null) " and role **${notifiedRole.name}**" else ""}"
             )
         } catch (e: InvalidRegexPatternException) {
             command.replySuspended("Invalid regex pattern. ${e.message}")

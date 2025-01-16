@@ -1,14 +1,14 @@
 package au.com.skater901.wc3.application.module
 
-import au.com.skater901.wc3.application.defaultUnitOfWork
 import au.com.skater901.wc3.core.gameProvider.GameProvider
 import au.com.skater901.wc3.core.gameProvider.WC3ConnectGameProvider
 import au.com.skater901.wc3.core.gameProvider.WC3StatsGameProvider
-import au.com.skater901.wc3.utils.getInstance
+import au.com.skater901.wc3.utilities.defaultUnitOfWork
 import au.com.skater901.wc3.utils.scanResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Guice
 import com.google.inject.Key
+import dev.misfitlabs.kotlinguice4.getInstance
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.retry.RetryRegistry
 import org.assertj.core.api.Assertions.assertThat

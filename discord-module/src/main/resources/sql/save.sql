@@ -1,0 +1,1 @@
+REPLACE INTO discord_notification_role (channel_id, role_id) VALUES (:channelId, :roleId)

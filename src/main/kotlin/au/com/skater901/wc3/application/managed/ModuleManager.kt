@@ -7,9 +7,9 @@ import au.com.skater901.wc3.application.config.ConfigParser
 import au.com.skater901.wc3.core.job.TaskRunner
 import au.com.skater901.wc3.core.service.WC3GameNotificationServiceImpl
 import au.com.skater901.wc3.utilities.collections.ifNotEmpty
-import au.com.skater901.wc3.utils.getInstance
 import com.google.inject.*
 import com.google.inject.name.Names.named
+import dev.misfitlabs.kotlinguice4.getInstance
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import java.util.*

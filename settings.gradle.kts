@@ -4,7 +4,13 @@ plugins {
 
 rootProject.name = "wc3-notification-bot"
 
-include("discord-module")
+// API for modules to implement
 include("module-api")
-include("utilities")
+
+// Modules
+include("discord-module")
 include("masto-module")
+
+// Utilities
+include("utilities")
+include("test-utilities")

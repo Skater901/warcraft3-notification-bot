@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 import kotlin.random.Random
 
+// TODO
 class DiscordGameNotifierTest {
     @Test
     fun `should notify new game, update it, and close it`() {
@@ -50,7 +51,7 @@ class DiscordGameNotifierTest {
             on { getTextChannelById(notificationId) } doReturn channel
         }
 
-        val notifier = DiscordGameNotifier(jda)
+        val notifier = DiscordGameNotifier(jda, mock())
 
         val game = mock<Game> {
             on { id } doReturn 1
@@ -205,7 +206,7 @@ class DiscordGameNotifierTest {
         }
 
         assertThatThrownBy {
-            runBlocking { DiscordGameNotifier(jda).notifyNewGame("1", mock()) }
+            runBlocking { DiscordGameNotifier(jda, mock()).notifyNewGame("1", mock()) }
         }
             .isInstanceOf(InvalidNotificationException::class.java)
     }
@@ -217,14 +218,14 @@ class DiscordGameNotifierTest {
         }
 
         assertThatThrownBy {
-            runBlocking { DiscordGameNotifier(jda).notifyNewGame("1", mock()) }
+            runBlocking { DiscordGameNotifier(jda, mock()).notifyNewGame("1", mock()) }
         }
             .isInstanceOf(InvalidNotificationException::class.java)
     }
 
     @Test
     fun `should handle updating or closing unknown game`() {
-        val notifier = DiscordGameNotifier(mock())
+        val notifier = DiscordGameNotifier(mock(), mock())
 
         val game = mock<Game> {
             on { id } doReturn 1
@@ -399,7 +400,7 @@ class DiscordGameNotifierTest {
         }
 
         runBlocking {
-            DiscordGameNotifier(jda).notifyNewGame(notificationId, game)
+            DiscordGameNotifier(jda, mock()).notifyNewGame(notificationId, game)
         }
 
         verify(channel) {

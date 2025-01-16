@@ -1,11 +1,11 @@
-package au.com.skater901.wc3.utils
+package au.com.skater901.wc3.test.utilities
 
 import org.testcontainers.containers.MariaDBContainer
 import kotlin.reflect.KClass
 
-annotation class MariaDBConnection
+public annotation class MariaDBConnection
 
-class MariaDBExtension : SQLDBExtension<MariaDBContainer<*>>() {
+public class MariaDBExtension : SQLDBExtension<MariaDBContainer<*>>() {
     override val annotationClass: KClass<out Annotation> = MariaDBConnection::class
 
     override fun containerProvider(): MariaDBContainer<*> = MariaDBContainer("mariadb")

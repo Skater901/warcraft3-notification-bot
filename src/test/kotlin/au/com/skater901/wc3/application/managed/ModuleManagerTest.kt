@@ -10,6 +10,7 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Provides
+import dev.misfitlabs.kotlinguice4.key
 import jakarta.inject.Named
 import jakarta.inject.Singleton
 import kotlinx.coroutines.runBlocking
@@ -39,7 +40,7 @@ class ModuleManagerTest {
 
         val childInjector = mock<Injector> {
             on { getInstance(Any::class.java) } doReturn "config class"
-            on { getInstance(WC3GameNotificationService::class.java) } doReturn wc3NotificationService
+            on { getInstance(key<WC3GameNotificationService>()) } doReturn wc3NotificationService
             on { getInstance(GameNotifier::class.java) } doReturn notifier
         }
 

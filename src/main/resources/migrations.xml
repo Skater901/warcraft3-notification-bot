@@ -17,4 +17,15 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="2.0" author="Skater901">
+        <comment>Create table for storing a Discord role that will be tagged when a Discord message is created for a hosted game.</comment>
+        <createTable tableName="discord_notification_role">
+            <column name="channel_id" type="varchar(100)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_id" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

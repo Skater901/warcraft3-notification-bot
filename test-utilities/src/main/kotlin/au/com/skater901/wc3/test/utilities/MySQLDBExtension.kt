@@ -1,11 +1,11 @@
-package au.com.skater901.wc3.utils
+package au.com.skater901.wc3.test.utilities
 
 import org.testcontainers.containers.MySQLContainer
 import kotlin.reflect.KClass
 
-annotation class MySQLConnection
+public annotation class MySQLConnection
 
-class MySQLDBExtension : SQLDBExtension<MySQLContainer<*>>() {
+public class MySQLDBExtension : SQLDBExtension<MySQLContainer<*>>() {
     override val annotationClass: KClass<out Annotation> = MySQLConnection::class
 
     override fun containerProvider(): MySQLContainer<*> = MySQLContainer("mysql")

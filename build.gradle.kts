@@ -1,12 +1,7 @@
-val mysql_version: String by project
-val mariadb_version: String by project
-val jdbi_version: String by project
 val hikari_version: String by project
-val liquibase_version: String by project
 val liquibase_logging_version: String by project
 val logback_version: String by project
 val classgraph_version: String by project
-val resilience4j_version: String by project
 val jackson_version: String by project
 
 // Testing library versions
@@ -22,7 +17,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3"
-version = "1.0.1"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -39,27 +34,22 @@ dependencies {
     implementation(libs.coroutines)
 
     // Database libraries
-    implementation("com.mysql:mysql-connector-j:$mysql_version")
-    implementation("org.mariadb.jdbc:mariadb-java-client:$mariadb_version")
-    implementation("org.jdbi:jdbi3-core:$jdbi_version")
+    implementation(libs.drivers.mysql)
+    implementation(libs.drivers.mariadb)
+    implementation(libs.jdbi)
     implementation("com.zaxxer:HikariCP:$hikari_version")
-    implementation("org.liquibase:liquibase-core:$liquibase_version")
+    implementation(libs.liquibase)
     implementation("com.mattbertolini:liquibase-slf4j:$liquibase_logging_version")
 
     // Logging libraries
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
     // DI/reflection libraries
-    implementation(libs.guice) { // TODO kotlinguice?
+    implementation(libs.guice) {
         exclude("com.google.guava", "guava")
     }
     implementation(libs.guava)
     implementation("io.github.classgraph:classgraph:$classgraph_version")
-
-    // Resilience Libraries
-    implementation("io.github.resilience4j:resilience4j-kotlin:$resilience4j_version")
-    implementation("io.github.resilience4j:resilience4j-retry:$resilience4j_version")
-    implementation("io.github.resilience4j:resilience4j-circuitbreaker:$resilience4j_version")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
@@ -70,16 +60,17 @@ dependencies {
     implementation(project(":masto-module"))
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
 
     // Testing/assertion libraries
     testImplementation(libs.assertj)
     testImplementation(libs.mockito.kotlin)
 
     // Integration/end to end testing libraries
-    testImplementation("org.testcontainers:mysql:$test_containers_version")
-    testImplementation("org.testcontainers:mariadb:$test_containers_version")
     testImplementation("org.wiremock:wiremock:$wiremock_version")
     testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
+
+    testImplementation(project(":test-utilities"))
 }
 
 jacoco {

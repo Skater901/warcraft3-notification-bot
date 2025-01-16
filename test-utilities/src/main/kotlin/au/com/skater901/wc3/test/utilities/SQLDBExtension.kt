@@ -1,18 +1,19 @@
-package au.com.skater901.wc3.utils
+package au.com.skater901.wc3.test.utilities
 
-import au.com.skater901.wc3.core.dao.jdbi.updateFromFile
-import au.com.skater901.wc3.core.dao.jdbi.usingHandle
+import au.com.skater901.wc3.utilities.database.updateFromFile
+import au.com.skater901.wc3.utilities.database.usingHandle
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.ClassLoaderResourceAccessor
+import liquibase.resource.DirectoryResourceAccessor
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.extension.*
 import org.testcontainers.containers.JdbcDatabaseContainer
 import java.sql.DriverManager
+import kotlin.io.path.Path
 import kotlin.reflect.KClass
 
-abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINER>> : BeforeAllCallback,
+public abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINER>> : BeforeAllCallback,
     AfterAllCallback,
     AfterEachCallback,
     ParameterResolver {
@@ -30,16 +31,16 @@ abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINE
 
     protected abstract fun containerProvider(): CONTAINER
 
-    val port: Int
+    public val port: Int
         get() = container.getMappedPort(3306)
 
-    val username: String
+    public val username: String
         get() = container.username
 
-    val password: String
+    public val password: String
         get() = container.password
 
-    override fun beforeAll(context: ExtensionContext) {
+    public override fun beforeAll(context: ExtensionContext) {
         val configuration: Configuration? = context.requiredTestClass.getAnnotation(Configuration::class.java)
 
         container = containerProvider().withDatabaseName("wc3_bot")
@@ -47,7 +48,7 @@ abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINE
             .apply { start() }
 
         if (configuration == null || configuration.migrate) {
-            val database = DatabaseFactory.getInstance()
+            val connection = DatabaseFactory.getInstance()
                 .findCorrectDatabaseImplementation(
                     JdbcConnection(
                         DriverManager.getConnection(
@@ -58,7 +59,12 @@ abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINE
                     )
                 )
 
-            Liquibase("migrations.xml", ClassLoaderResourceAccessor(), database).use { it.update() }
+            Liquibase(
+                "migrations.xml",
+                DirectoryResourceAccessor(Path("${if (configuration?.module != false) "../" else ""}src/main/resources")),
+                connection
+            )
+                .use { it.update() }
         }
 
         if (configuration?.setupScripts?.isNotEmpty() == true) {
@@ -80,7 +86,7 @@ abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINE
             .withPassword(configuration.password)
     }
 
-    override fun afterEach(context: ExtensionContext) {
+    public override fun afterEach(context: ExtensionContext) {
         jdbi.usingHandle { handle ->
             handle.createQuery("SHOW tables FROM wc3_bot")
                 .mapTo(String::class.java)
@@ -93,27 +99,32 @@ abstract class SQLDBExtension<out CONTAINER : JdbcDatabaseContainer<out CONTAINE
         }
     }
 
-    override fun afterAll(context: ExtensionContext) {
+    public override fun afterAll(context: ExtensionContext) {
         container.stop()
     }
 
-    override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean =
+    public override fun supportsParameter(
+        parameterContext: ParameterContext,
+        extensionContext: ExtensionContext
+    ): Boolean =
         parameterContext.parameter.type == Jdbi::class.java &&
                 parameterContext.isAnnotated(annotationClass.java)
 
-    override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any? =
+    public override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any? =
         if (parameterContext.isAnnotated(annotationClass.java))
             jdbi
         else
             null
 
-    annotation class Configuration(
+    public annotation class Configuration(
         val username: String = "test",
 
         val password: String = "test",
 
         val migrate: Boolean = true,
 
-        val setupScripts: Array<String> = []
+        val setupScripts: Array<String> = [],
+
+        val module: Boolean = true
     )
 }

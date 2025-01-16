@@ -1,10 +1,8 @@
 package au.com.skater901.wc3.core.dao.jdbi
 
 import au.com.skater901.wc3.core.domain.WC3GameNotification
-import au.com.skater901.wc3.utils.MariaDBConnection
-import au.com.skater901.wc3.utils.MariaDBExtension
-import au.com.skater901.wc3.utils.MySQLConnection
-import au.com.skater901.wc3.utils.MySQLDBExtension
+import au.com.skater901.wc3.test.utilities.*
+import au.com.skater901.wc3.test.utilities.SQLDBExtension.Configuration
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.jdbi.v3.core.Jdbi
@@ -12,8 +10,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(MariaDBExtension::class)
-@ExtendWith(MySQLDBExtension::class)
+@ExtendWith(MariaDBExtension::class, MySQLDBExtension::class)
+@Configuration(module = false)
 class JdbiNotificationDAOITCase {
     companion object {
         private lateinit var mariaDBJdbi: Jdbi

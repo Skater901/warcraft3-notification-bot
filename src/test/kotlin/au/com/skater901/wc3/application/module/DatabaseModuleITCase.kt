@@ -1,16 +1,16 @@
 package au.com.skater901.wc3.application.module
 
 import au.com.skater901.wc3.application.config.DatabaseConfig
-import au.com.skater901.wc3.core.dao.jdbi.wHandle
-import au.com.skater901.wc3.utils.MariaDBExtension
-import au.com.skater901.wc3.utils.MySQLDBExtension
-import au.com.skater901.wc3.utils.SQLDBExtension
-import au.com.skater901.wc3.utils.SQLDBExtension.Configuration
-import au.com.skater901.wc3.utils.getInstance
+import au.com.skater901.wc3.test.utilities.MariaDBExtension
+import au.com.skater901.wc3.test.utilities.MySQLDBExtension
+import au.com.skater901.wc3.test.utilities.SQLDBExtension
+import au.com.skater901.wc3.test.utilities.SQLDBExtension.Configuration
+import au.com.skater901.wc3.utilities.database.wHandle
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Provides
 import com.zaxxer.hikari.HikariDataSource
+import dev.misfitlabs.kotlinguice4.getInstance
 import jakarta.inject.Singleton
 import org.assertj.core.api.Assertions.assertThat
 import org.jdbi.v3.core.Jdbi
@@ -20,7 +20,8 @@ import javax.sql.DataSource
 
 @Configuration(
     username = "wc3_notification_bot",
-    password = "mypassword"
+    password = "mypassword",
+    module = false
 )
 internal class DatabaseModuleITCase {
     companion object {
@@ -72,8 +73,8 @@ internal class DatabaseModuleITCase {
                     .list()
             }
 
-            assertThat(tables).hasSize(3)
-                .contains("DATABASECHANGELOG", "DATABASECHANGELOGLOCK", "notification")
+            assertThat(tables).hasSize(4)
+                .contains("DATABASECHANGELOG", "DATABASECHANGELOGLOCK", "notification", "discord_notification_role")
 
             (connectionPool as HikariDataSource).close()
         }

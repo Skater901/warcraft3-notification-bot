@@ -1,4 +1,4 @@
-package au.com.skater901.wc3.application
+package au.com.skater901.wc3.utilities
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig
@@ -14,8 +14,8 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 
-internal class UnitOfWork(private val javaClass: Class<*>, private val name: String) {
-    companion object {
+public class UnitOfWork(private val javaClass: Class<*>, private val name: String) {
+    public companion object {
         private val RETRY_REGISTRY = AtomicReference(RetryRegistry.ofDefaults())
         private val CIRCUIT_BREAKER_REGISTRY = AtomicReference(CircuitBreakerRegistry.ofDefaults())
 
@@ -24,13 +24,13 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
 
         @JvmStatic
         @Inject
-        fun setRetries(retries: RetryRegistry) {
+        public fun setRetries(retries: RetryRegistry) {
             RETRY_REGISTRY.set(retries)
         }
 
         @JvmStatic
         @Inject
-        fun setCircuitBreakers(circuitBreakers: CircuitBreakerRegistry) {
+        public fun setCircuitBreakers(circuitBreakers: CircuitBreakerRegistry) {
             CIRCUIT_BREAKER_REGISTRY.set(circuitBreakers)
         }
     }
@@ -43,14 +43,14 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
 
     private fun name(type: String): String = "${javaClass.packageName}.$name.$type"
 
-    fun retry(config: RetryConfig.() -> Unit = {}): UnitOfWork {
+    public fun retry(config: RetryConfig.() -> Unit = {}): UnitOfWork {
         retry = retries.computeIfAbsent(name("retry")) { name ->
             RETRY_REGISTRY.get().retry(name, RetryConfig.ofDefaults().also(config))
         }
         return this
     }
 
-    fun circuitBreaker(config: CircuitBreakerConfig.() -> Unit = {}): UnitOfWork {
+    public fun circuitBreaker(config: CircuitBreakerConfig.() -> Unit = {}): UnitOfWork {
         circuitBreaker = circuitBreakers.computeIfAbsent(name("circuitBreaker")) { name ->
             CIRCUIT_BREAKER_REGISTRY.get().circuitBreaker(
                 name,
@@ -60,7 +60,7 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
         return this
     }
 
-    fun withDispatcher(dispatcher: CoroutineDispatcher): UnitOfWork {
+    public fun withDispatcher(dispatcher: CoroutineDispatcher): UnitOfWork {
         this.dispatcher = dispatcher
         return this
     }
@@ -74,7 +74,7 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
                 it()
         }
 
-    suspend operator fun <T> invoke(block: suspend () -> T): T = execute(block = block)
+    public suspend operator fun <T> invoke(block: suspend () -> T): T = execute(block = block)
 
     private fun <T> decorate(block: suspend () -> T): suspend () -> T {
         val resilience = retry?.decorateSuspendFunction(block) ?: block
@@ -82,8 +82,8 @@ internal class UnitOfWork(private val javaClass: Class<*>, private val name: Str
     }
 }
 
-internal inline fun <reified T : Any> T.unitOfWork(name: String): UnitOfWork = UnitOfWork(this::class.java, name)
+public inline fun <reified T : Any> T.unitOfWork(name: String): UnitOfWork = UnitOfWork(this::class.java, name)
 
-internal inline fun <reified T : Any> T.defaultUnitOfWork(name: String): UnitOfWork = unitOfWork(name)
+public inline fun <reified T : Any> T.defaultUnitOfWork(name: String): UnitOfWork = unitOfWork(name)
     .retry()
     .circuitBreaker()

@@ -2,6 +2,7 @@ package au.com.skater901.wc3.core.dao.jdbi
 
 import au.com.skater901.wc3.core.dao.NotificationDAO
 import au.com.skater901.wc3.core.domain.WC3GameNotification
+import au.com.skater901.wc3.utilities.database.*
 import jakarta.inject.Inject
 import org.jdbi.v3.core.Jdbi
 

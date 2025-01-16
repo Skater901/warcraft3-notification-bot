@@ -18,7 +18,7 @@ internal class RegisterNotification @Inject constructor(
 ) : Command {
     override val name: String = "notify"
     override val description: String =
-        "Set the Warcraft III maps that you want to be announced to this channel when hosted, and optionally a role to be tagged every time a game is hosted."
+        "Set the Warcraft III maps that you want to be announced to this channel when hosted."
 
     override val options: SlashCommandData.() -> Unit = {
         option<String>(

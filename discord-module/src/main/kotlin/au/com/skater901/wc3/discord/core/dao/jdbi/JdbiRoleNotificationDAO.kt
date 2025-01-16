@@ -13,7 +13,7 @@ internal class JdbiRoleNotificationDAO @Inject constructor(
     override suspend fun save(channelId: String, roleId: String) {
         saveWork {
             jdbi.usingHandle {
-                it.updateFromFile("sql/save.sql")
+                it.updateFromFile("discord-sql/save.sql")
                     .bind("channelId", channelId)
                     .bind("roleId", roleId)
                     .execute()
@@ -24,7 +24,7 @@ internal class JdbiRoleNotificationDAO @Inject constructor(
     private val findWork = databaseUnitOfWork(::find)
     override suspend fun find(channelId: String): String? = findWork {
         jdbi.wHandle {
-            it.queryFromFile("sql/find.sql")
+            it.queryFromFile("discord-sql/find.sql")
                 .bind("channelId", channelId)
                 .mapTo(String::class.java)
                 .findFirst()
@@ -36,7 +36,7 @@ internal class JdbiRoleNotificationDAO @Inject constructor(
     override suspend fun delete(channelId: String) {
         deleteWork {
             jdbi.usingHandle {
-                it.updateFromFile("sql/delete.sql")
+                it.updateFromFile("discord-sql/delete.sql")
                     .bind("channelId", channelId)
                     .execute()
             }

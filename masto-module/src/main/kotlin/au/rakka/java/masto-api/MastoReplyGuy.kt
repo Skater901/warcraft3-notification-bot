@@ -2,6 +2,7 @@ package au.rakka.java.mastoapi
 
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
+import au.com.skater901.wc3.api.core.domain.exceptions.InvalidRegexPatternException
 
 import java.net.http.HttpClient // This should be significantly less hassle.
 import java.net.http.HttpRequest
@@ -48,41 +49,56 @@ public class MastoReplyGuy @Inject constructor(private val conf:MastoConfig, pri
 			node.forEach{ process_post(it) }
 			logger.debug(node.size().toString())
 			finished=node.size()<20 // If node size isn't 20 I don't need to update max_id at all. Mainly avoids the issue where node size is 0.
-			if (!finished) {max_id=node.get(19).get("id").asText()}
+			if (!finished) {max_id="?max_id="+node.get(19).get("id").asText()}
 		}
 		val response = client.sendAsync(builder.uri(URI.create(clearurl)).POST(HttpRequest.BodyPublishers.ofString("")).build(),HttpResponse.BodyHandlers.ofInputStream()).await()
 		logger.debug("Cleared notifications (hopefully) {}",response.statusCode().toString())
 	}
 	private suspend fun process_post(post:JsonNode)
 	{
-		logger.debug("Processing notif {}",post.get("id"))
-		if (post.get("type").asText()!="mention") {logger.debug("Was not a mention");return}
-		if (is_pleroma==null)
-			{is_pleroma=post.get("status").get("pleroma")!=null}
-		val text=if (is_pleroma!!)
+		try
 		{
-			post.get("status").get("pleroma").get("content").get("text/plain").asText()
+			logger.debug("Processing notif {}",post.get("id"))
+			if (post.get("type").asText()!="mention") {logger.debug("Was not a mention");return}
+			if (is_pleroma==null)
+				{is_pleroma=post.get("status").get("pleroma")!=null}
+			val text=if (is_pleroma!!)
+			{
+				post.get("status").get("pleroma").get("content").get("text/plain").asText()
+			}
+			else
+			{
+				post.get("status").get("content").asText().replace(Regex("<.*?>"),"")
+			}
+			val (tag,regex)=process_post_contents(text)
+			if (tag=="") {logger.debug("tag: {} was null",tag);return}
+			if (regex=="")
+			{
+				logger.debug("Deleting {}",tag)
+				wc3GameNotificationService.deleteNotification(tag) // lol hope you meant it
+				val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"Unregistered ${tag}. In future this will hopefully be able to tell you what it contained.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await()
+				logger.debug("Deleted {} {}",response.statusCode().toString(),post.get("status").get("id"))
+			}
+			else
+			{
+				logger.debug("Adding {} with {}",tag,regex)
+				try {wc3GameNotificationService.createNotification(tag,regex)}
+				catch (ex:InvalidRegexPatternException)
+				{
+					logger.debug("InvalidRegexPatternException")
+					val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"${regex.replace("\\","\\\\")} was invalid. Note: Spaces are not supported, use \\s instead and hope that there aren't two different maps with the same name differing only by the type of whitespace.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await()
+					logger.debug("Reported InvalidRegexPatternException")
+					return // Don't say it succeeded
+				}
+				val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"Registered ${tag} with pattern ${regex.replace("\\","\\\\")}.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await() // .get("id") returns a string with quotes: Deleted 400 "AotNh4gQIua2IPvPN2", so don't need to put new quotes on it.
+				// Why do I have to replace \ with \\? I have no idea. Pleromer gets mad about a lone backslash in post contents apparently. Does mastodon? Dunno.
+				logger.debug("Created {} {}",response.statusCode().toString(),post.get("status").get("id"))
+			}
 		}
-		else
+		catch (ex:Exception)
 		{
-			post.get("status").get("content").asText().replace(Regex("<.*?>"),"")
-		}
-		val (tag,regex)=process_post_contents(text)
-		if (tag=="") {logger.debug("tag: {} was null",tag);return}
-		if (regex=="")
-		{
-			logger.debug("Deleting {}",tag)
-			wc3GameNotificationService.deleteNotification(tag) // lol hope you meant it
-			val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"Unregistered ${tag}. In future this will hopefully be able to tell you what it contained.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await()
-			logger.debug("Deleted {} {}",response.statusCode().toString(),post.get("status").get("id"))
-		}
-		else
-		{
-			logger.debug("Adding {} with {}",tag,regex)
-			wc3GameNotificationService.createNotification(tag,regex)
-			val response=client.sendAsync(builder.uri(URI.create(statusurl)).POST(HttpRequest.BodyPublishers.ofString("""{"status":"Registered ${tag} with pattern ${regex.replace("\\","\\\\")}.","in_reply_to_id":${post.get("status").get("id")}}""")).build(),HttpResponse.BodyHandlers.ofInputStream()).await() // .get("id") returns a string with quotes: Deleted 400 "AotNh4gQIua2IPvPN2", so don't need to put new quotes on it.
-			// Why do I have to replace \ with \\? I have no idea. Pleromer gets mad about a lone backslash in post contents apparently. Does mastodon? Dunno.
-			logger.debug("Created {} {}",response.statusCode().toString(),post.get("status").get("id"))
+			logger.error("{}",ex); // Something happened.
+			// The purpose of this catch is to prevent the effects of any one broken notif from reaching any further; so it can continue processing the rest of the notifications and then clear them.
 		}
 	}
 	private fun process_post_contents(contents:String) : Pair<String,String>

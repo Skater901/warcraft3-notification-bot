@@ -5,7 +5,6 @@ val classgraph_version: String by project
 val jackson_version: String by project
 
 // Testing library versions
-val test_containers_version: String by project
 val wiremock_version: String by project
 val wiremock_kotlin_version: String by project
 
@@ -17,7 +16,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3"
-version = "1.1.2"
+version = "1.1.3"
 
 repositories {
     mavenCentral()

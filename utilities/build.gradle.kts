@@ -22,6 +22,12 @@ dependencies {
     api("io.github.resilience4j:resilience4j-circuitbreaker:$resilience4j_version")
 }
 
+tasks {
+    compileJava {
+        options.release = 24
+    }
+}
+
 kotlin {
     explicitApi()
 }

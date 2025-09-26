@@ -23,6 +23,10 @@ dependencies {
 }
 
 tasks {
+    compileJava {
+        options.release = 24
+    }
+
     test {
         useJUnitPlatform()
     }

@@ -19,6 +19,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
 }
 
+tasks {
+    compileJava {
+        options.release = 24
+    }
+}
+
 kotlin {
 	explicitApi()
 }

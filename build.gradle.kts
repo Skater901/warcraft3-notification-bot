@@ -119,7 +119,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "8.10"
+        gradleVersion = "9.1.0"
         distributionType = Wrapper.DistributionType.ALL
     }
 
@@ -129,8 +129,6 @@ tasks {
 }
 
 kotlin {
-    jvmToolchain(21)
-
     explicitApi()
 }
 

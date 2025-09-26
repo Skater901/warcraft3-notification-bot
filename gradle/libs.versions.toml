@@ -1,5 +1,5 @@
 [libraries]
-kotlin-bom = "org.jetbrains.kotlin:kotlin-bom:2.1.0"
+kotlin-bom = "org.jetbrains.kotlin:kotlin-bom:2.2.20"
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect" }
 coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1"
 guice = "dev.misfitlabs.kotlinguice4:kotlin-guice:3.0.0"
@@ -15,4 +15,4 @@ assertj = "org.assertj:assertj-core:3.27.2"
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
 
 [plugins]
-kotlin = "org.jetbrains.kotlin.jvm:2.1.0"
+kotlin = "org.jetbrains.kotlin.jvm:2.2.20"

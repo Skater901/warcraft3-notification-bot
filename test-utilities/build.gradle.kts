@@ -18,8 +18,8 @@ dependencies {
     implementation(project(":utilities"))
     implementation(libs.liquibase)
 
-    api("org.testcontainers:mysql:$test_containers_version")
-    api("org.testcontainers:mariadb:$test_containers_version")
+    api("org.testcontainers:testcontainers-mysql:$test_containers_version")
+    api("org.testcontainers:testcontainers-mariadb:$test_containers_version")
 }
 
 tasks {

@@ -33,20 +33,19 @@ internal class GameNotificationService @Inject constructor(
         expiredGames.keys.forEach { hostedGames.remove(it) }
 
         coroutineScope {
-            launch { updateExistingGames() }
+            launch {
+                // Update the game info for hosted games
+                currentlyHostedGames.filter { it.id in hostedGames.keys }
+                    .forEach { hostedGames[it.id] = it to hostedGames[it.id]!!.second }
+
+                updateExistingGames()
+            }
 
             launch { closeExpiredGames(expiredGames.values.toList()) }
 
             postNewGames(newGames)
         }
             .forEach { hostedGames[it.first.id] = it }
-
-        // Update the game info for hosted games
-        currentlyHostedGames.forEach {
-            val gameAndNotifiers = hostedGames[it.id]!!
-
-            hostedGames[it.id] = it to gameAndNotifiers.second
-        }
     }
 
     private suspend fun postNewGames(newGames: List<Game>): List<Pair<Game, List<GameNotifier>>> {
@@ -60,7 +59,7 @@ internal class GameNotificationService @Inject constructor(
                         gameNotifier.apply {
                             notifyNewGame(it.id, game)
                         }
-                    } catch (e: InvalidNotificationException) {
+                    } catch (_: InvalidNotificationException) {
                         logger.warn("Deleting invalid notification [ {}-{} ]", it.id, it.type)
                         notificationDAO.delete(it.id)
                         null

@@ -1,43 +1,44 @@
 package au.com.skater901.wc3.core.job
 
 import au.com.skater901.wc3.api.NotificationModule
-import com.google.inject.Injector
+import au.com.skater901.wc3.api.scheduled.ScheduledTask
+import io.dropwizard.lifecycle.Managed
+import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 
 @Singleton
-internal class TaskRunner : AutoCloseable {
+internal class TaskRunner @Inject constructor(
+    private val scheduledTasks: Set<Pair<ScheduledTask, NotificationModule<Any, *, *>>>
+) : Managed {
     private val tasks = mutableListOf<ExecutorCoroutineDispatcher>()
 
     private var running = true
 
-    fun runTask(module: NotificationModule<Any, *, *>, injector: Injector) {
-        if (module.scheduledTask() == null && module.scheduledTaskClass == null) return
+    override fun start() {
+        scheduledTasks.forEach { (task, module) ->
+            val dispatcher = newSingleThreadContext("${module.moduleName}-task").also { tasks.add(it) }
 
-        val dispatcher = newSingleThreadContext("${module.moduleName}-task").also { tasks.add(it) }
+            CoroutineScope(dispatcher).launch {
+                val logger = LoggerFactory.getLogger(module::class.java)
 
-        CoroutineScope(dispatcher).launch {
-            val logger = LoggerFactory.getLogger(module::class.java)
+                val schedule = task.schedule * 1000L
 
-            val task = module.scheduledTaskClass?.let { injector.getInstance(it.java) }
-                ?: module.scheduledTask()!!
+                while (running) {
+                    try {
+                        task.task()
+                    } catch (t: Throwable) {
+                        logger.error("Exception while running task:", t)
+                    }
 
-            val schedule = task.schedule * 1000L
-
-            while (running) {
-                try {
-                    task.task()
-                } catch (t: Throwable) {
-                    logger.error("Exception while running task:", t)
+                    delay(schedule)
                 }
-
-                delay(schedule)
             }
         }
     }
 
-    override fun close() {
+    override fun stop() {
         running = false
         tasks.forEach { it.close() }
     }

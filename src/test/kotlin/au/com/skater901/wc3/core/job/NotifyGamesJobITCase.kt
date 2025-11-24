@@ -2,21 +2,22 @@ package au.com.skater901.wc3.core.job
 
 import au.com.skater901.wc3.api.core.domain.GameSource
 import au.com.skater901.wc3.api.core.domain.Region
-import au.com.skater901.wc3.application.config.WC3ConnectConfig
-import au.com.skater901.wc3.application.config.WC3StatsConfig
 import au.com.skater901.wc3.core.gameProvider.WC3ConnectGameProvider
 import au.com.skater901.wc3.core.gameProvider.WC3StatsGameProvider
 import au.com.skater901.wc3.core.service.GameNotificationService
 import au.com.skater901.wc3.utils.fixture
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
-import com.marcinziolo.kotlin.wiremock.contains
-import com.marcinziolo.kotlin.wiremock.equalTo
-import com.marcinziolo.kotlin.wiremock.get
-import com.marcinziolo.kotlin.wiremock.returnsJson
+import com.marcinziolo.kotlin.wiremock.*
+import jakarta.ws.rs.client.Client
+import jakarta.ws.rs.client.ClientBuilder
+import jakarta.ws.rs.client.ClientRequestFilter
+import jakarta.ws.rs.core.HttpHeaders
+import jakarta.ws.rs.core.MediaType
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,7 +29,6 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import java.net.URI
-import java.net.http.HttpClient
 
 @WireMockTest
 class NotifyGamesJobITCase {
@@ -36,14 +36,21 @@ class NotifyGamesJobITCase {
         private val mapper = ObjectMapper().registerKotlinModule()
             .registerModule(JavaTimeModule())
 
-        private val client = HttpClient.newHttpClient()
+        private val clients = mutableListOf<Client>()
 
-        @AfterAll
         @JvmStatic
-        fun tearDown() {
-            client.close()
+        @AfterAll
+        fun closeClients() {
+            clients.forEach { it.close() }
         }
     }
+
+    private fun createClient(port: Int): Client = ClientBuilder.newClient()
+        .register(JacksonJsonProvider(ObjectMapper().registerModule(JavaTimeModule()).registerKotlinModule()))
+        .register(ClientRequestFilter { request ->
+            request.uri = URI.create("http://localhost:$port" + request.uri.toString())
+        })
+        .also { clients += it }
 
     @Test
     fun `should fetch games list`(wireMock: WireMockRuntimeInfo) {
@@ -51,26 +58,29 @@ class NotifyGamesJobITCase {
             url equalTo "/allgames"
 
             headers contains "Accept" equalTo "application/json"
-        } returnsJson {
+        } returns {
+            header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
             body = fixture("fixtures/wc3connect/games.json")
         }
         wireMock.wireMock.get {
-            url equalTo "/api/lobbies"
+            url equalTo "/gamelist"
 
             headers contains "Accept" equalTo "application/json"
-        } returnsJson {
+        } returns {
+            header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
             body = fixture("fixtures/wc3stats/games.json")
         }
 
         val gameNotificationService = mock<GameNotificationService>()
 
+        val client = createClient(wireMock.httpPort)
+
         val job = NotifyGamesJob(
             gameNotificationService,
-            client,
             mapper,
             setOf(
-                WC3ConnectGameProvider(WC3ConnectConfig(URI("http://localhost:${wireMock.httpPort}/allgames"))),
-                WC3StatsGameProvider(WC3StatsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
+                WC3ConnectGameProvider(client),
+                WC3StatsGameProvider(client)
             ),
             1_000
         )
@@ -188,27 +198,30 @@ class NotifyGamesJobITCase {
             url equalTo "/allgames"
 
             headers contains "Accept" equalTo "application/json"
-        } returnsJson {
+        } returns {
             statusCode = 500
+            header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
             body = """{ "error": "blah" }"""
         }
         wireMock.wireMock.get {
-            url equalTo "/api/lobbies"
+            url equalTo "/gamelist"
 
             headers contains "Accept" equalTo "application/json"
-        } returnsJson {
+        } returns {
+            header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
             body = fixture("fixtures/wc3stats/games.json")
         }
 
         val gameNotificationService = mock<GameNotificationService>()
 
+        val client = createClient(wireMock.httpPort)
+
         val job = NotifyGamesJob(
             gameNotificationService,
-            client,
             mapper,
             setOf(
-                WC3ConnectGameProvider(WC3ConnectConfig(URI("http://localhost:${wireMock.httpPort}/allgames"))),
-                WC3StatsGameProvider(WC3StatsConfig(URI("http://localhost:${wireMock.httpPort}/api/lobbies")))
+                WC3ConnectGameProvider(client),
+                WC3StatsGameProvider(client)
             ),
             1_000
         )

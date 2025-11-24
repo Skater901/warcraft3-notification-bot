@@ -1,12 +1,17 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val hikari_version: String by project
 val liquibase_logging_version: String by project
 val logback_version: String by project
 val classgraph_version: String by project
 val jackson_version: String by project
+val dropwizard_version: String by project
+val dropwizard_guicey_version: String by project
 
 // Testing library versions
 val wiremock_version: String by project
 val wiremock_kotlin_version: String by project
+val test_containers_version: String by project
 
 plugins {
     alias(libs.plugins.kotlin)
@@ -16,7 +21,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3"
-version = "1.1.3"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
@@ -49,10 +54,13 @@ dependencies {
     }
     implementation(libs.guava)
     implementation("io.github.classgraph:classgraph:$classgraph_version")
+    implementation("ru.vyarus:dropwizard-guicey:$dropwizard_guicey_version")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
+
+    implementation("io.dropwizard:dropwizard-client:$dropwizard_version")
+    implementation("io.dropwizard:dropwizard-core:$dropwizard_version")
+    implementation("io.dropwizard:dropwizard-jdbi3:$dropwizard_version")
 
     // Notification Modules
     implementation(project(":discord-module"))
@@ -65,9 +73,11 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.mockito.kotlin)
 
-    // Integration/end to end testing libraries
-    testImplementation("org.wiremock:wiremock:$wiremock_version")
+    // Integration/end-to-end testing libraries
+    testImplementation("org.wiremock:wiremock-jetty12:$wiremock_version")
     testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$test_containers_version")
+    testImplementation("io.dropwizard:dropwizard-testing:$dropwizard_version")
 
     testImplementation(project(":test-utilities"))
 }
@@ -90,7 +100,10 @@ tasks {
 
         useJUnitPlatform()
 
-        dependsOn(test)
+        testClassesDirs = test.get().testClassesDirs
+        classpath = test.get().classpath
+
+        shouldRunAfter(test)
 
         filter {
             excludeTestsMatching("*Test")
@@ -99,7 +112,7 @@ tasks {
     }
 
     jacocoTestReport {
-        dependsOn("integrationTest")
+        dependsOn(test, "integrationTest")
 
         executionData(test.get(), named("integrationTest").get())
     }
@@ -119,7 +132,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "8.10"
+        gradleVersion = "9.2.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 
@@ -128,8 +141,12 @@ tasks {
     }
 }
 
+java {
+    targetCompatibility = JavaVersion.VERSION_24
+}
+
 kotlin {
-    jvmToolchain(21)
+    compilerOptions.jvmTarget = JvmTarget.JVM_24
 
     explicitApi()
 }

@@ -10,7 +10,7 @@ import java.util.regex.PatternSyntaxException
 
 internal class WC3GameNotificationServiceImpl @Inject constructor(
     private val notificationDAO: NotificationDAO,
-    @Named("moduleName")
+    @param:Named("moduleName")
     private val type: String
 ) : WC3GameNotificationService {
     override suspend fun createNotification(id: String, mapNameRegexPattern: String) {

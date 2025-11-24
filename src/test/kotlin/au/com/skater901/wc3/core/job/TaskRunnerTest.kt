@@ -4,12 +4,8 @@ import au.com.skater901.wc3.api.NotificationModule
 import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
 import com.google.inject.Injector
-import com.google.inject.Provides
 import jakarta.inject.Inject
-import jakarta.inject.Singleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -65,34 +61,20 @@ class TaskRunnerTest {
         override val scheduledTaskClass = ScheduledTask2::class
     }
 
-    private val moduleWithoutTask = object : NotificationModule<Any, GameNotifier, ScheduledTask> {
-        override val moduleName: String = "moduleWithoutTask"
-        override val configClass: KClass<Any> = Any::class
-
-        override fun initializeNotificationHandlers(
-            config: Any,
-            injector: Injector,
-            wc3GameNotificationService: WC3GameNotificationService
-        ) {
-        }
-    }
-
     @Test
-    fun `should ignore modules without tasks, run multiple tasks, and not let them block each other`() {
-        val injector = Guice.createInjector(
-            object : AbstractModule() {
-                @Provides
-                @Singleton
-                fun getCounter(): AtomicInteger = module2Counter
-            }
+    fun `should run multiple tasks and not let them block each other`() {
+        val taskRunner = TaskRunner(
+            setOf(
+                Module1().scheduledTask() to Module1(),
+                ScheduledTask2(module2Counter) to Module2()
+            )
         )
-        TaskRunner().use {
-            it.runTask(Module1(), injector)
-            it.runTask(Module2(), injector)
-            it.runTask(moduleWithoutTask, injector)
 
-            Thread.sleep(12_000)
-        }
+        taskRunner.start()
+
+        Thread.sleep(12_000)
+
+        taskRunner.stop()
 
         assertThat(module1Counter).isEqualTo(2)
         assertThat(module2Counter.get()).isGreaterThan(10)
@@ -123,12 +105,13 @@ class TaskRunnerTest {
 
     @Test
     fun `should handle exceptions when running scheduled tasks`() {
-        val injector = Guice.createInjector()
-        TaskRunner().use {
-            it.runTask(ModuleWithBrokenTask(), injector)
+        val taskRunner = TaskRunner(setOf(ModuleWithBrokenTask().scheduledTask() to ModuleWithBrokenTask()))
 
-            Thread.sleep(5000)
-        }
+        taskRunner.start()
+
+        Thread.sleep(5000)
+
+        taskRunner.stop()
 
         assertThat(brokenModuleCounter).isGreaterThanOrEqualTo(4)
     }

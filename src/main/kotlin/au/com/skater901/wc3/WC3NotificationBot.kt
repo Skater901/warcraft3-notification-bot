@@ -1,62 +1,81 @@
 package au.com.skater901.wc3
 
-import au.com.skater901.wc3.application.database.MigrationsManager
-import au.com.skater901.wc3.application.managed.ModuleManager
-import au.com.skater901.wc3.application.module.*
-import au.com.skater901.wc3.core.job.NotifyGamesJob
-import com.google.inject.Guice
-import com.google.inject.Injector
-import dev.misfitlabs.kotlinguice4.getInstance
+import au.com.skater901.wc3.api.NotificationModule
+import au.com.skater901.wc3.application.bundles.*
+import au.com.skater901.wc3.application.module.AppModule
+import au.com.skater901.wc3.application.module.ClientModule
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import io.dropwizard.core.Application
+import io.dropwizard.core.setup.Bootstrap
+import io.dropwizard.core.setup.Environment
 import io.github.classgraph.ClassGraph
-import io.github.classgraph.ScanResult
-import kotlinx.coroutines.runBlocking
-import java.io.File
+import ru.vyarus.dropwizard.guice.GuiceBundle
+import java.util.*
 
-internal class WC3NotificationBot {
-    fun run() {
-        validateConfig()
+internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>() {
+    private lateinit var guiceBundle: GuiceBundle
+    private lateinit var modulesBundle: ModulesBundle
 
-        val injector = ClassGraph().acceptPackages(this.javaClass.packageName)
+    override fun initialize(bootstrap: Bootstrap<WC3NotificationBotConfiguration>) {
+        val notificationModules = ServiceLoader.load(NotificationModule::class.java)
+            .map { it as NotificationModule<Any, *, *> }
+            .let {
+                val enabledModules = System.getProperty("enabledModules")
+                    ?.split(",")
+                    ?.map { n -> n.trim() }
+                    ?.toSet()
+                    ?: return@let it
+                it.filter { m -> m.moduleName in enabledModules }
+            }
+
+        modulesBundle = ModulesBundle(notificationModules) { guiceBundle.injector }
+
+        val bundles: List<BaseBundle>
+
+        guiceBundle = ClassGraph().acceptPackages(
+            NotificationModule::class.java.packageName,
+            javaClass.packageName,
+            *notificationModules.map { it.javaClass.packageName }
+                .toTypedArray()
+        )
             .enableAnnotationInfo()
+            .enableMethodInfo()
             .scan()
-            .use { createInjector(it) }
+            .use { scanResult ->
+                bundles = listOf(
+                    ConfigBundle(scanResult, javaClass.classLoader),
+                    DatabaseBundle { guiceBundle.injector },
+                    modulesBundle,
+                    GameNotifierBundle { modulesBundle.modulesInjector },
+                    ScheduledTasksBundle { modulesBundle.modulesInjector }
+                )
+                GuiceBundle.builder()
+                    .modules(
+                        AppModule(scanResult),
+                        ClientModule(scanResult)
+                    )
+                    .modules(
+                        *bundles.mapNotNull { it.module }
+                            .toTypedArray()
+                    )
+                    .build()
+            }
 
-        // Run database migrations
-        injector.getInstance<MigrationsManager>().runMigrations()
-
-        val moduleManager = injector.getInstance<ModuleManager>()
-
-        moduleManager.initializeModules(injector)
-
-        runBlocking { startGamesNotifyingJob(injector, moduleManager) }
+        bootstrap.addBundle(guiceBundle)
+        bundles.forEach { bootstrap.addBundle(it) }
     }
 
-    private fun validateConfig() {
-        val configFilePath = System.getProperty("configFile")
-            ?: throw IllegalArgumentException("Required system property [ configFile ] has not been set. Please set it, with a path to a config file, using -DconfigFile=/path/to/config/file.properties")
-
-        // check file exists
-        if (!File(configFilePath).exists()) throw IllegalArgumentException("Config file [ $configFilePath ] does not exist.")
-    }
-
-    private fun createInjector(scanResult: ScanResult): Injector = Guice.createInjector(
-        AppModule(scanResult),
-        ClientModule(),
-        ConfigModule(scanResult),
-        DatabaseModule(),
-        NotificationModulesModule()
-    )
-
-    private suspend fun startGamesNotifyingJob(injector: Injector, moduleManager: ModuleManager) {
-        injector.createChildInjector(GameNotifierModule(moduleManager.getGameNotifiers()))
-            .getInstance<NotifyGamesJob>()
-            .start()
+    override fun run(configuration: WC3NotificationBotConfiguration, environment: Environment) {
+        environment.objectMapper
+            .registerModule(JavaTimeModule())
+            .registerKotlinModule()
     }
 
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            WC3NotificationBot().run()
+            WC3NotificationBot().run(*args)
         }
     }
 }

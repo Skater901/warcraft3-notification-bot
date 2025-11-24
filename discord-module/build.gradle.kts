@@ -44,7 +44,7 @@ tasks {
 
         useJUnitPlatform()
 
-        dependsOn(test)
+        shouldRunAfter(test)
 
         filter {
             excludeTestsMatching("*Test")
@@ -53,7 +53,7 @@ tasks {
     }
 
     jacocoTestReport {
-        dependsOn("integrationTest")
+        dependsOn(test, "integrationTest")
 
         executionData(test.get(), named("integrationTest").get())
     }

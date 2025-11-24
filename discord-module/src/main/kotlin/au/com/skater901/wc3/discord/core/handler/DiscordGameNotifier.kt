@@ -31,7 +31,7 @@ public class DiscordGameNotifier @Inject internal constructor(
         val channel = try {
             jda.getTextChannelById(notificationId)
                 ?: throw InvalidNotificationException()
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             throw InvalidNotificationException()
         }
 

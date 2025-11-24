@@ -18,15 +18,15 @@ internal data class WC3ConnectGame(
     override val name: String,
     override val map: String,
     override val host: String,
-    @JsonProperty("slots_taken")
+    @param:JsonProperty("slots_taken")
     override val currentPlayers: Int,
-    @JsonProperty("slots_total")
+    @param:JsonProperty("slots_total")
     override val maxPlayers: Int,
-    @JsonProperty("uptime")
-    @JsonDeserialize(using = UptimeDeserializer::class)
+    @param:JsonProperty("uptime")
+    @param:JsonDeserialize(using = UptimeDeserializer::class)
     override val created: Instant,
-    @JsonProperty("location")
-    @JsonDeserialize(using = RegionDeserializer::class)
+    @param:JsonProperty("location")
+    @param:JsonDeserialize(using = RegionDeserializer::class)
     override val region: Region
 ) : Game {
     override val gameSource: GameSource = GameSource.WC3Connect

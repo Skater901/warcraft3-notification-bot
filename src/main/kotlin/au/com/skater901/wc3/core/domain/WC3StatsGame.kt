@@ -17,13 +17,13 @@ internal data class WC3StatsGame(
     override val name: String,
     override val map: String,
     override val host: String,
-    @JsonProperty("slotsTaken")
+    @param:JsonProperty("slotsTaken")
     override val currentPlayers: Int,
-    @JsonProperty("slotsTotal")
+    @param:JsonProperty("slotsTotal")
     override val maxPlayers: Int,
     override val created: Instant,
-    @JsonProperty("server")
-    @JsonDeserialize(using = RegionDeserializer::class)
+    @param:JsonProperty("server")
+    @param:JsonDeserialize(using = RegionDeserializer::class)
     override val region: Region
 ) : Game {
     override val gameSource: GameSource = GameSource.BattleNet

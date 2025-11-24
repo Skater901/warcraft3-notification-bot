@@ -12,6 +12,8 @@ dependencies {
     implementation(libs.guice) {
         exclude("com.google.guava", "guava")
     }
+
+    api(libs.jersey.client)
 }
 
 kotlin {

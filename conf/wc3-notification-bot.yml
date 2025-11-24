@@ -1,0 +1,24 @@
+app:
+  port: ${port}
+  adminPort: ${adminPort}
+  requestThreads: ${requestThreads}
+  maxQueuedRequests: ${maxQueuedRequests}
+  logging:
+    consoleLoggingLevel: ${consoleLoggingLevel}
+    fileLoggingLevel: ${fileLoggingLevel}
+    logFileDirectory: ${logFileDirectory}
+    logFileArchiveCount: ${logFileArchiveCount}
+
+database:
+  type: ${database.type}
+  host: ${database.host}
+  port: ${database.port}
+  schema: ${database.schema}
+  username: ${database.username}
+  password: ${database.password}
+
+clients:
+  wc3connect: ${wc3connect.baseUri}
+  wc3stats: ${wc3stats.baseUri}
+
+refreshInterval: ${refreshInterval}

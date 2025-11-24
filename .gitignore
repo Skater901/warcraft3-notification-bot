@@ -34,4 +34,4 @@ bin/
 .DS_Store
 
 ### Project-specific ###
-conf/
+conf/local/

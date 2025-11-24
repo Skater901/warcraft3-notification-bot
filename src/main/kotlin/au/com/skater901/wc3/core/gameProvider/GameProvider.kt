@@ -1,14 +1,12 @@
 package au.com.skater901.wc3.core.gameProvider
 
 import au.com.skater901.wc3.api.core.domain.Game
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.io.InputStream
-import java.net.URI
+import jakarta.ws.rs.client.AsyncInvoker
+import jakarta.ws.rs.client.WebTarget
+import java.util.concurrent.Future
 
 internal interface GameProvider {
-    val name: String
+    fun webTarget(): WebTarget
 
-    val sourceURL: URI
-
-    val gamesProvider: ObjectMapper.(InputStream) -> List<Game>
+    val getGames: AsyncInvoker.() -> Future<out List<Game>>
 }

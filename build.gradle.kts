@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 val hikari_version: String by project
 val liquibase_logging_version: String by project
 val logback_version: String by project
@@ -141,13 +139,7 @@ tasks {
     }
 }
 
-java {
-    targetCompatibility = JavaVersion.VERSION_24
-}
-
 kotlin {
-    compilerOptions.jvmTarget = JvmTarget.JVM_24
-
     explicitApi()
 }
 

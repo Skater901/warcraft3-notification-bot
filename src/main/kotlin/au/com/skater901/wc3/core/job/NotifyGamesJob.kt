@@ -27,6 +27,7 @@ internal class NotifyGamesJob @Inject constructor(
     private lateinit var job: Job
 
     override fun start() {
+        // TODO remove
         context = newSingleThreadContext("notify-games-job")
 
         job = CoroutineScope(context).launch {
@@ -41,7 +42,7 @@ internal class NotifyGamesJob @Inject constructor(
                                 .let { async -> it.getGames(async) }
                                 .await()
                         } catch (t: Throwable) {
-                            logger.error("Error when fetching games for {}", it, t)
+                            logger.error("Error when fetching games for {}", it::class.simpleName, t)
                             emptyList()
                         }
                     }

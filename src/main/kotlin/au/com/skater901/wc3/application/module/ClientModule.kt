@@ -26,7 +26,8 @@ internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
     companion object {
         val defaultClientConfiguration = JerseyClientConfiguration().apply {
             maxThreads = 5
-            connectionTimeout = io.dropwizard.util.Duration.seconds(10)
+            connectionTimeout = io.dropwizard.util.Duration.seconds(5)
+            timeout = io.dropwizard.util.Duration.seconds(5)
         }
     }
 

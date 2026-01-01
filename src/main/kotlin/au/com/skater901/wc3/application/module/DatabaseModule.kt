@@ -45,7 +45,7 @@ internal class DatabaseModule : KotlinModule() {
                 }
             }
 
-            poolName = "wc3-notification-bot"
+            poolName = "database"
 
             username = databaseConfig.username
             password = databaseConfig.password
@@ -61,7 +61,7 @@ internal class DatabaseModule : KotlinModule() {
         environment,
         DataSourceFactory(),
         DelegatedManagedDataSource(dataSource),
-        "wc3-notification-bot"
+        "database"
     )
 
     private class DelegatedManagedDataSource(private val delegate: DataSource) : ManagedDataSource {
@@ -84,7 +84,7 @@ internal class DatabaseModule : KotlinModule() {
 
         override fun getParentLogger(): Logger = delegate.parentLogger
 
-        override fun <T : Any?> unwrap(iface: Class<T?>): T? = delegate.unwrap(iface)
+        override fun <T> unwrap(iface: Class<T?>): T? = delegate.unwrap(iface)
 
         override fun isWrapperFor(iface: Class<*>): Boolean = delegate.isWrapperFor(iface)
 

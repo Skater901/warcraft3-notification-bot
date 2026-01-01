@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 
 @Singleton
 internal class TaskRunner @Inject constructor(
-    private val scheduledTasks: Set<Pair<ScheduledTask, NotificationModule<Any, *, *>>>
+    private val scheduledTasks: Set<Pair<ScheduledTask, NotificationModule<*>>>
 ) : Managed {
     private val tasks = mutableListOf<ExecutorCoroutineDispatcher>()
 

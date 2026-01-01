@@ -4,13 +4,10 @@ import au.com.skater901.wc3.api.core.domain.exceptions.InvalidRegexPatternExcept
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.core.dao.NotificationDAO
 import au.com.skater901.wc3.core.domain.WC3GameNotification
-import jakarta.inject.Inject
-import jakarta.inject.Named
 import java.util.regex.PatternSyntaxException
 
-internal class WC3GameNotificationServiceImpl @Inject constructor(
+internal class WC3GameNotificationServiceImpl(
     private val notificationDAO: NotificationDAO,
-    @param:Named("moduleName")
     private val type: String
 ) : WC3GameNotificationService {
     override suspend fun createNotification(id: String, mapNameRegexPattern: String) {

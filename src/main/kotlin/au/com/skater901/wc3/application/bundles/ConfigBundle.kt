@@ -22,7 +22,8 @@ internal class ConfigBundle(
             ?: throw IllegalArgumentException("Required system property [ configFile ] has not been set. Please set it, with a path to a config file, using -DconfigFile=/path/to/config/file.properties")
 
         // check file exists
-        if (!File(configFilePath).exists()) throw IllegalArgumentException("Config file [ $configFilePath ] does not exist.")
+        if (!File(configFilePath).exists())
+            throw IllegalArgumentException("Config file [ $configFilePath ] does not exist.")
 
         val properties = Properties(defaultProperties).apply {
             load(
@@ -39,5 +40,5 @@ internal class ConfigBundle(
         )
     }
 
-    override val module: KotlinModule? = ConfigModule(scanResult)
+    override val module: KotlinModule = ConfigModule(scanResult)
 }

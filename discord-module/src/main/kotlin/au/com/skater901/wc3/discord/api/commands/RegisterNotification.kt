@@ -2,6 +2,7 @@ package au.com.skater901.wc3.discord.api.commands
 
 import au.com.skater901.wc3.api.core.domain.exceptions.InvalidRegexPatternException
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
+import au.com.skater901.wc3.discord.annotations.DiscordModule
 import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import dev.minn.jda.ktx.interactions.commands.option
 import jakarta.inject.Inject
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 internal class RegisterNotification @Inject constructor(
+    @param:DiscordModule
     private val wc3GameNotificationService: WC3GameNotificationService,
     private val roleNotificationDAO: RoleNotificationDAO
 ) : Command {

@@ -44,11 +44,17 @@ internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
 
     override fun configure() {
         val environment = getProvider<Environment>()
-        val clientConfiguration = getProvider(Key.get(typeLiteral<Map<String, @JvmSuppressWildcards URI>>(), named("clientConfiguration")))
+        val clientConfiguration = getProvider(
+            Key.get(
+                typeLiteral<Map<String, @JvmSuppressWildcards URI>>(),
+                named("clientConfiguration")
+            )
+        )
         val configProperties = getProvider(Key.get(Properties::class.java, named("configProperties")))
 
         clientAnnotations.forEach {
-            bind<Client>().annotatedWith(it).toProvider(ClientProvider(environment, it, clientConfiguration, configProperties))
+            bind<Client>().annotatedWith(it)
+                .toProvider(ClientProvider(environment, it, clientConfiguration, configProperties))
         }
     }
 

@@ -3,6 +3,7 @@ package au.com.skater901.wc3
 import au.com.skater901.wc3.api.NotificationModule
 import au.com.skater901.wc3.api.core.domain.Game
 import au.com.skater901.wc3.api.core.domain.Region
+import au.com.skater901.wc3.api.core.service.AdminMessageNotifier
 import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
@@ -14,6 +15,10 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
+import com.github.tomakehurst.wiremock.matching.EqualToPattern
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern
+import com.github.tomakehurst.wiremock.matching.UrlPattern
+import com.google.inject.BindingAnnotation
 import com.google.inject.Injector
 import com.marcinziolo.kotlin.wiremock.*
 import io.dropwizard.testing.junit5.DropwizardAppExtension
@@ -23,6 +28,7 @@ import jakarta.ws.rs.client.Client
 import jakarta.ws.rs.client.ClientBuilder
 import jakarta.ws.rs.client.ClientRequestFilter
 import jakarta.ws.rs.client.Entity.json
+import jakarta.ws.rs.client.Entity.text
 import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.UriBuilder
@@ -81,6 +87,7 @@ class WC3NotificationBotE2EITCase {
     @InvisibleForScanner
     @Path("/")
     class TestNotificationHandlerResource(
+        @param:TestModuleAnnotation
         private val wc3GameNotificationService: WC3GameNotificationService,
         private val config: TestConfiguration
     ) {
@@ -104,9 +111,23 @@ class WC3NotificationBotE2EITCase {
         fun configValue(): String = config.testProperty
     }
 
-    class TestModule : NotificationModule<TestConfiguration, TestGameNotifier, TestScheduledTask> {
+    @BindingAnnotation
+    annotation class TestModuleAnnotation
+
+    class AdminNotifier : AdminMessageNotifier {
+        override suspend fun sendAdminMessage(message: String, notifications: List<String>) {
+            notifications.forEach {
+                notificationClient.target(UriBuilder.fromPath("/admin/{id}").build(it))
+                    .request()
+                    .post(text(message), String::class.java)
+            }
+        }
+    }
+
+    class TestModule : NotificationModule<TestConfiguration> {
         override val moduleName: String = "test-module"
         override val configClass: KClass<TestConfiguration> = TestConfiguration::class
+        override val annotation: KClass<out Annotation> = TestModuleAnnotation::class
 
         override fun initializeNotificationHandlers(
             config: TestConfiguration,
@@ -122,9 +143,42 @@ class WC3NotificationBotE2EITCase {
                 .apply { before() }
         }
 
-        override fun gameNotifier(): TestGameNotifier = TestGameNotifier()
+        override val gameNotifier: KClass<out GameNotifier> = TestGameNotifier::class
 
-        override fun scheduledTask(): TestScheduledTask = TestScheduledTask()
+        override val scheduledTask: KClass<out ScheduledTask> = TestScheduledTask::class
+
+        override val adminMessageNotifier: KClass<out AdminMessageNotifier> = AdminNotifier::class
+    }
+
+    class TestConfiguration2
+
+    class TestGameNotifier2 : GameNotifier {
+        override suspend fun notifyNewGame(notificationId: String, game: Game) {
+        }
+
+        override suspend fun updateExistingGame(game: Game) {
+        }
+
+        override suspend fun closeExpiredGame(game: Game) {
+        }
+    }
+
+    @BindingAnnotation
+    annotation class TestModuleAnnotation2
+
+    class TestModule2 : NotificationModule<TestConfiguration2> {
+        override val moduleName: String = "test-module2"
+        override val configClass: KClass<TestConfiguration2> = TestConfiguration2::class
+        override val annotation: KClass<out Annotation> = TestModuleAnnotation2::class
+
+        override fun initializeNotificationHandlers(
+            config: TestConfiguration2,
+            injector: Injector,
+            wc3GameNotificationService: WC3GameNotificationService
+        ) {
+        }
+
+        override val gameNotifier: KClass<out GameNotifier> = TestGameNotifier2::class
     }
 
     companion object {
@@ -166,7 +220,7 @@ class WC3NotificationBotE2EITCase {
                 })
 
             System.setProperty("configFile", "build/conf/e2e/wc3-notification-bot.properties")
-            System.setProperty("enabledModules", "test-module")
+            System.setProperty("enabledModules", "test-module,test-module2")
 
             app.before()
         }
@@ -334,6 +388,22 @@ class WC3NotificationBotE2EITCase {
                                 )
                             }
                         }
+                    }
+
+                wireMock.wireMock.post {
+                    url equalTo "/admin/test"
+                } returns {}
+
+                client.target("http://localhost:8080/admin")
+                    .request()
+                    .post(text("admin message"), String::class.java)
+
+                await().atMost(5, TimeUnit.SECONDS)
+                    .untilAsserted {
+                        wireMock.wireMock.verifyThat(
+                            newRequestPattern(RequestMethod.POST, UrlPattern(EqualToPattern("/admin/test"), false))
+                                .withRequestBody(EqualToPattern("admin message"))
+                        )
                     }
 
                 client.target(testNotificationHandler.baseUri().toString() + "/register/test")

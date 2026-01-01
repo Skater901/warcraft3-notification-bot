@@ -5,8 +5,8 @@ import com.google.inject.Provides
 import dev.misfitlabs.kotlinguice4.KotlinModule
 
 internal class NotificationModulesModule(
-    private val notificationModules: List<NotificationModule<Any, *, *>>
+    private val notificationModules: List<NotificationModule<*>>
 ) : KotlinModule() {
     @Provides
-    fun getModules(): List<NotificationModule<Any, *, *>> = notificationModules
+    fun getModules(): List<NotificationModule<*>> = notificationModules
 }

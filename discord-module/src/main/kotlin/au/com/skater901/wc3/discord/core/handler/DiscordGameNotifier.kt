@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 @Singleton
-public class DiscordGameNotifier @Inject internal constructor(
+internal class DiscordGameNotifier @Inject constructor(
     private val jda: JDA,
     private val roleNotificationDAO: RoleNotificationDAO
 ) : GameNotifier {

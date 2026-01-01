@@ -3,6 +3,7 @@ package au.rakka.java.mastoapi
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.api.core.domain.exceptions.InvalidRegexPatternException
+import au.rakka.java.`masto-api`.MastodonModule
 
 import java.net.http.HttpClient // This should be significantly less hassle.
 import java.net.http.HttpRequest
@@ -19,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 
 import org.slf4j.LoggerFactory
 
-public class MastoReplyGuy @Inject constructor(private val conf:MastoConfig, private val wc3GameNotificationService: WC3GameNotificationService) : ScheduledTask
+public class MastoReplyGuy @Inject constructor(private val conf:MastoConfig, @param:MastodonModule private val wc3GameNotificationService: WC3GameNotificationService) : ScheduledTask
 {
 	private val logger = LoggerFactory.getLogger(MastoReplyGuy::class.java)
 	private val mapper = ObjectMapper()

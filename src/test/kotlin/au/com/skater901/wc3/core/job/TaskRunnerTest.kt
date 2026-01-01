@@ -12,12 +12,26 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
 class TaskRunnerTest {
-    private var module1Counter = 0
-    private val module2Counter = AtomicInteger(0)
+    companion object {
+        private var module1Counter = 0
+        private var brokenModuleCounter = 0
+    }
 
-    inner class Module1 : NotificationModule<Any, GameNotifier, ScheduledTask> {
+    class ScheduledTask1 : ScheduledTask {
+        override val schedule: Int = 1
+
+        override suspend fun task() {
+            Thread.sleep(5000)
+
+            module1Counter += 1
+        }
+    }
+
+    class Module1 : NotificationModule<Any> {
         override val moduleName: String = "module1"
         override val configClass: KClass<Any> = Any::class
+        override val annotation: KClass<out Annotation>
+            get() = TODO("Not yet implemented")
 
         override fun initializeNotificationHandlers(
             config: Any,
@@ -26,20 +40,11 @@ class TaskRunnerTest {
         ) {
         }
 
-        override fun scheduledTask(): ScheduledTask = object : ScheduledTask {
-            override val schedule: Int = 1
-
-            override suspend fun task() {
-                Thread.sleep(5000)
-
-                module1Counter++
-            }
-        }
+        override val scheduledTask: KClass<out ScheduledTask> = ScheduledTask1::class
+        override val gameNotifier: KClass<out GameNotifier> = GameNotifier::class
     }
 
-    class ScheduledTask2 @Inject constructor(
-        private val module2Counter: AtomicInteger
-    ) : ScheduledTask {
+    class ScheduledTask2 @Inject constructor(private val module2Counter: AtomicInteger) : ScheduledTask {
         override val schedule: Int = 1
 
         override suspend fun task() {
@@ -47,9 +52,11 @@ class TaskRunnerTest {
         }
     }
 
-    class Module2 : NotificationModule<Any, GameNotifier, ScheduledTask2> {
+    class Module2 : NotificationModule<Any> {
         override val moduleName: String = "module2"
         override val configClass: KClass<Any> = Any::class
+        override val annotation: KClass<out Annotation>
+            get() = TODO("Not yet implemented")
 
         override fun initializeNotificationHandlers(
             config: Any,
@@ -58,14 +65,17 @@ class TaskRunnerTest {
         ) {
         }
 
-        override val scheduledTaskClass = ScheduledTask2::class
+        override val scheduledTask = ScheduledTask2::class
+        override val gameNotifier: KClass<out GameNotifier> = GameNotifier::class
     }
 
     @Test
     fun `should run multiple tasks and not let them block each other`() {
+        val module2Counter = AtomicInteger(0)
+
         val taskRunner = TaskRunner(
             setOf(
-                Module1().scheduledTask() to Module1(),
+                Module1().scheduledTask.constructors.first().call() to Module1(),
                 ScheduledTask2(module2Counter) to Module2()
             )
         )
@@ -80,11 +90,20 @@ class TaskRunnerTest {
         assertThat(module2Counter.get()).isGreaterThan(10)
     }
 
-    private var brokenModuleCounter = 0
+    class BrokenTask : ScheduledTask {
+        override val schedule: Int = 1
 
-    inner class ModuleWithBrokenTask : NotificationModule<Any, GameNotifier, ScheduledTask> {
+        override suspend fun task() {
+            brokenModuleCounter++
+            throw RuntimeException("oh no!")
+        }
+    }
+
+    class ModuleWithBrokenTask : NotificationModule<Any> {
         override val moduleName: String = "moduleWithBrokenTask"
         override val configClass: KClass<Any> = Any::class
+        override val annotation: KClass<out Annotation>
+            get() = TODO("Not yet implemented")
 
         override fun initializeNotificationHandlers(
             config: Any,
@@ -93,19 +112,17 @@ class TaskRunnerTest {
         ) {
         }
 
-        override fun scheduledTask(): ScheduledTask = object : ScheduledTask {
-            override val schedule: Int = 1
-
-            override suspend fun task() {
-                brokenModuleCounter++
-                throw RuntimeException("oh no!")
-            }
-        }
+        override val scheduledTask: KClass<out ScheduledTask> = BrokenTask::class
+        override val gameNotifier: KClass<out GameNotifier> = GameNotifier::class
     }
 
     @Test
     fun `should handle exceptions when running scheduled tasks`() {
-        val taskRunner = TaskRunner(setOf(ModuleWithBrokenTask().scheduledTask() to ModuleWithBrokenTask()))
+        val taskRunner = TaskRunner(
+            setOf(
+                ModuleWithBrokenTask().scheduledTask.constructors.first().call() to ModuleWithBrokenTask()
+            )
+        )
 
         taskRunner.start()
 

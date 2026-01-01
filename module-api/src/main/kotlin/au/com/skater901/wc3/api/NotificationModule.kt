@@ -1,26 +1,22 @@
 package au.com.skater901.wc3.api
 
+import au.com.skater901.wc3.api.core.service.AdminMessageNotifier
 import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
 import com.google.inject.AbstractModule
 import com.google.inject.Injector
+import com.google.inject.Module
+import dev.misfitlabs.kotlinguice4.KotlinModule
 import kotlin.reflect.KClass
 
 /**
  * The main class to implement when registering a module.
  *
- * [C], [G], and [T] are type parameters that represent the classes your module provides.
- *
- * [C] is the class you create for your config. See the [configClass] property for more information.
- *
- * [G] is the class you create to notify on games being hosted and unhosted. As the syntax shows, [G] must implement
- * [GameNotifier].
- *
- * [T] is the class you create to hook into the existing event loop, if you wish to. As the syntax shows, [T] must
- * implement [ScheduledTask]. If you do not wish to provide a [ScheduledTask], set [T] to [ScheduledTask].
+ * [C] is a type parameter, indicating the class you create for your config. See the [configClass] property for more
+ * information.
  */
-public interface NotificationModule<C : Any, G : GameNotifier, T : ScheduledTask> {
+public interface NotificationModule<C : Any> {
     /**
      * The unique name of this module. Recommendation is for this to be a single word with no special characters.
      */
@@ -52,6 +48,29 @@ public interface NotificationModule<C : Any, G : GameNotifier, T : ScheduledTask
     public val configClass: KClass<C>
 
     /**
+     * An annotation class required to annotate places where you want the [WC3GameNotificationService] to be injected.
+     * This is required to bind your module name to the notifications saved by your module.
+     *
+     * The annotation class must be annotated with the [com.google.inject.BindingAnnotation] annotation.
+     *
+     * An example annotation class might look like this:
+     * ```kotlin
+     * @BindingAnnotation
+     * annotation class ModuleAnnotation
+     * ```
+     *
+     * You would use it like so:
+     * ```kotlin
+     * internal class NotificationHandler @Inject constructor(
+     *     @param:ModuleAnnotation
+     *     private val wc3GameNotificationService: WC3GameNotificationService
+     * ) {
+     * }
+     * ```
+     */
+    public val annotation: KClass<out Annotation>
+
+    /**
      * Provide a Guice module where all injection configurations required for your module are configured. This is
      * optional, hence the default value being an empty [AbstractModule].
      *
@@ -79,9 +98,10 @@ public interface NotificationModule<C : Any, G : GameNotifier, T : ScheduledTask
      * }
      * ```
      *
-     * @return The configured [AbstractModule].
+     * @return The configured [Module].
      */
-    public fun guiceModule(): AbstractModule = object : AbstractModule() {}
+    public val guiceModule: Module
+        get() = object : KotlinModule() {}
 
     /**
      * Function to start whatever is needed for your API. This is the place to instantiate any classes required for
@@ -101,73 +121,21 @@ public interface NotificationModule<C : Any, G : GameNotifier, T : ScheduledTask
     )
 
     /**
-     * The class of an optional [ScheduledTask] that you want to be run. Can be used for registering code that polls for
+     * An optional [ScheduledTask] that you want to be run. Can be used for registering code that polls for
      * something.
-     *
-     * Use this if you wish to use dependency injection with Guice. An instance of your class will be instantiated via
-     * Guice.
-     *
-     * If both a [scheduledTaskClass] and [scheduledTask] are provided, an [IllegalArgumentException] will be thrown.
-     * Please provide one or the other, or none, not both.
      */
-    public val scheduledTaskClass: KClass<T>?
+    public val scheduledTask: KClass<out ScheduledTask>?
         get() = null
 
     /**
-     * An optional [ScheduledTask] that you want to be run. Can be used for registering code that polls for something.
-     *
-     * Use this if you wish to instantiate your own instance of your scheduled task, without using dependency injection.
-     *
-     * This function will be called multiple times by the application, so if your class is expensive to instantiate,
-     * you should lazily instantiate it and return the same instance every time this function is called. An easy way to
-     * do this is to use a private backing field with Kotlin's lazy delegate.
-     *
-     * ```kotlin
-     * private val myScheduledTask by lazy {
-     *     MyScheduledTask()
-     * }
-     *
-     * override fun scheduledTask(): MyScheduledTask = myScheduledTask
-     * ```
-     *
-     * If both a [scheduledTaskClass] and [scheduledTask] are provided, an [IllegalArgumentException] will be thrown.
-     * Please provide one or the other, or none, not both.
+     * An optional [AdminMessageNotifier] that you wish to be called for admin messages.
      */
-    public fun scheduledTask(): T? = null
+    public val adminMessageNotifier: KClass<out AdminMessageNotifier>?
+        get() = null
 
     /**
      * The class you have created that implements [GameNotifier], and is used for notifying on new games, updating
      * existing games that get modified, and closing off games that have started or been unhosted.
-     *
-     * Use this if you wish to use dependency injection with Guice. An instance of your class will be instantiated via
-     * Guice.
-     *
-     * You must implement either [gameNotifierClass] or [gameNotifier]. If both return null, or both return a value, an
-     * [IllegalArgumentException] will be thrown when initializing your module.
      */
-    public val gameNotifierClass: KClass<G>?
-        get() = null
-
-    /**
-     * An instance of the class you have created that implements [GameNotifier], and is used for notifying on new games,
-     * updating existing games that get modified, and closing off games that have started or been unhosted.
-     *
-     * Use this if you wish to instantiate your own instance of your [GameNotifier], without using dependency injection.
-     *
-     * This function will be called multiple times by the application, so if your class is expensive to instantiate,
-     * you should lazily instantiate it and return the same instance every time this function is called. An easy way to
-     * do this is to use a private backing field with Kotlin's lazy delegate.
-     *
-     * ```kotlin
-     * private val myGameNotifier by lazy {
-     *     MyGameNotifier()
-     * }
-     *
-     * override fun gameNotifier(): MyGameNotifier = myGameNotifier
-     * ```
-     *
-     * You must implement either [gameNotifierClass] or [gameNotifier]. If both return null, or both return a value, an
-     * [IllegalArgumentException] will be thrown when initializing your module.
-     */
-    public fun gameNotifier(): G? = null
+    public val gameNotifier: KClass<out GameNotifier>
 }

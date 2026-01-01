@@ -1,6 +1,7 @@
 package au.com.skater901.wc3.discord.api.commands
 
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
+import au.com.skater901.wc3.discord.annotations.DiscordModule
 import au.com.skater901.wc3.discord.core.dao.jdbi.JdbiRoleNotificationDAO
 import jakarta.inject.Inject
 import kotlinx.coroutines.coroutineScope
@@ -9,6 +10,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 
 internal class StopNotification @Inject constructor(
+    @param:DiscordModule
     private val wc3GameNotificationService: WC3GameNotificationService,
     private val roleNotificationDAO: JdbiRoleNotificationDAO
 ) : Command {

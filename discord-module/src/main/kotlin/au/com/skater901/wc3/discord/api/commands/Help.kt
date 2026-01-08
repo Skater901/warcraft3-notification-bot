@@ -25,14 +25,14 @@ internal class Help : Command {
                     field {
                         name = "What Is Regex?"
                         value =
-                            "Regex stands for Regular Expression, and it's a special language for matching words or phrases. For a basic pattern to match the start of a map name, use `^map_name`. For example: `^DotA`. For more complicated expressions, use https://regex101.com/."
+                            "Regex stands for Regular Expression, and it's a special language for matching words or phrases. For a basic pattern to match the start of a map name, use `^map_name`. For example: `^DotA`. Please note: regex is case sensitive, so you must match the case of the map name. For more complicated expressions, use https://regex101.com/."
                         inline = false
                     }
 
                     field {
                         name = "It's not working!"
                         value =
-                            "If the bot stops working, first check if it's online. It should be online, or you won't be able to see this message. Second, if Battle.Net games are not showing up, check [WC3Stats' Live  Game List](https://wc3stats.com/gamelist). This bot uses that list as the source of data for what games are currently hosted, so if it stops updating, this bot stops working for Battle.Net games. For any other problem, please either [join the Discord server](https://discord.gg/vXQwUzx8va), or raise an issue [here](https://github.com/Skater901/warcraft3-notification-bot/issues)."
+                            "If the bot stops working, first check if it's online. It should be online, or you won't be able to see this message. Second, use the `/healthcheck` command to see which parts are not working. If the game providers (wc3stats, wc3maps, wc3connect) are not working, there's nothing I can do, you just have to wait for the sites to start working again. For any other problem, please either [join the Discord server](https://discord.gg/vXQwUzx8va), or raise an issue [here](https://github.com/Skater901/warcraft3-notification-bot/issues)."
                         inline = false
                     }
                 }

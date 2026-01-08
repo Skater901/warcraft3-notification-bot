@@ -14,6 +14,9 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.exceptions.ContextException
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.net.URI
 import java.time.Duration
@@ -46,16 +49,42 @@ internal class DiscordGameNotifier @Inject constructor(
     }
 
     override suspend fun updateExistingGame(game: Game) {
+        val invalidMessages = mutableSetOf<Pair<Int, String>>()
         hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
-            message.edit(embeds = createGameMessage(game, false, roleToNotify).embeds)
-                .await()
+            try {
+                message.edit(
+                    content = "<@&$roleToNotify>",
+                    embeds = createGameMessage(game, false, null).embeds
+                )
+                    .await()
+            } catch (e: ErrorResponseException) {
+                if (e.errorResponse == ErrorResponse.UNKNOWN_MESSAGE) {
+                    invalidMessages.add(game.id to message.id)
+                } else {
+                    throw e
+                }
+            }
+        }
+        invalidMessages.forEach { (gameId, messageId) ->
+            hostedGameMessages[gameId]!!.removeIf { (message, _) -> message.id == messageId }
         }
     }
 
     override suspend fun closeExpiredGame(game: Game) {
         hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
-            message.edit(embeds = createGameMessage(game, true, roleToNotify).embeds)
-                .await()
+            try {
+                message.edit(
+                    content = "<@&$roleToNotify>",
+                    embeds = createGameMessage(game, true, null).embeds
+                )
+                    .await()
+            } catch (e: ErrorResponseException) {
+                if (e.errorResponse == ErrorResponse.UNKNOWN_MESSAGE) {
+                    // do nothing, we're done with this message and we just want to remove it from the list of messages
+                } else {
+                    throw e
+                }
+            }
         }
 
         hostedGameMessages.remove(game.id)

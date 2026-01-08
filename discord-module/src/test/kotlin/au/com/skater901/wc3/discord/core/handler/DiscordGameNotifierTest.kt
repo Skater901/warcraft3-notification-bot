@@ -4,6 +4,7 @@ import au.com.skater901.wc3.api.core.domain.Game
 import au.com.skater901.wc3.api.core.domain.GameSource
 import au.com.skater901.wc3.api.core.domain.Region
 import au.com.skater901.wc3.api.core.domain.exceptions.InvalidNotificationException
+import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import au.com.skater901.wc3.discord.utils.game
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
@@ -11,6 +12,10 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
+import net.dv8tion.jda.api.exceptions.ContextException
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.api.requests.Response
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -20,10 +25,10 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.*
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.random.Random
 
-// TODO
 class DiscordGameNotifierTest {
     @Test
     fun `should notify new game, update it, and close it`() {
@@ -51,7 +56,12 @@ class DiscordGameNotifierTest {
             on { getTextChannelById(notificationId) } doReturn channel
         }
 
-        val notifier = DiscordGameNotifier(jda, mock())
+        val notifier = DiscordGameNotifier(
+            jda,
+            mock {
+                onBlocking { find(notificationId) } doReturn "dota"
+            }
+        )
 
         val game = mock<Game> {
             on { id } doReturn 1
@@ -100,7 +110,8 @@ class DiscordGameNotifierTest {
         verify(channel) {
             1 * {
                 sendMessage(argThat<MessageCreateData> {
-                    embeds.size == 1 &&
+                    content == "<@&dota>" &&
+                            embeds.size == 1 &&
                             embeds.first().run {
                                 color?.red == 34 &&
                                         color?.green == 255 &&
@@ -134,7 +145,8 @@ class DiscordGameNotifierTest {
         verify(messageChannel) {
             1 * {
                 editMessageById(eq("123"), argThat<MessageEditData> {
-                    embeds.size == 1 &&
+                    content == "<@&dota>" &&
+                            embeds.size == 1 &&
                             embeds.first().run {
                                 color?.red == 34 &&
                                         color?.green == 255 &&
@@ -166,7 +178,8 @@ class DiscordGameNotifierTest {
             }
             1 * {
                 editMessageById(eq("123"), argThat<MessageEditData> {
-                    embeds.size == 1 &&
+                    content == "<@&dota>" &&
+                            embeds.size == 1 &&
                             embeds.first().run {
                                 color?.red == 30 &&
                                         color?.green == 31 &&
@@ -383,6 +396,109 @@ class DiscordGameNotifierTest {
         }) {
             url == "https://entgaming.net/link/host_add.php?filter=My%20cool%20map.w3x"
         }
+    }
+
+    @Test
+    fun `should remove message if it no longer exists`() {
+        val notificationId = "channelid"
+
+        val response = mock<Response> {
+            on { optObject() } doReturn Optional.empty()
+            on { isError } doReturn true
+            on { exception } doReturn null
+            on { string } doReturn "Message not found."
+        }
+        val messageChannel = mock<MessageChannelUnion> {
+            on { editMessageById(eq("1"), any<MessageEditData>()) } doAnswer {
+                ContextException.here { throw it }
+                    .accept(ErrorResponseException.create(ErrorResponse.UNKNOWN_MESSAGE, response))
+                throw RuntimeException()
+            }
+        }
+        val message = mock<Message> {
+            on { id } doReturn "1"
+            on { channel } doReturn messageChannel
+        }
+        val messageCreateAction = mock<MessageCreateAction> {
+            on { submit() } doReturn CompletableFuture.completedFuture(message)
+        }
+        val channel = mock<TextChannel> {
+            on { sendMessage(any<MessageCreateData>()) } doReturn messageCreateAction
+        }
+        val jda = mock<JDA> {
+            on { getTextChannelById(notificationId) } doReturn channel
+        }
+
+        val roleNotificationDAO = mock<RoleNotificationDAO> {
+            onBlocking { find(any()) } doReturn null
+        }
+
+        val notifier = DiscordGameNotifier(jda, roleNotificationDAO)
+
+        runBlocking {
+            notifier.notifyNewGame(notificationId, game())
+
+            notifier.updateExistingGame(game())
+        }
+
+        verify(messageChannel) {
+            1 * { editMessageById(eq("1"), any<MessageEditData>()) }
+        }
+
+        runBlocking { notifier.updateExistingGame(game()) }
+
+        // Make sure it hasn't tried to edit the message again
+        verify(messageChannel) {
+            1 * { editMessageById(eq("1"), any<MessageEditData>()) }
+        }
+    }
+
+    @Test
+    fun `should throw Discord exception if exception is not about missing message`() {
+        val notificationId = "channelid"
+
+        val response = mock<Response> {
+            on { optObject() } doReturn Optional.empty()
+            on { isError } doReturn true
+            on { exception } doReturn null
+            on { string } doReturn "Message not found."
+        }
+        val messageChannel = mock<MessageChannelUnion> {
+            on { editMessageById(eq("1"), any<MessageEditData>()) } doAnswer {
+                ContextException.here { throw it }
+                    .accept(ErrorResponseException.create(ErrorResponse.UNKNOWN_GUILD, response))
+                throw RuntimeException()
+            }
+        }
+        val message = mock<Message> {
+            on { id } doReturn "1"
+            on { channel } doReturn messageChannel
+        }
+        val messageCreateAction = mock<MessageCreateAction> {
+            on { submit() } doReturn CompletableFuture.completedFuture(message)
+        }
+        val channel = mock<TextChannel> {
+            on { sendMessage(any<MessageCreateData>()) } doReturn messageCreateAction
+        }
+        val jda = mock<JDA> {
+            on { getTextChannelById(notificationId) } doReturn channel
+        }
+
+        val roleNotificationDAO = mock<RoleNotificationDAO> {
+            onBlocking { find(any()) } doReturn null
+        }
+
+        val notifier = DiscordGameNotifier(jda, roleNotificationDAO)
+
+        assertThatThrownBy {
+            runBlocking {
+                notifier.notifyNewGame(notificationId, game())
+
+                notifier.updateExistingGame(game())
+            }
+        }
+            .isInstanceOf(ErrorResponseException::class.java)
+            .matches { (it as ErrorResponseException).errorResponse == ErrorResponse.UNKNOWN_GUILD }
     }
 
     private fun verifyMessageSent(game: Game, verification: MessageEmbed.() -> Boolean) {

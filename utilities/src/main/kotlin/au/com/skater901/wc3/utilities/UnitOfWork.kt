@@ -120,7 +120,22 @@ public class UnitOfWork(private val javaClass: Class<*>, private val name: Strin
     public suspend operator fun <T> invoke(block: suspend () -> T): T = execute(block = block)
 
     private fun <T> decorate(block: suspend () -> T): suspend () -> T {
-        val resilience = retry?.decorateSuspendFunction(block) ?: block
+        val withMetrics = suspend {
+            val time = timer?.time()
+            activeCounter?.inc()
+            try {
+                block()
+            } catch (t: Throwable) {
+                exceptionMeter?.mark()
+                throw t
+            } finally {
+                meter?.mark()
+                activeCounter?.dec()
+                totalCounter?.inc()
+                time?.stop()
+            }
+        }
+        val resilience = retry?.decorateSuspendFunction(withMetrics) ?: withMetrics
         return circuitBreaker?.decorateSuspendFunction(resilience) ?: resilience
     }
 

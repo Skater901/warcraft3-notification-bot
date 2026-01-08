@@ -5,10 +5,7 @@ import au.com.skater901.wc3.api.core.service.AdminMessageNotifier
 import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.discord.annotations.DiscordModule
-import au.com.skater901.wc3.discord.api.commands.About
-import au.com.skater901.wc3.discord.api.commands.Help
-import au.com.skater901.wc3.discord.api.commands.RegisterNotification
-import au.com.skater901.wc3.discord.api.commands.StopNotification
+import au.com.skater901.wc3.discord.api.commands.*
 import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import au.com.skater901.wc3.discord.core.dao.jdbi.JdbiRoleNotificationDAO
 import au.com.skater901.wc3.discord.core.handler.DiscordGameNotifier
@@ -60,7 +57,8 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
             injector.getInstance<RegisterNotification>(),
             injector.getInstance<StopNotification>(),
             injector.getInstance<Help>(),
-            injector.getInstance<About>()
+            injector.getInstance<About>(),
+            injector.getInstance<HealthCheck>()
         )
 
         val jda = injector.getInstance<JDA>()

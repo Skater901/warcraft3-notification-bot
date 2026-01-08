@@ -1,8 +1,11 @@
 package au.com.skater901.wc3.application.module
 
+import au.com.skater901.wc3.api.application.HealthChecksProvider
 import au.com.skater901.wc3.core.gameProvider.GameProvider
 import au.com.skater901.wc3.utilities.UnitOfWork
 import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.health.HealthCheck
+import com.codahale.metrics.health.HealthCheckRegistry
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Provides
 import dev.misfitlabs.kotlinguice4.KotlinModule
@@ -38,6 +41,10 @@ internal class AppModule(scanResult: ScanResult) : KotlinModule() {
     fun provideMetricsRegistry(environment: Environment): MetricRegistry = environment.metrics()
 
     @Provides
+    @Inject
+    fun provideHealthCheckRegistry(environment: Environment): HealthCheckRegistry = environment.healthChecks()
+
+    @Provides
     @Singleton
     fun getRetryRegistry(): RetryRegistry = RetryRegistry.ofDefaults()
 
@@ -53,4 +60,12 @@ internal class AppModule(scanResult: ScanResult) : KotlinModule() {
         .minThreads(1)
         .maxThreads(1)
         .build()
+
+    @Provides
+    @Singleton
+    @Inject
+    fun provideHealthCheckProvider(healthCheckRegistry: HealthCheckRegistry): HealthChecksProvider =
+        object : HealthChecksProvider {
+            override fun healthChecks(): Map<String, HealthCheck.Result> = healthCheckRegistry.runHealthChecks()
+        }
 }

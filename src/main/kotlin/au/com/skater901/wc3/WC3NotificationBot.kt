@@ -4,6 +4,9 @@ import au.com.skater901.wc3.api.NotificationModule
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.application.bundles.*
 import au.com.skater901.wc3.application.config.ConfigParser
+import au.com.skater901.wc3.application.healthcheck.WC3ConnectHealthCheck
+import au.com.skater901.wc3.application.healthcheck.WC3MapsHealthCheck
+import au.com.skater901.wc3.application.healthcheck.WC3StatsHealthCheck
 import au.com.skater901.wc3.application.module.AdminModule
 import au.com.skater901.wc3.application.module.AppModule
 import au.com.skater901.wc3.application.module.ClientModule
@@ -98,6 +101,10 @@ internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>
         environment.objectMapper
             .registerModule(JavaTimeModule())
             .registerKotlinModule()
+
+        environment.healthChecks().register("wc3connect", WC3ConnectHealthCheck)
+        environment.healthChecks().register("wc3maps", WC3MapsHealthCheck)
+        environment.healthChecks().register("wc3stats", WC3StatsHealthCheck)
     }
 
     companion object {

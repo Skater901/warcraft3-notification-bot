@@ -17,7 +17,7 @@ public class MastoNotificationModule : NotificationModule<MastoConfig>
 	override val configClass: KClass<MastoConfig> = MastoConfig::class
     override val annotation: KClass<out Annotation> = MastodonModule::class
     private val logger = LoggerFactory.getLogger(MastoNotificationModule::class.java)
-	override public fun initializeNotificationHandlers(config:MastoConfig, injector:Injector, wc3GameNotificationService:WC3GameNotificationService)
+	public override fun initializeNotificationHandlers(config:MastoConfig, injector:Injector, wc3GameNotificationService:WC3GameNotificationService)
 	{
 		logger.debug("xyzzy")
 	}

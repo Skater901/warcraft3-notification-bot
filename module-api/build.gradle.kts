@@ -1,3 +1,5 @@
+val jersey_version: String by project
+
 group = "au.com.skater901.wc3.api"
 
 repositories {
@@ -9,11 +11,8 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.guice) {
-        exclude("com.google.guava", "guava")
-    }
-
-    api(libs.jersey.client)
+    api(libs.guice)
+    api("jakarta.ws.rs:jakarta.ws.rs-api:$jersey_version")
 }
 
 kotlin {

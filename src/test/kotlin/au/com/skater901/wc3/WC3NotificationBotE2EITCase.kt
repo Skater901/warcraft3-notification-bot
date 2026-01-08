@@ -207,6 +207,7 @@ class WC3NotificationBotE2EITCase {
                 set("database.host", database.host)
                 set("database.port", database.firstMappedPort.toString())
                 set("wc3connect.baseUri", wireMock.httpBaseUrl)
+                set("wc3maps.baseUri", wireMock.httpBaseUrl)
                 set("wc3stats.baseUri", wireMock.httpBaseUrl)
                 set("test-module.testProperty", "potato")
                 File("build/conf/e2e").mkdirs()
@@ -221,6 +222,7 @@ class WC3NotificationBotE2EITCase {
 
             System.setProperty("configFile", "build/conf/e2e/wc3-notification-bot.properties")
             System.setProperty("enabledModules", "test-module,test-module2")
+            System.setProperty("appVersion", "1.0.0")
 
             app.before()
         }
@@ -272,6 +274,7 @@ class WC3NotificationBotE2EITCase {
                         url equalTo "/allgames"
 
                         headers contains HttpHeaders.ACCEPT equalTo MediaType.APPLICATION_JSON
+                        headers contains HttpHeaders.USER_AGENT equalTo "WC3 Notification Bot 1.0.0 - Jersey Client"
                     } returns {
                         header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
                         body = "[]"
@@ -281,6 +284,9 @@ class WC3NotificationBotE2EITCase {
                         whenState = null
                         toState = "game created"
                         url equalTo "/gamelist"
+
+                        headers contains HttpHeaders.ACCEPT equalTo MediaType.APPLICATION_JSON
+                        headers contains HttpHeaders.USER_AGENT equalTo "WC3 Notification Bot 1.0.0 - Jersey Client"
                     } returns {
                         header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
                         body = mapper.writeValueAsString(
@@ -304,6 +310,9 @@ class WC3NotificationBotE2EITCase {
                         whenState = "game created"
                         toState = "game updated"
                         url equalTo "/gamelist"
+
+                        headers contains HttpHeaders.ACCEPT equalTo MediaType.APPLICATION_JSON
+                        headers contains HttpHeaders.USER_AGENT equalTo "WC3 Notification Bot 1.0.0 - Jersey Client"
                     } returns {
                         header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
                         body = mapper.writeValueAsString(
@@ -327,6 +336,9 @@ class WC3NotificationBotE2EITCase {
                         whenState = "game updated"
                         toState = "game closed"
                         url equalTo "/gamelist"
+
+                        headers contains HttpHeaders.ACCEPT equalTo MediaType.APPLICATION_JSON
+                        headers contains HttpHeaders.USER_AGENT equalTo "WC3 Notification Bot 1.0.0 - Jersey Client"
                     } returns {
                         header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
                         body = mapper.writeValueAsString(mapOf("body" to emptyList<Any>()))
@@ -342,7 +354,6 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
-                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",
@@ -359,7 +370,6 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
-                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",
@@ -376,7 +386,6 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
-                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",

@@ -1,22 +1,16 @@
 [libraries]
-kotlin-bom = "org.jetbrains.kotlin:kotlin-bom:2.3.0"
-kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect" }
 coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2"
 
 guice = "dev.misfitlabs.kotlinguice4:kotlin-guice:3.0.0"
-guava = "com.google.guava:guava:32.0.1-jre" # Guava brought in by Guice has a vulnerability, so we exclude Guava from Guice, and bring in the newer Guava with the vulnerability fix.
 
-drivers-mariadb = "org.mariadb.jdbc:mariadb-java-client:3.5.6"
+drivers-mariadb = "org.mariadb.jdbc:mariadb-java-client:3.5.7"
 drivers-mysql = "com.mysql:mysql-connector-j:9.5.0"
-jdbi = "org.jdbi:jdbi3-core:3.50.0"
-liquibase = "org.liquibase:liquibase-core:5.0.1"
-
-jersey-client = "jakarta.ws.rs:jakarta.ws.rs-api:3.1.0"
+jdbi = "org.jdbi:jdbi3-core:3.51.0" # Keep this in sync with Dropwizard
 
 # Testing Libraries
-junit = "org.junit.jupiter:junit-jupiter-api:6.0.1"
+junit = "org.junit.jupiter:junit-jupiter-api:6.0.2"
 assertj = "org.assertj:assertj-core:3.27.6"
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:6.1.0"
 
 [plugins]
-kotlin = "org.jetbrains.kotlin.jvm:2.3.0"
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.3.0" }

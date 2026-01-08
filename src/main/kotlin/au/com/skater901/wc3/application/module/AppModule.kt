@@ -12,7 +12,9 @@ import io.github.classgraph.ScanResult
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.retry.RetryRegistry
 import jakarta.inject.Inject
+import jakarta.inject.Named
 import jakarta.inject.Singleton
+import java.util.concurrent.ExecutorService
 
 internal class AppModule(scanResult: ScanResult) : KotlinModule() {
     private val gameProviders = scanResult.allClasses
@@ -42,4 +44,13 @@ internal class AppModule(scanResult: ScanResult) : KotlinModule() {
     @Provides
     @Singleton
     fun getCircuitBreakerRegistry(): CircuitBreakerRegistry = CircuitBreakerRegistry.ofDefaults()
+
+    @Provides
+    @Named("notify-games-job-thread-pool")
+    @Inject
+    fun provideNotifyGamesJobThreadPool(environment: Environment): ExecutorService = environment.lifecycle()
+        .executorService("notify-games-job")
+        .minThreads(1)
+        .maxThreads(1)
+        .build()
 }

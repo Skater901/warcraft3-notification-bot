@@ -1,4 +1,4 @@
-package au.com.skater901.wc3.core.domain
+package au.com.skater901.wc3.core.convertors
 
 import au.com.skater901.wc3.api.core.domain.Region
 import com.fasterxml.jackson.core.JsonParser
@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
-class WC3StatsGameTest {
+class RegionDeserializerTest {
     @Test
     fun `should deserialize US region`() {
         val parser = mock<JsonParser> {
             on { valueAsString } doReturn "usw"
         }
 
-        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.US)
     }
@@ -25,7 +25,7 @@ class WC3StatsGameTest {
             on { valueAsString } doReturn "eu"
         }
 
-        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.EU)
     }
@@ -36,7 +36,7 @@ class WC3StatsGameTest {
             on { valueAsString } doReturn "kr"
         }
 
-        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.Asia)
     }
@@ -47,7 +47,7 @@ class WC3StatsGameTest {
             on { valueAsString } doReturn "Arctic"
         }
 
-        val region = WC3StatsGame.RegionDeserializer().deserialize(parser, mock())
+        val region = RegionDeserializer().deserialize(parser, mock())
 
         assertThat(region).isEqualTo(Region.Unknown)
     }

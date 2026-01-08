@@ -1,4 +1,4 @@
-val discord_version: String by project
+val jda_version: String by project
 val ktx_version: String by project
 
 group = "au.com.skater901.wc3.discord"
@@ -18,12 +18,9 @@ dependencies {
     implementation(project(":utilities"))
 
     // Discord API
-    implementation("net.dv8tion:JDA:$discord_version")
+    implementation("net.dv8tion:JDA:$jda_version")
     implementation("club.minnced:jda-ktx:$ktx_version")
 
-    implementation(libs.guice) {
-        exclude("com.google.guava", "guava")
-    }
     implementation(libs.jdbi)
 
     testImplementation(kotlin("test"))

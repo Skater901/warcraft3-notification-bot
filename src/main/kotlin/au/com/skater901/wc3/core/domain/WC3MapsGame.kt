@@ -10,20 +10,20 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import java.time.Instant
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-internal data class WC3StatsGame(
+internal data class WC3MapsGame(
     override val name: String,
+    @param:JsonProperty("path")
     override val map: String,
     override val host: String,
-    @param:JsonProperty("slotsTaken")
+    @param:JsonProperty("slots_taken")
     override val currentPlayers: Int,
-    @param:JsonProperty("slotsTotal")
+    @param:JsonProperty("slots_total")
     override val maxPlayers: Int,
     override val created: Instant,
-    @param:JsonProperty("server")
     @param:JsonDeserialize(using = RegionDeserializer::class)
     override val region: Region
 ) : Game {
     override val id by lazy { name.hashCode() + map.hashCode() + host.hashCode() }
 
-    override val gameSource: GameSource = GameSource.BattleNet
+    override val gameSource = GameSource.BattleNet
 }

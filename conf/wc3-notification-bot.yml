@@ -19,6 +19,7 @@ database:
 
 clients:
   wc3connect: ${wc3connect.baseUri}
+  wc3maps: ${wc3maps.baseUri}
   wc3stats: ${wc3stats.baseUri}
 
 refreshInterval: ${refreshInterval}

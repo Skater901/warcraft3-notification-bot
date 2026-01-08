@@ -1,10 +1,11 @@
-val hikari_version: String by project
-val liquibase_logging_version: String by project
-val logback_version: String by project
-val classgraph_version: String by project
-val jackson_version: String by project
 val dropwizard_version: String by project
+val jackson_version: String by project
+val logback_version: String by project
+
+val classgraph_version: String by project
 val dropwizard_guicey_version: String by project
+
+val hikari_version: String by project
 
 // Testing library versions
 val wiremock_version: String by project
@@ -29,36 +30,30 @@ dependencies {
     // Core API library
     implementation(project(":module-api"))
 
-    implementation(project(":utilities"))
+    // Dropwizard
+    implementation(platform("io.dropwizard:dropwizard-bom:$dropwizard_version"))
+    implementation("io.dropwizard:dropwizard-client")
+    implementation("io.dropwizard:dropwizard-core")
+    implementation("io.dropwizard:dropwizard-jdbi3")
+    implementation("io.dropwizard:dropwizard-migrations")
 
-    implementation(libs.kotlin.bom)
-    implementation(libs.kotlin.reflect)
+    // Jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}")
+
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation(libs.coroutines)
 
     // Database libraries
     implementation(libs.drivers.mysql)
     implementation(libs.drivers.mariadb)
-    implementation(libs.jdbi)
     implementation("com.zaxxer:HikariCP:$hikari_version")
-    implementation(libs.liquibase)
-    implementation("com.mattbertolini:liquibase-slf4j:$liquibase_logging_version")
-
-    // Logging libraries
-    implementation("ch.qos.logback:logback-classic:$logback_version")
 
     // DI/reflection libraries
-    implementation(libs.guice) {
-        exclude("com.google.guava", "guava")
-    }
-    implementation(libs.guava)
     implementation("io.github.classgraph:classgraph:$classgraph_version")
     implementation("ru.vyarus:dropwizard-guicey:$dropwizard_guicey_version")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
-
-    implementation("io.dropwizard:dropwizard-client:$dropwizard_version")
-    implementation("io.dropwizard:dropwizard-core:$dropwizard_version")
-    implementation("io.dropwizard:dropwizard-jdbi3:$dropwizard_version")
+    implementation(project(":utilities"))
 
     // Notification Modules
     implementation(project(":discord-module"))
@@ -75,7 +70,7 @@ dependencies {
     testImplementation("org.wiremock:wiremock-jetty12:$wiremock_version")
     testImplementation("com.marcinziolo:kotlin-wiremock:$wiremock_kotlin_version")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:$test_containers_version")
-    testImplementation("io.dropwizard:dropwizard-testing:$dropwizard_version")
+    testImplementation("io.dropwizard:dropwizard-testing")
 
     testImplementation(project(":test-utilities"))
 }

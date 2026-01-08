@@ -7,7 +7,6 @@ import io.dropwizard.core.setup.Environment
 import jakarta.inject.Provider
 import jakarta.ws.rs.client.Client
 import jakarta.ws.rs.client.ClientRequestFilter
-import jakarta.ws.rs.core.HttpHeaders
 import java.net.URI
 import java.util.*
 
@@ -32,11 +31,4 @@ internal class ClientProvider(
                 }
                 ?: it
         }
-        .register(ClientRequestFilter { request ->
-            request.headers[HttpHeaders.USER_AGENT] = listOf(
-                "WC3 Notification Bot ${System.getProperty("appVersion")} - Java-http-client/${
-                    System.getProperty("java.version")
-                }"
-            )
-        })
 }

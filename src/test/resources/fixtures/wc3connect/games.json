@@ -35,7 +35,7 @@
   {
     "id": 4745,
     "bot_id": 35,
-    "location": "Montreal",
+    "location": "New York",
     "name": "[ENT] Legion TD Mega 1v1 #65",
     "map": "Legion TD Mega 3.43d6",
     "host": "",
@@ -46,10 +46,10 @@
   {
     "id": 3286,
     "bot_id": 65,
-    "location": "Montreal",
+    "location": "Amsterdam",
     "name": "[ENT] Castle Fight 1v1 #30",
     "map": "p1l1s-CF-2040",
-    "host": "",
+    "host": "test host",
     "slots_taken": 0,
     "slots_total": 2,
     "uptime": "19191:24"

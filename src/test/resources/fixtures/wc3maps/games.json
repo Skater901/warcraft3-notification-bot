@@ -1,0 +1,58 @@
+{
+  "error": false,
+  "data": [
+    {
+      "id": 736576141,
+      "name": "和",
+      "region": "usw",
+      "slots_taken": 1,
+      "slots_total": 10,
+      "host": "York#11394",
+      "created": 1767671509,
+      "path": "XCZYWCN9.5SZZWS.w3x",
+      "map_id": 0,
+      "players": [],
+      "preview": 0
+    },
+    {
+      "id": 736576140,
+      "name": "악몽",
+      "region": "kr",
+      "slots_taken": 2,
+      "slots_total": 4,
+      "host": "와리가리디팬스#3967",
+      "created": 1767671507,
+      "path": "ORDR_S2_2.201[R].w3x",
+      "map_id": 412151,
+      "players": [],
+      "preview": 1
+    },
+    {
+      "id": 736576139,
+      "name": "imp3 up",
+      "region": "usw",
+      "slots_taken": 9,
+      "slots_total": 10,
+      "host": "MrSunshine#1654",
+      "created": 1767670451,
+      "path": "Twilight Ascendant v3.06c.w3x",
+      "map_id": 412238,
+      "players": [],
+      "preview": 1
+    },
+    {
+      "id": 736576138,
+      "name": "Dota -APEMSOSP USW",
+      "region": "eu",
+      "slots_taken": 9,
+      "slots_total": 11,
+      "host": "JimmyJam#11761",
+      "created": 1767670901,
+      "path": "DotA_v6_89N.w3x",
+      "map_id": 411740,
+      "players": [],
+      "preview": 1
+    }
+  ],
+  "message": ""
+}

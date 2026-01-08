@@ -18,17 +18,16 @@ import jakarta.inject.Named
 import jakarta.inject.Singleton
 import jakarta.ws.rs.client.Client
 import java.net.URI
-import java.net.http.HttpClient
-import java.time.Duration
 import java.util.*
 
 internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
     companion object {
         val defaultClientConfiguration = JerseyClientConfiguration().apply {
             maxThreads = 5
-            connectionTimeout = io.dropwizard.util.Duration.seconds(5)
-            connectionRequestTimeout = io.dropwizard.util.Duration.seconds(5)
-            timeout = io.dropwizard.util.Duration.seconds(5)
+            connectionTimeout = io.dropwizard.util.Duration.seconds(2)
+            timeout = io.dropwizard.util.Duration.seconds(8)
+
+            userAgent = Optional.of("WC3 Notification Bot ${System.getProperty("appVersion")} - Jersey Client")
         }
     }
 
@@ -60,12 +59,6 @@ internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
                 .toProvider(ClientProvider(environment, it, clientConfiguration, configProperties))
         }
     }
-
-    @Provides
-    @Singleton
-    fun getClient(): HttpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(10))
-        .build()
 
     @Inject
     @Provides

@@ -20,6 +20,6 @@ internal class MigrationsManager @Inject constructor(
         }
             .apply { connection = JdbcConnection(dataSource.connection) }
 
-        Liquibase("migrations.xml", ClassLoaderResourceAccessor(), database).update()
+        Liquibase("migrations.xml", ClassLoaderResourceAccessor(), database).use { it.update() }
     }
 }

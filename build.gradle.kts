@@ -6,6 +6,7 @@ val classgraph_version: String by project
 val dropwizard_guicey_version: String by project
 
 val hikari_version: String by project
+val liquibase_slf4j_version: String by project
 
 // Testing library versions
 val wiremock_version: String by project
@@ -35,7 +36,6 @@ dependencies {
     implementation("io.dropwizard:dropwizard-client")
     implementation("io.dropwizard:dropwizard-core")
     implementation("io.dropwizard:dropwizard-jdbi3")
-    implementation("io.dropwizard:dropwizard-migrations")
 
     // Jackson
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}")
@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.drivers.mysql)
     implementation(libs.drivers.mariadb)
     implementation("com.zaxxer:HikariCP:$hikari_version")
+    implementation(libs.liquibase)
+    implementation("com.mattbertolini:liquibase-slf4j:$liquibase_slf4j_version")
 
     // DI/reflection libraries
     implementation("io.github.classgraph:classgraph:$classgraph_version")

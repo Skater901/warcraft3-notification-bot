@@ -17,7 +17,7 @@ dependencies {
     implementation(libs.drivers.mariadb)
     implementation(libs.drivers.mysql)
     implementation(project(":utilities"))
-    implementation("org.liquibase:liquibase-core:$liquibase_version")
+    implementation(libs.liquibase)
 
     api("org.testcontainers:testcontainers-mysql:$test_containers_version")
     api("org.testcontainers:testcontainers-mariadb:$test_containers_version")

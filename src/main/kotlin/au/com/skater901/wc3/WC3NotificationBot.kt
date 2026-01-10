@@ -4,6 +4,7 @@ import au.com.skater901.wc3.api.NotificationModule
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.application.bundles.*
 import au.com.skater901.wc3.application.config.ConfigParser
+import au.com.skater901.wc3.application.healthcheck.CircuitBreakersHealthCheck
 import au.com.skater901.wc3.application.healthcheck.WC3ConnectHealthCheck
 import au.com.skater901.wc3.application.healthcheck.WC3MapsHealthCheck
 import au.com.skater901.wc3.application.healthcheck.WC3StatsHealthCheck
@@ -14,9 +15,11 @@ import au.com.skater901.wc3.application.provider.WC3GameNotificationServiceProvi
 import au.com.skater901.wc3.resources.AdminResource
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.google.inject.Injector
 import com.google.inject.Scopes
 import com.google.inject.name.Names.named
 import dev.misfitlabs.kotlinguice4.KotlinModule
+import dev.misfitlabs.kotlinguice4.getInstance
 import dev.misfitlabs.kotlinguice4.key
 import io.dropwizard.core.Application
 import io.dropwizard.core.setup.Bootstrap
@@ -26,6 +29,8 @@ import ru.vyarus.dropwizard.guice.GuiceBundle
 import java.util.*
 
 internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>() {
+    private lateinit var injector: () -> Injector
+
     override fun initialize(bootstrap: Bootstrap<WC3NotificationBotConfiguration>) {
         val notificationModules = ServiceLoader.load(NotificationModule::class.java)
             .map { it as NotificationModule<*> }
@@ -49,6 +54,8 @@ internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>
             .scan()
             .use { scanResult ->
                 lateinit var guiceBundle: GuiceBundle
+
+                injector = { guiceBundle.injector }
 
                 val bundles = listOf(
                     ConfigBundle(scanResult, javaClass.classLoader),
@@ -105,6 +112,8 @@ internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>
         environment.healthChecks().register("wc3connect", WC3ConnectHealthCheck)
         environment.healthChecks().register("wc3maps", WC3MapsHealthCheck)
         environment.healthChecks().register("wc3stats", WC3StatsHealthCheck)
+
+        environment.healthChecks().register("circuitBreakers", injector().getInstance<CircuitBreakersHealthCheck>())
     }
 
     companion object {

@@ -7,6 +7,7 @@ import au.com.skater901.wc3.api.core.domain.exceptions.InvalidNotificationExcept
 import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import au.com.skater901.wc3.utilities.collections.forEachAsync
+import au.com.skater901.wc3.utilities.metricsWork
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.edit
@@ -14,7 +15,6 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.exceptions.ContextException
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
@@ -30,64 +30,74 @@ internal class DiscordGameNotifier @Inject constructor(
     private val roleNotificationDAO: RoleNotificationDAO
 ) : GameNotifier {
     private val hostedGameMessages: ConcurrentMap<Int, MutableSet<Pair<Message, String?>>> = ConcurrentHashMap()
+
+    private val notifyNewGameWork = metricsWork(::notifyNewGame)
     override suspend fun notifyNewGame(notificationId: String, game: Game) {
-        val channel = try {
-            jda.getTextChannelById(notificationId)
-                ?: throw InvalidNotificationException()
-        } catch (_: NumberFormatException) {
-            throw InvalidNotificationException()
-        }
-
-        val roleToNotify = roleNotificationDAO.find(notificationId)
-
-        channel.sendMessage(createGameMessage(game, false, roleToNotify))
-            .await()
-            .let {
-                hostedGameMessages.computeIfAbsent(game.id) { mutableSetOf() }
-                    .add(it to roleToNotify)
+        notifyNewGameWork {
+            val channel = try {
+                jda.getTextChannelById(notificationId)
+                    ?: throw InvalidNotificationException()
+            } catch (_: NumberFormatException) {
+                throw InvalidNotificationException()
             }
+
+            val roleToNotify = roleNotificationDAO.find(notificationId)
+
+            channel.sendMessage(createGameMessage(game, false, roleToNotify))
+                .await()
+                .let {
+                    hostedGameMessages.computeIfAbsent(game.id) { mutableSetOf() }
+                        .add(it to roleToNotify)
+                }
+        }
     }
 
+    private val updateExistingGameWork = metricsWork(::updateExistingGame)
     override suspend fun updateExistingGame(game: Game) {
-        val invalidMessages = mutableSetOf<Pair<Int, String>>()
-        hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
-            try {
-                message.edit(
-                    content = "<@&$roleToNotify>",
-                    embeds = createGameMessage(game, false, null).embeds
-                )
-                    .await()
-            } catch (e: ErrorResponseException) {
-                if (e.errorResponse == ErrorResponse.UNKNOWN_MESSAGE) {
-                    invalidMessages.add(game.id to message.id)
-                } else {
-                    throw e
+        updateExistingGameWork {
+            val invalidMessages = mutableSetOf<Pair<Int, String>>()
+            hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
+                try {
+                    message.edit(
+                        content = "<@&$roleToNotify>",
+                        embeds = createGameMessage(game, false, null).embeds
+                    )
+                        .await()
+                } catch (e: ErrorResponseException) {
+                    if (e.errorResponse == ErrorResponse.UNKNOWN_MESSAGE) {
+                        invalidMessages.add(game.id to message.id)
+                    } else {
+                        throw e
+                    }
                 }
             }
-        }
-        invalidMessages.forEach { (gameId, messageId) ->
-            hostedGameMessages[gameId]!!.removeIf { (message, _) -> message.id == messageId }
+            invalidMessages.forEach { (gameId, messageId) ->
+                hostedGameMessages[gameId]!!.removeIf { (message, _) -> message.id == messageId }
+            }
         }
     }
 
+    private val closeExpiredGameWork = metricsWork(::closeExpiredGame)
     override suspend fun closeExpiredGame(game: Game) {
-        hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
-            try {
-                message.edit(
-                    content = "<@&$roleToNotify>",
-                    embeds = createGameMessage(game, true, null).embeds
-                )
-                    .await()
-            } catch (e: ErrorResponseException) {
-                if (e.errorResponse == ErrorResponse.UNKNOWN_MESSAGE) {
-                    // do nothing, we're done with this message and we just want to remove it from the list of messages
-                } else {
-                    throw e
+        closeExpiredGameWork {
+            hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
+                try {
+                    message.edit(
+                        content = "<@&$roleToNotify>",
+                        embeds = createGameMessage(game, true, null).embeds
+                    )
+                        .await()
+                } catch (e: ErrorResponseException) {
+                    if (e.errorResponse == ErrorResponse.UNKNOWN_MESSAGE) {
+                        // do nothing, we're done with this message and we just want to remove it from the list of messages
+                    } else {
+                        throw e
+                    }
                 }
             }
-        }
 
-        hostedGameMessages.remove(game.id)
+            hostedGameMessages.remove(game.id)
+        }
     }
 
     private fun createGameMessage(game: Game, gameRemoved: Boolean, roleToNotify: String?): MessageCreateData =

@@ -6,6 +6,7 @@ import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.core.dao.NotificationDAO
 import au.com.skater901.wc3.utilities.collections.forEachAsync
 import au.com.skater901.wc3.utilities.collections.mapAsync
+import au.com.skater901.wc3.utilities.metricsWork
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.coroutineScope
@@ -23,35 +24,39 @@ internal class GameNotificationService @Inject constructor(
 
     private val hostedGames = mutableMapOf<Int, Pair<Game, List<GameNotifier>>>()
 
+    private val notifyGamesWork = metricsWork(::notifyGames)
     suspend fun notifyGames(currentlyHostedGames: List<Game>) {
-        val newGames = currentlyHostedGames.filter { it.id !in hostedGames.keys }
+        notifyGamesWork {
+            val newGames = currentlyHostedGames.filter { it.id !in hostedGames.keys }
 
-        val gameIds = currentlyHostedGames.map { it.id }.toSet()
+            val gameIds = currentlyHostedGames.map { it.id }.toSet()
 
-        val expiredGames = hostedGames.filter { (gameId, _) -> gameId !in gameIds }
+            val expiredGames = hostedGames.filter { (gameId, _) -> gameId !in gameIds }
 
-        expiredGames.keys.forEach { hostedGames.remove(it) }
+            expiredGames.keys.forEach { hostedGames.remove(it) }
 
-        coroutineScope {
-            launch {
-                // Update the game info for hosted games
-                currentlyHostedGames.filter { it.id in hostedGames.keys }
-                    .forEach { hostedGames[it.id] = it to hostedGames[it.id]!!.second }
+            coroutineScope {
+                launch {
+                    // Update the game info for hosted games
+                    currentlyHostedGames.filter { it.id in hostedGames.keys }
+                        .forEach { hostedGames[it.id] = it to hostedGames[it.id]!!.second }
 
-                updateExistingGames()
+                    updateExistingGames()
+                }
+
+                launch { closeExpiredGames(expiredGames.values.toList()) }
+
+                postNewGames(newGames)
             }
-
-            launch { closeExpiredGames(expiredGames.values.toList()) }
-
-            postNewGames(newGames)
+                .forEach { hostedGames[it.first.id] = it }
         }
-            .forEach { hostedGames[it.first.id] = it }
     }
 
-    private suspend fun postNewGames(newGames: List<Game>): List<Pair<Game, List<GameNotifier>>> {
+    private val postNewGamesWork = metricsWork(::postNewGames)
+    private suspend fun postNewGames(newGames: List<Game>): List<Pair<Game, List<GameNotifier>>> = postNewGamesWork {
         val channelNotifications = notificationDAO.find()
 
-        return newGames.mapAsync { game ->
+        newGames.mapAsync { game ->
             game to channelNotifications.filter { it.mapNameRegexPattern.containsMatchIn(game.map) }
                 .mapAsync inner@{
                     val gameNotifier = gameNotifiers[it.type] ?: return@inner null
@@ -79,28 +84,34 @@ internal class GameNotificationService @Inject constructor(
         }
     }
 
+    private val updateExistingGamesWork = metricsWork(::updateExistingGames)
     private suspend fun updateExistingGames() {
-        hostedGames.values
-            .forEachAsync { (game, notifiers) ->
-                notifiers.forEachAsync {
-                    try {
-                        it.updateExistingGame(game)
-                    } catch (t: Throwable) {
-                        LoggerFactory.getLogger(it.javaClass)
-                            .error("Exception when updating existing game [ {} ]", game, t)
+        updateExistingGamesWork {
+            hostedGames.values
+                .forEachAsync { (game, notifiers) ->
+                    notifiers.forEachAsync {
+                        try {
+                            it.updateExistingGame(game)
+                        } catch (t: Throwable) {
+                            LoggerFactory.getLogger(it.javaClass)
+                                .error("Exception when updating existing game [ {} ]", game, t)
+                        }
                     }
                 }
-            }
+        }
     }
 
+    private val closeExpiredGamesWork = metricsWork(::closeExpiredGames)
     private suspend fun closeExpiredGames(expiredGames: List<Pair<Game, List<GameNotifier>>>) {
-        expiredGames.forEachAsync { (game, gameNotifiers) ->
-            gameNotifiers.forEachAsync {
-                try {
-                    it.closeExpiredGame(game)
-                } catch (t: Throwable) {
-                    LoggerFactory.getLogger(it.javaClass)
-                        .error("Exception when closing existing game [ {} ]", game, t)
+        closeExpiredGamesWork {
+            expiredGames.forEachAsync { (game, gameNotifiers) ->
+                gameNotifiers.forEachAsync {
+                    try {
+                        it.closeExpiredGame(game)
+                    } catch (t: Throwable) {
+                        LoggerFactory.getLogger(it.javaClass)
+                            .error("Exception when closing existing game [ {} ]", game, t)
+                    }
                 }
             }
         }

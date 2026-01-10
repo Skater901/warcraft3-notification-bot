@@ -6,22 +6,31 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.MessageCreate
 import jakarta.inject.Inject
 import net.dv8tion.jda.api.JDA
+import org.slf4j.LoggerFactory
 
 internal class AdminNotifier @Inject constructor(private val jda: JDA) : AdminMessageNotifier {
+    companion object {
+        private val logger = LoggerFactory.getLogger(AdminNotifier::class.java)
+    }
+
     override suspend fun sendAdminMessage(message: String, notifications: List<String>) {
         notifications.forEachAsync {
-            jda.getTextChannelById(it)
-                ?.sendMessage(
-                    MessageCreate {
-                        embed {
-                            title = "Admin Message"
-                            field {
-                                value = message
+            try {
+                jda.getTextChannelById(it)
+                    ?.sendMessage(
+                        MessageCreate {
+                            embed {
+                                title = "Admin Message"
+                                field {
+                                    value = message
+                                }
                             }
                         }
-                    }
-                )
-                ?.await()
+                    )
+                    ?.await()
+            } catch (e: Exception) {
+                logger.error("Exception when sending admin message to channel [ {} ]:", it, e)
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 val dropwizard_version: String by project
 val jackson_version: String by project
-val logback_version: String by project
 
 val classgraph_version: String by project
 val dropwizard_guicey_version: String by project

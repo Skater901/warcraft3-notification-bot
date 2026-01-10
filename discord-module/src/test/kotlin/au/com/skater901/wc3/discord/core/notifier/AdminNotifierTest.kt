@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -42,5 +43,42 @@ class AdminNotifierTest {
         verify(messageCreateAction) {
             1 * { submit() }
         }
+    }
+
+    @Test
+    fun `should catch exception from sending admin message to one channel`() {
+        val goodChannelId = "good channel"
+        val badChannelId = "bad channel"
+
+        var goodChannelSucceeded = false
+
+        val goodChannelResult = mock<MessageCreateAction> {
+            on { submit() } doReturn CompletableFuture.supplyAsync {
+                Thread.sleep(100)
+                goodChannelSucceeded = true
+                null
+            }
+        }
+        val goodChannel = mock<TextChannel> {
+            on { sendMessage(any<MessageCreateData>()) } doReturn goodChannelResult
+        }
+
+        val badChannelResult = mock<MessageCreateAction> {
+            on { submit() } doReturn CompletableFuture<Message>().apply { completeExceptionally(RuntimeException("Kaboom!")) }
+        }
+        val badChannel = mock<TextChannel> {
+            on { sendMessage(any<MessageCreateData>()) } doReturn badChannelResult
+        }
+
+        val jda = mock<JDA> {
+            on { getTextChannelById(goodChannelId) } doReturn goodChannel
+            on { getTextChannelById(badChannelId) } doReturn badChannel
+        }
+
+        runBlocking {
+            AdminNotifier(jda).sendAdminMessage("", listOf(goodChannelId, badChannelId))
+        }
+
+        assertThat(goodChannelSucceeded).isTrue()
     }
 }

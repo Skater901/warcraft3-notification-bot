@@ -9,12 +9,17 @@ import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.core.MediaType
 import kotlinx.coroutines.runBlocking
+import org.slf4j.LoggerFactory
 
 @Path("/admin")
 internal class AdminResource @Inject constructor(
     private val notificationDAO: NotificationDAO,
     private val adminMessageNotifiers: Map<String, @JvmSuppressWildcards AdminMessageNotifier>
 ) {
+    companion object {
+        private val logger = LoggerFactory.getLogger(AdminResource::class.java)
+    }
+
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
     fun sendAdminMessage(message: String) {
@@ -24,7 +29,11 @@ internal class AdminResource @Inject constructor(
                 .mapValues { (_, notifications) -> notifications.map { it.id } }
 
             adminMessageNotifiers.forEachAsync { (moduleName, notifier) ->
-                notifier.sendAdminMessage(message, notifications[moduleName] ?: emptyList())
+                try {
+                    notifier.sendAdminMessage(message, notifications[moduleName] ?: emptyList())
+                } catch (e: Exception) {
+                    logger.error("Exception when sending admin message ", e)
+                }
             }
         }
     }

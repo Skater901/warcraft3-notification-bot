@@ -1,4 +1,4 @@
-package au.com.skater901.wc3.api.annotation
+package au.com.skater901.wc3.extras.annotation
 
 import com.google.inject.BindingAnnotation
 

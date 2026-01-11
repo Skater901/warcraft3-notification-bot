@@ -7,6 +7,9 @@ rootProject.name = "wc3-notification-bot"
 // API for modules to implement
 include("module-api")
 
+// Extras
+include("extras")
+
 // Modules
 include("discord-module")
 include("masto-module")

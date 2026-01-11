@@ -1,9 +1,9 @@
 package au.rakka.java.mastoapi
 
-import au.com.skater901.wc3.api.annotation.ClientFor
 import au.com.skater901.wc3.api.core.domain.exceptions.InvalidRegexPatternException
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
 import au.com.skater901.wc3.api.scheduled.ScheduledTask
+import au.com.skater901.wc3.extras.annotation.ClientFor
 import au.com.skater901.wc3.utilities.coroutines.await
 import au.rakka.java.`masto-api`.MastodonModule
 import com.fasterxml.jackson.databind.JsonNode

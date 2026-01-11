@@ -11,6 +11,7 @@ import au.com.skater901.wc3.application.healthcheck.WC3StatsHealthCheck
 import au.com.skater901.wc3.application.module.AdminModule
 import au.com.skater901.wc3.application.module.AppModule
 import au.com.skater901.wc3.application.module.ClientModule
+import au.com.skater901.wc3.application.module.ExecutorsModule
 import au.com.skater901.wc3.application.provider.WC3GameNotificationServiceProvider
 import au.com.skater901.wc3.resources.AdminResource
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -69,6 +70,7 @@ internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>
                     .modules(
                         AppModule(scanResult),
                         ClientModule(scanResult),
+                        ExecutorsModule(scanResult),
                         AdminModule(notificationModules),
                         *bundles.mapNotNull { it.module }.toTypedArray(),
                         *notificationModules.map { it.guiceModule }.toTypedArray(),

@@ -10,6 +10,7 @@ import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import au.com.skater901.wc3.discord.core.dao.jdbi.JdbiRoleNotificationDAO
 import au.com.skater901.wc3.discord.core.handler.DiscordGameNotifier
 import au.com.skater901.wc3.discord.core.notifier.AdminNotifier
+import au.com.skater901.wc3.extras.annotation.ExecutorFor
 import com.google.inject.AbstractModule
 import com.google.inject.Injector
 import com.google.inject.Provides
@@ -25,6 +26,7 @@ import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
+import java.util.concurrent.ExecutorService
 import kotlin.reflect.KClass
 
 public class DiscordNotificationModule : NotificationModule<DiscordConfiguration> {
@@ -40,11 +42,17 @@ public class DiscordNotificationModule : NotificationModule<DiscordConfiguration
         @Provides
         @Singleton
         @Inject
-        fun getJDA(config: DiscordConfiguration): JDA = light(
+        fun getJDA(
+            config: DiscordConfiguration,
+            @ExecutorFor("discord.jda")
+            discordMessagesThreadPool: ExecutorService
+        ): JDA = light(
             config.privateToken,
             enableCoroutines = true
         ) {
             intents -= GatewayIntent.entries // disable all intents, none are needed
+
+            setCallbackPool(discordMessagesThreadPool)
         }
     }
 

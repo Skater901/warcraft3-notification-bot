@@ -12,6 +12,7 @@ plugins {
 
 dependencies {
 	implementation(project(":module-api"))
+	implementation(project(":extras"))
 	implementation(project(":utilities"))
 	implementation(libs.coroutines)
 	implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")

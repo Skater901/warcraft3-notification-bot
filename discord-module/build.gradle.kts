@@ -15,6 +15,7 @@ plugins {
 dependencies {
     implementation(project(":module-api"))
 
+    implementation(project(":extras"))
     implementation(project(":utilities"))
 
     // Discord API

@@ -30,6 +30,8 @@ dependencies {
     // Core API library
     implementation(project(":module-api"))
 
+    implementation(project(":extras"))
+
     // Dropwizard
     implementation(platform("io.dropwizard:dropwizard-bom:$dropwizard_version"))
     implementation("io.dropwizard:dropwizard-client")

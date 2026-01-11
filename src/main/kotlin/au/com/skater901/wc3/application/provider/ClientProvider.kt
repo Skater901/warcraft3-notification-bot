@@ -1,7 +1,7 @@
 package au.com.skater901.wc3.application.provider
 
-import au.com.skater901.wc3.api.annotation.ClientFor
 import au.com.skater901.wc3.application.module.ClientModule.Companion.defaultClientConfiguration
+import au.com.skater901.wc3.extras.annotation.ClientFor
 import io.dropwizard.client.JerseyClientBuilder
 import io.dropwizard.core.setup.Environment
 import jakarta.inject.Provider

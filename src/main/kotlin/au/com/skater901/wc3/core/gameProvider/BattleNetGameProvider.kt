@@ -1,12 +1,12 @@
 package au.com.skater901.wc3.core.gameProvider
 
-import au.com.skater901.wc3.api.annotation.ClientFor
 import au.com.skater901.wc3.api.core.domain.Game
 import au.com.skater901.wc3.application.healthcheck.GameSourceHealthCheck
 import au.com.skater901.wc3.application.healthcheck.WC3MapsHealthCheck
 import au.com.skater901.wc3.application.healthcheck.WC3StatsHealthCheck
 import au.com.skater901.wc3.core.domain.WC3MapsGame
 import au.com.skater901.wc3.core.domain.WC3StatsGame
+import au.com.skater901.wc3.extras.annotation.ClientFor
 import au.com.skater901.wc3.utilities.coroutines.await
 import au.com.skater901.wc3.utilities.defaultUnitOfWork
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties

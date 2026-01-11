@@ -1,6 +1,6 @@
-val metrics_version: String by project
+val jersey_version: String by project
 
-group = "au.com.skater901.wc3.api"
+group = "au.com.skater901.wc3.extras"
 
 repositories {
     mavenCentral()
@@ -13,7 +13,7 @@ plugins {
 dependencies {
     api(libs.guice)
 
-    api("io.dropwizard.metrics:metrics-healthchecks:$metrics_version")
+    api("jakarta.ws.rs:jakarta.ws.rs-api:${jersey_version}")
 }
 
 kotlin {

@@ -1,8 +1,8 @@
 package au.com.skater901.wc3.application.module
 
 import au.com.skater901.wc3.WC3NotificationBotConfiguration
-import au.com.skater901.wc3.api.annotation.ClientFor
 import au.com.skater901.wc3.application.provider.ClientProvider
+import au.com.skater901.wc3.extras.annotation.ClientFor
 import com.google.inject.Key
 import com.google.inject.Provides
 import com.google.inject.name.Names.named

@@ -59,7 +59,7 @@ internal class DiscordGameNotifier @Inject constructor(
             hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
                 try {
                     message.edit(
-                        content = "<@&$roleToNotify>",
+                        content = roleToNotify?.encodeRole(),
                         embeds = createGameMessage(game, false, null).embeds
                     )
                         .await()
@@ -83,7 +83,7 @@ internal class DiscordGameNotifier @Inject constructor(
             hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
                 try {
                     message.edit(
-                        content = "<@&$roleToNotify>",
+                        content = roleToNotify?.encodeRole(),
                         embeds = createGameMessage(game, true, null).embeds
                     )
                         .await()
@@ -102,7 +102,7 @@ internal class DiscordGameNotifier @Inject constructor(
 
     private fun createGameMessage(game: Game, gameRemoved: Boolean, roleToNotify: String?): MessageCreateData =
         MessageCreate {
-            roleToNotify?.also { content = "<@&$it>" }
+            content = roleToNotify?.encodeRole()
             embed {
                 color = if (gameRemoved) 0x1e1f22 else 0x22FF00
                 author(iconUrl = "https://wow.zamimg.com/uploads/screenshots/normal/875650.jpg") {
@@ -148,6 +148,8 @@ internal class DiscordGameNotifier @Inject constructor(
                 footer("Powered by $url", icon)
             }
         }
+
+    private fun String.encodeRole(): String = "<@&$this>"
 
     private fun Region.flag(): String = when (this) {
         Region.EU -> ":flag_eu:"

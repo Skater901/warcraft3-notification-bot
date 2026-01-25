@@ -92,8 +92,8 @@ public class MastoNotifier @Inject constructor(
     }
 
     // Copied from discord module. It makes a lot of sense.
-    private fun game_to_string(game: Game, tag: String?, gameRemoved: Boolean = false): Map<String, String> {
-        val body = "$tag lobby's " + if (!gameRemoved) "up" else "down" +
+    private fun game_to_string(game: Game, tag: String, gameRemoved: Boolean = false): Map<String, String> {
+        val body = "$tag lobby's " + (if (!gameRemoved) "up" else "down") +
                 "\\nName: " + game.name +
                 "\\nMap: " + game.map +
                 "\\nHosted by: " + game.host +

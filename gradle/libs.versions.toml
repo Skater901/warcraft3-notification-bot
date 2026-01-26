@@ -10,8 +10,8 @@ liquibase = "org.liquibase:liquibase-core:5.0.1"
 
 # Testing Libraries
 junit = "org.junit.jupiter:junit-jupiter-api:6.0.2"
-assertj = "org.assertj:assertj-core:3.27.6"
-mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:6.1.0"
+assertj = "org.assertj:assertj-core:3.27.7"
+mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:6.2.2"
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.3.0" }

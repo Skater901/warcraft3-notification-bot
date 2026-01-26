@@ -11,18 +11,18 @@ class AdminResourceTest {
     @Test
     fun `should handle exception from one notifier and not let it affect other notifiers`() {
         val brokenNotifier = mock<AdminMessageNotifier> {
-            onBlocking { sendAdminMessage(any(), any()) } doThrow RuntimeException("Kaboom!")
+            on { sendAdminMessage(any(), any()) } doThrow RuntimeException("Kaboom!")
         }
         var happyNotifierSucceeded = false
         val happyNotifier = mock<AdminMessageNotifier> {
-            onBlocking { sendAdminMessage(any(), any()) } doSuspendableAnswer {
+            on { sendAdminMessage(any(), any()) } doSuspendableAnswer {
                 delay(100)
 
                 happyNotifierSucceeded = true
             }
         }
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn emptyList()
+            on { find() } doReturn emptyList()
         }
 
         AdminResource(notificationDAO, mapOf("module1" to brokenNotifier, "module2" to happyNotifier)).sendAdminMessage(

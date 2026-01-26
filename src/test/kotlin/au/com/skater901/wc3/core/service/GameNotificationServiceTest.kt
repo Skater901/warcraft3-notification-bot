@@ -17,7 +17,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val myModuleNotifier = mock<GameNotifier>()
@@ -47,7 +47,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val myModuleNotifier = mock<GameNotifier>()
@@ -77,7 +77,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val myModuleNotifier = mock<GameNotifier>()
@@ -108,7 +108,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val myModuleNotifier = mock<GameNotifier>()
@@ -145,7 +145,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val myModuleNotifier = mock<GameNotifier>()
@@ -177,7 +177,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val newGame = mock<Game> {
@@ -186,7 +186,7 @@ class GameNotificationServiceTest {
         }
 
         val myModuleNotifier = mock<GameNotifier> {
-            onBlocking { notifyNewGame(notificationId, newGame) } doThrow InvalidNotificationException()
+            on { notifyNewGame(notificationId, newGame) } doThrow InvalidNotificationException()
         }
 
         val notifiers = mapOf(module to myModuleNotifier)
@@ -212,7 +212,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val newGame = mock<Game> {
@@ -221,7 +221,7 @@ class GameNotificationServiceTest {
         }
 
         val myModuleNotifier = mock<GameNotifier> {
-            onBlocking { notifyNewGame(notificationId, newGame) } doThrow RuntimeException("Kaboom!")
+            on { notifyNewGame(notificationId, newGame) } doThrow RuntimeException("Kaboom!")
         }
 
         val notifiers = mapOf(module to myModuleNotifier)
@@ -244,7 +244,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val newGame = mock<Game> {
@@ -253,7 +253,7 @@ class GameNotificationServiceTest {
         }
 
         val myModuleNotifier = mock<GameNotifier> {
-            onBlocking { updateExistingGame(newGame) } doThrow RuntimeException("Kaboom!")
+            on { updateExistingGame(newGame) } doThrow RuntimeException("Kaboom!")
         }
 
         val notifiers = mapOf(module to myModuleNotifier)
@@ -277,7 +277,7 @@ class GameNotificationServiceTest {
         val mapRegex = "mymap"
 
         val notificationDAO = mock<NotificationDAO> {
-            onBlocking { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
+            on { find() } doReturn listOf(WC3GameNotification(notificationId, module, Regex(mapRegex)))
         }
 
         val newGame = mock<Game> {
@@ -286,7 +286,7 @@ class GameNotificationServiceTest {
         }
 
         val myModuleNotifier = mock<GameNotifier> {
-            onBlocking { closeExpiredGame(newGame) } doThrow RuntimeException("Kaboom!")
+            on { closeExpiredGame(newGame) } doThrow RuntimeException("Kaboom!")
         }
 
         val notifiers = mapOf(module to myModuleNotifier)

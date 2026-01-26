@@ -25,7 +25,7 @@ class NotifyGamesJobTest {
                     gameNotificationService,
                     setOf(
                         mock {
-                            onBlocking { getGames() } doReturn listOf(
+                            on { getGames() } doReturn listOf(
                                 WC3ConnectGame(
                                     4747,
                                     "[ENT] HELLHALT TD v80 #55",
@@ -79,7 +79,7 @@ class NotifyGamesJobTest {
                             )
                         },
                         mock {
-                            onBlocking { getGames() } doReturn listOf(
+                            on { getGames() } doReturn listOf(
                                 WC3StatsGame(
                                     "x hero",
                                     "X_Hero_Reborn_1.2_ENG_fix~1.w3x",
@@ -241,10 +241,10 @@ class NotifyGamesJobTest {
                     gameNotificationService,
                     setOf(
                         mock {
-                            onBlocking { getGames() } doThrow InternalServerErrorException("blah")
+                            on { getGames() } doThrow InternalServerErrorException("blah")
                         },
                         mock {
-                            onBlocking { getGames() } doReturn listOf(
+                            on { getGames() } doReturn listOf(
                                 WC3StatsGame(
                                     "x hero",
                                     "X_Hero_Reborn_1.2_ENG_fix~1.w3x",

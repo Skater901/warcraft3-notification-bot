@@ -51,7 +51,7 @@ class RegisterNotificationTest {
         val mapPattern = "bad regex"
 
         val wc3GameNotificationService = mock<WC3GameNotificationService> {
-            onBlocking { createNotification(channelId, mapPattern) } doThrow InvalidRegexPatternException(mapPattern)
+            on { createNotification(channelId, mapPattern) } doThrow InvalidRegexPatternException(mapPattern)
         }
         val roleNotificationDAO = mock<RoleNotificationDAO>()
 

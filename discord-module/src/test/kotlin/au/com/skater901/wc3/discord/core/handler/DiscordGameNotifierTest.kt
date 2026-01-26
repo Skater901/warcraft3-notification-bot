@@ -59,7 +59,7 @@ class DiscordGameNotifierTest {
         val notifier = DiscordGameNotifier(
             jda,
             mock {
-                onBlocking { find(notificationId) } doReturn "dota"
+                on { find(notificationId) } doReturn "dota"
             }
         )
 
@@ -430,7 +430,7 @@ class DiscordGameNotifierTest {
         }
 
         val roleNotificationDAO = mock<RoleNotificationDAO> {
-            onBlocking { find(any()) } doReturn null
+            on { find(any()) } doReturn null
         }
 
         val notifier = DiscordGameNotifier(jda, roleNotificationDAO)
@@ -485,7 +485,7 @@ class DiscordGameNotifierTest {
         }
 
         val roleNotificationDAO = mock<RoleNotificationDAO> {
-            onBlocking { find(any()) } doReturn null
+            on { find(any()) } doReturn null
         }
 
         val notifier = DiscordGameNotifier(jda, roleNotificationDAO)

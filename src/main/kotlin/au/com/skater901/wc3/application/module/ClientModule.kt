@@ -28,6 +28,8 @@ internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
             timeout = io.dropwizard.util.Duration.seconds(8)
 
             userAgent = Optional.of("WC3 Notification Bot ${System.getProperty("appVersion")} - Jersey Client")
+
+            isGzipEnabledForRequests = false
         }
     }
 

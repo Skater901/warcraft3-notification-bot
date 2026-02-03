@@ -4,6 +4,7 @@ import au.com.skater901.wc3.api.core.domain.Game
 import au.com.skater901.wc3.api.core.service.GameNotifier
 import au.com.skater901.wc3.extras.annotation.ClientFor
 import au.com.skater901.wc3.utilities.coroutines.await
+import au.rakka.java.`masto-api`.PostResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 // Used to get my config class in here
 import jakarta.inject.Inject
@@ -40,15 +41,12 @@ public class MastoNotifier @Inject constructor(
             .request(MediaType.APPLICATION_JSON)
             .authorization()
             .async()
-            .post(json(game_to_string(game, notificationId)))
+            .post(json(game_to_string(game, notificationId)), PostResponse::class.java)
             .await()
-            .use { response ->
-                logger.debug(response.status.toString())
-                val body = response.readEntity(String::class.java)
-                val node = mapper.readTree(body)
-                logger.debug(body)
+            .let { response ->
+                logger.debug(response.toString())
                 hostedGames[game.id] = GameMessage(
-                    node.get("id").asText(),
+                    response.id,
                     notificationId,
                     game.name,
                     game.currentPlayers
@@ -69,12 +67,8 @@ public class MastoNotifier @Inject constructor(
             .request(MediaType.APPLICATION_JSON)
             .authorization()
             .async()
-            .put(json(game_to_string(game, gm.game_tag)))
+            .put(json(game_to_string(game, gm.game_tag)), String::class.java)
             .await()
-            .use { response ->
-                logger.debug(response.status.toString())
-                logger.debug(response.readEntity(String::class.java))
-            }
     }
 
     override suspend fun closeExpiredGame(game: Game) {
@@ -83,10 +77,10 @@ public class MastoNotifier @Inject constructor(
             .request(MediaType.APPLICATION_JSON)
             .authorization()
             .async()
-            .put(json(game_to_string(game, gm.game_tag, true)))
+            .put(json(game_to_string(game, gm.game_tag, true)), String::class.java)
             .await()
-            .use { response ->
-                logger.debug("{} {}", response.status, response.readEntity(String::class.java))
+            .let { response ->
+                logger.debug(response)
             }
         hostedGames.remove(game.id)
     }

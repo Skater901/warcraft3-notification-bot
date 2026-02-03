@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "au.com.skater901.wc3"
-version = "2.1.1"
+version = "2.1.2"
 
 repositories {
     mavenCentral()

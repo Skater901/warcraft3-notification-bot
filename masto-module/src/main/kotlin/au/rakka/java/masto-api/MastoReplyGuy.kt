@@ -6,17 +6,17 @@ import au.com.skater901.wc3.api.scheduled.ScheduledTask
 import au.com.skater901.wc3.extras.annotation.ClientFor
 import au.com.skater901.wc3.utilities.coroutines.await
 import au.rakka.java.`masto-api`.MastodonModule
-import com.fasterxml.jackson.databind.JsonNode
+import au.rakka.java.`masto-api`.MastodonPost
 import com.fasterxml.jackson.databind.ObjectMapper
 // Used to get my config class in here
 import jakarta.inject.Inject
 import jakarta.ws.rs.client.Client
 import jakarta.ws.rs.client.Entity.json
 import jakarta.ws.rs.client.Invocation
+import jakarta.ws.rs.core.GenericType
 import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.MediaType
 import org.slf4j.LoggerFactory
-import java.io.InputStream
 
 public class MastoReplyGuy @Inject constructor(
     private val conf: MastoConfig,
@@ -47,54 +47,49 @@ public class MastoReplyGuy @Inject constructor(
         var finished = false
         var max_id = ""
         while (!finished) {
-            val node = client.target(notifurl + max_id)
+            val posts = client.target(notifurl + max_id)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .authorization()
                 .async()
-                .get()
+                .get(object : GenericType<List<MastodonPost>>() {})
                 .await()
-                .use { response ->
-                    logger.debug(response.status.toString())
-                    mapper.readTree(response.readEntity(InputStream::class.java))
-                }
-            node.forEach { process_post(it) }
-            logger.debug(node.size().toString())
-            finished =
-                node.size() < 20 // If node size isn't 20 I don't need to update max_id at all. Mainly avoids the issue where node size is 0.
+            posts.forEach { process_post(it) }
+            logger.debug(posts.size.toString())
+
+            // If node size isn't 20 I don't need to update max_id at all. Mainly avoids the issue where node size is 0.
+            finished = posts.size < 20
             if (!finished) {
-                max_id = "?max_id=" + node.get(19).get("id").asText()
+                max_id = "?max_id=" + posts[19].id
             }
         }
         client.target(clearurl)
             .request(MediaType.APPLICATION_JSON)
             .authorization()
             .async()
-            .post(null)
+            .post(null, String::class.java)
             .await()
-            .use { response ->
-                logger.debug("Cleared notifications (hopefully) {}", response.status)
-                response.readEntity(String::class.java)
-            }
+        logger.debug("Cleared notifications (hopefully)")
     }
 
-    private suspend fun process_post(post: JsonNode) {
+    private suspend fun process_post(post: MastodonPost) {
         try {
-            logger.debug("Processing notif {}", post.get("id"))
-            if (post.get("type").asText() != "mention") {
+            logger.debug("Processing notif {}", post.id)
+            if (post.type != "mention") {
                 logger.debug("Was not a mention")
                 return
             }
             if (is_pleroma == null) {
-                is_pleroma = post.get("status").get("pleroma") != null
+                is_pleroma = post.status.pleroma != null
             }
             val text = if (is_pleroma!!) {
-                post.get("status").get("pleroma").get("content").get("text/plain").asText()
+                post.status.pleroma!!.content.text
             } else {
-                post.get("status").get("content").asText().replace(Regex("<.*?>"), "")
+                post.status.content.replace(Regex("<.*?>"), "")
             }
             val (tag, regex) = process_post_contents(text)
             if (tag == "") {
-                logger.debug("tag: {} was null", tag); return
+                logger.debug("tag: {} was null", tag)
+                return
             }
             if (regex == "") {
                 logger.debug("Deleting {}", tag)
@@ -107,15 +102,12 @@ public class MastoReplyGuy @Inject constructor(
                         json(
                             mapOf(
                                 "status" to "Unregistered $tag. In future this will hopefully be able to tell you what it contained.",
-                                "in_reply_to_id" to post.get("status").get("id")
+                                "in_reply_to_id" to post.status.id
                             )
-                        )
+                        ),
+                        String::class.java
                     )
                     .await()
-                    .use { response ->
-                        logger.debug("Deleted {} {}", response.status, post.get("status").get("id"))
-                        response.readEntity(String::class.java)
-                    }
             } else {
                 logger.debug("Adding {} with {}", tag, regex)
                 try {
@@ -135,7 +127,7 @@ public class MastoReplyGuy @Inject constructor(
                                             "\\\\"
                                         )
                                     } was invalid. Note: Spaces are not supported, use \\\\s instead and hope that there aren't two different maps with the same name differing only by the type of whitespace.",
-                                    "in_reply_to_id" to post.get("status").get("id")
+                                    "in_reply_to_id" to post.status.id
                                 )
                             ),
                             String::class.java
@@ -152,16 +144,12 @@ public class MastoReplyGuy @Inject constructor(
                         json(
                             mapOf(
                                 "status" to "Registered $tag with pattern ${regex.replace("\\", "\\\\")}",
-                                "in_reply_to_id" to post.get("status").get("id")
+                                "in_reply_to_id" to post.status.id
                             )
-                        )
+                        ),
+                        String::class.java
                     )
                     .await() // .get("id") returns a string with quotes: Deleted 400 "AotNh4gQIua2IPvPN2", so don't need to put new quotes on it.
-                    .use { response ->
-                        // Why do I have to replace \ with \\? I have no idea. Pleromer gets mad about a lone backslash in post contents apparently. Does mastodon? Dunno.
-                        logger.debug("Created {} {}", response.status, post.get("status").get("id"))
-                        response.readEntity(String::class.java)
-                    }
             }
         } catch (ex: Exception) {
             logger.error("Exception while processing post: ", ex) // Something happened.

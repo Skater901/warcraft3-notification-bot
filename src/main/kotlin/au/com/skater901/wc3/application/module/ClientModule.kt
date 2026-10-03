@@ -44,7 +44,7 @@ internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
         }
         .map { it.getAnnotationInfo(ClientFor::class.java).loadClassAndInstantiate() }
         .filterIsInstance<ClientFor>()
-        .toList()
+        .toSet()
 
     override fun configure() {
         val environment = getProvider<Environment>()

@@ -11,6 +11,7 @@ import java.time.Instant
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 internal data class WC3StatsGame(
+    override val id: Long,
     override val name: String,
     override val map: String,
     override val host: String,
@@ -23,7 +24,5 @@ internal data class WC3StatsGame(
     @param:JsonDeserialize(using = RegionDeserializer::class)
     override val region: Region
 ) : Game {
-    override val id by lazy { name.hashCode() + map.hashCode() + host.hashCode() }
-
     override val gameSource: GameSource = GameSource.BattleNet
 }

@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 internal data class WC3ConnectGame(
-    override val id: Int,
+    override val id: Long,
     override val name: String,
     override val map: String,
     override val host: String,

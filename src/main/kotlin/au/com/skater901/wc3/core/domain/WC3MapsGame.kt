@@ -23,7 +23,7 @@ internal data class WC3MapsGame(
     @param:JsonDeserialize(using = RegionDeserializer::class)
     override val region: Region
 ) : Game {
-    override val id by lazy { name.hashCode() + map.hashCode() + host.hashCode() }
+    override val id by lazy { name.hashCode() + map.hashCode() + host.hashCode() + created.epochSecond }
 
     override val gameSource = GameSource.BattleNet
 }

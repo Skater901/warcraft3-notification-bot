@@ -6,7 +6,7 @@ import au.com.skater901.wc3.api.core.domain.Region
 import java.time.Instant
 
 class GameBuilder : Game {
-    override var id = 1
+    override var id = 1L
     override var name = "My cool game"
     override var map = "Best_Map.w3x"
     override var host = "best_war3_player"

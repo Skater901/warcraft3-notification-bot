@@ -9,7 +9,7 @@ public interface Game {
     /**
      * The unique identifier of the Warcraft 3 hosted game.
      */
-    public val id: Int
+    public val id: Long
 
     /**
      * The name of the Warcraft 3 hosted game.

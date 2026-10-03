@@ -29,7 +29,7 @@ internal class DiscordGameNotifier @Inject constructor(
     private val jda: JDA,
     private val roleNotificationDAO: RoleNotificationDAO
 ) : GameNotifier {
-    private val hostedGameMessages: ConcurrentMap<Int, MutableSet<Pair<Message, String?>>> = ConcurrentHashMap()
+    private val hostedGameMessages: ConcurrentMap<Long, MutableSet<Pair<Message, String?>>> = ConcurrentHashMap()
 
     private val notifyNewGameWork = metricsWork(::notifyNewGame)
     override suspend fun notifyNewGame(notificationId: String, game: Game) {
@@ -55,7 +55,7 @@ internal class DiscordGameNotifier @Inject constructor(
     private val updateExistingGameWork = metricsWork(::updateExistingGame)
     override suspend fun updateExistingGame(game: Game) {
         updateExistingGameWork {
-            val invalidMessages = mutableSetOf<Pair<Int, String>>()
+            val invalidMessages = mutableSetOf<Pair<Long, String>>()
             hostedGameMessages[game.id]?.forEachAsync { (message, roleToNotify) ->
                 try {
                     message.edit(

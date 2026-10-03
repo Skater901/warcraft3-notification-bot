@@ -194,7 +194,7 @@ class WC3NotificationBotE2EITCase {
             .withPassword("wc3_bot")
             .withDatabaseName("wc3_bot")
 
-        private val app = DropwizardAppExtension<WC3NotificationBotConfiguration>(
+        private val app = DropwizardAppExtension(
             WC3NotificationBot::class.java,
             "conf/wc3-notification-bot.yml"
         )
@@ -354,6 +354,7 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
+                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",
@@ -370,6 +371,7 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
+                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",
@@ -386,6 +388,7 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
+                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",

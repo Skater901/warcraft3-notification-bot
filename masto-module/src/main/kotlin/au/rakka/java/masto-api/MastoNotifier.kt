@@ -23,7 +23,7 @@ public class MastoNotifier @Inject constructor(
     private val client: Client,
     private val mapper: ObjectMapper
 ) : GameNotifier {
-    private val hostedGames: ConcurrentMap<Int, GameMessage> = ConcurrentHashMap()
+    private val hostedGames: ConcurrentMap<Long, GameMessage> = ConcurrentHashMap()
 
     private companion object {
         private val logger = LoggerFactory.getLogger(MastoNotifier::class.java)

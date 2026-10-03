@@ -33,7 +33,7 @@ class BattleNetGameProviderITCase {
 
         assertThat(games).hasSize(4)
             .anyMatch {
-                it.id == -1539066740 &&
+                it.id == 19342L &&
                         it.name == "x hero" &&
                         it.map == "X_Hero_Reborn_1.2_ENG_fix~1.w3x" &&
                         it.host == "Nyxiz#2980" &&
@@ -43,7 +43,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == 258875721 &&
+                it.id == 21541L &&
                         it.name == "greenTD" &&
                         it.map == "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x" &&
                         it.host == "RoDac90#2504" &&
@@ -53,7 +53,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == -1183358855 &&
+                it.id == 56252L &&
                         it.name == "-phccezlg" &&
                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                         it.host == "JosipBukal#2996" &&
@@ -63,7 +63,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == -898256637 &&
+                it.id == 56258L &&
                         it.name == "-prccezlg" &&
                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                         it.host == "JosipBukal#2996" &&
@@ -104,7 +104,7 @@ class BattleNetGameProviderITCase {
 
         assertThat(games).hasSize(4)
             .anyMatch {
-                it.id == -416127269 &&
+                it.id == 1351544240L &&
                         it.name == "和" &&
                         it.map == "XCZYWCN9.5SZZWS.w3x" &&
                         it.host == "York#11394" &&
@@ -115,7 +115,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == 1143104989 &&
+                it.id == 2910776496L &&
                         it.name == "악몽" &&
                         it.map == "ORDR_S2_2.201[R].w3x" &&
                         it.host == "와리가리디팬스#3967" &&
@@ -126,7 +126,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == 1193201636 &&
+                it.id == 2960872087L &&
                         it.name == "imp3 up" &&
                         it.map == "Twilight Ascendant v3.06c.w3x" &&
                         it.host == "MrSunshine#1654" &&
@@ -137,7 +137,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == -765521156 &&
+                it.id == 1002149745L &&
                         it.name == "Dota -APEMSOSP USW" &&
                         it.map == "DotA_v6_89N.w3x" &&
                         it.host == "JimmyJam#11761" &&
@@ -173,7 +173,7 @@ class BattleNetGameProviderITCase {
 
         assertThat(games).hasSize(4)
             .anyMatch {
-                it.id == -416127269 &&
+                it.id == 1351544240L &&
                         it.name == "和" &&
                         it.map == "XCZYWCN9.5SZZWS.w3x" &&
                         it.host == "York#11394" &&
@@ -184,7 +184,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == 1143104989 &&
+                it.id == 2910776496L &&
                         it.name == "악몽" &&
                         it.map == "ORDR_S2_2.201[R].w3x" &&
                         it.host == "와리가리디팬스#3967" &&
@@ -195,7 +195,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == 1193201636 &&
+                it.id == 2960872087L &&
                         it.name == "imp3 up" &&
                         it.map == "Twilight Ascendant v3.06c.w3x" &&
                         it.host == "MrSunshine#1654" &&
@@ -206,7 +206,7 @@ class BattleNetGameProviderITCase {
                         it.gameSource == GameSource.BattleNet
             }
             .anyMatch {
-                it.id == -765521156 &&
+                it.id == 1002149745L &&
                         it.name == "Dota -APEMSOSP USW" &&
                         it.map == "DotA_v6_89N.w3x" &&
                         it.host == "JimmyJam#11761" &&

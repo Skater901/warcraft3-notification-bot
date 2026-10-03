@@ -81,6 +81,7 @@ class NotifyGamesJobTest {
                         mock {
                             on { getGames() } doReturn listOf(
                                 WC3StatsGame(
+                                    1,
                                     "x hero",
                                     "X_Hero_Reborn_1.2_ENG_fix~1.w3x",
                                     "Nyxiz#2980",
@@ -90,6 +91,7 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
+                                    2,
                                     "greenTD",
                                     "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x",
                                     "RoDac90#2504",
@@ -99,6 +101,7 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
+                                    3,
                                     "-phccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",
@@ -108,6 +111,7 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
+                                    4,
                                     "-prccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",
@@ -136,7 +140,7 @@ class NotifyGamesJobTest {
                 argThat {
                     size == 9 &&
                             any {
-                                it.id == 4747 &&
+                                it.id == 4747L &&
                                         it.name == "[ENT] HELLHALT TD v80 #55" &&
                                         it.map == "HELLHALT v5.0.80" &&
                                         it.host == "" &&
@@ -146,7 +150,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == 4176 &&
+                                it.id == 4176L &&
                                         it.name == "[ENT] HELLHALT TD v84 #25" &&
                                         it.map == "HELLHALT v5.0.84" &&
                                         it.host == "" &&
@@ -156,7 +160,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == 4746 &&
+                                it.id == 4746L &&
                                         it.name == "[ENT] DotA apem us/ca #23" &&
                                         it.map == "DotA v6.83d fixed v5 by h3rmit" &&
                                         it.host == "" &&
@@ -166,7 +170,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == 4745 &&
+                                it.id == 4745L &&
                                         it.name == "[ENT] Legion TD Mega 1v1 #65" &&
                                         it.map == "Legion TD Mega 3.43d6" &&
                                         it.host == "" &&
@@ -176,7 +180,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == 3286 &&
+                                it.id == 3286L &&
                                         it.name == "[ENT] Castle Fight 1v1 #30" &&
                                         it.map == "p1l1s-CF-2040" &&
                                         it.host == "test host" &&
@@ -186,7 +190,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == -1539066740 &&
+                                it.id == 1L &&
                                         it.name == "x hero" &&
                                         it.map == "X_Hero_Reborn_1.2_ENG_fix~1.w3x" &&
                                         it.host == "Nyxiz#2980" &&
@@ -196,7 +200,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.BattleNet
                             } &&
                             any {
-                                it.id == 258875721 &&
+                                it.id == 2L &&
                                         it.name == "greenTD" &&
                                         it.map == "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x" &&
                                         it.host == "RoDac90#2504" &&
@@ -206,7 +210,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.BattleNet
                             } &&
                             any {
-                                it.id == -1183358855 &&
+                                it.id == 3L &&
                                         it.name == "-phccezlg" &&
                                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                                         it.host == "JosipBukal#2996" &&
@@ -216,7 +220,7 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.BattleNet
                             } &&
                             any {
-                                it.id == -898256637 &&
+                                it.id == 4L &&
                                         it.name == "-prccezlg" &&
                                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                                         it.host == "JosipBukal#2996" &&
@@ -246,6 +250,7 @@ class NotifyGamesJobTest {
                         mock {
                             on { getGames() } doReturn listOf(
                                 WC3StatsGame(
+                                    1,
                                     "x hero",
                                     "X_Hero_Reborn_1.2_ENG_fix~1.w3x",
                                     "Nyxiz#2980",
@@ -255,6 +260,7 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
+                                    2,
                                     "greenTD",
                                     "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x",
                                     "RoDac90#2504",
@@ -264,6 +270,7 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
+                                    3,
                                     "-phccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",
@@ -273,6 +280,7 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
+                                    4,
                                     "-prccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",

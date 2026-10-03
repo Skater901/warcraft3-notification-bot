@@ -35,7 +35,7 @@ class WC3ConnectGameProviderITCase {
 
         assertThat(games).hasSize(5)
             .anyMatch {
-                it.id == 4747 &&
+                it.id == 4747L &&
                         it.name == "[ENT] HELLHALT TD v80 #55" &&
                         it.map == "HELLHALT v5.0.80" &&
                         it.host == "" &&
@@ -45,7 +45,7 @@ class WC3ConnectGameProviderITCase {
                         it.gameSource == GameSource.WC3Connect
             }
             .anyMatch {
-                it.id == 4176 &&
+                it.id == 4176L &&
                         it.name == "[ENT] HELLHALT TD v84 #25" &&
                         it.map == "HELLHALT v5.0.84" &&
                         it.host == "" &&
@@ -55,7 +55,7 @@ class WC3ConnectGameProviderITCase {
                         it.gameSource == GameSource.WC3Connect
             }
             .anyMatch {
-                it.id == 4746 &&
+                it.id == 4746L &&
                         it.name == "[ENT] DotA apem us/ca #23" &&
                         it.map == "DotA v6.83d fixed v5 by h3rmit" &&
                         it.host == "" &&
@@ -65,7 +65,7 @@ class WC3ConnectGameProviderITCase {
                         it.gameSource == GameSource.WC3Connect
             }
             .anyMatch {
-                it.id == 4745 &&
+                it.id == 4745L &&
                         it.name == "[ENT] Legion TD Mega 1v1 #65" &&
                         it.map == "Legion TD Mega 3.43d6" &&
                         it.host == "" &&
@@ -75,7 +75,7 @@ class WC3ConnectGameProviderITCase {
                         it.gameSource == GameSource.WC3Connect
             }
             .anyMatch {
-                it.id == 3286 &&
+                it.id == 3286L &&
                         it.name == "[ENT] Castle Fight 1v1 #30" &&
                         it.map == "p1l1s-CF-2040" &&
                         it.host == "test host" &&

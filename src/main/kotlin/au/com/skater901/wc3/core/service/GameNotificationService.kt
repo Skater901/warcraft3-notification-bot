@@ -22,7 +22,7 @@ internal class GameNotificationService @Inject constructor(
         private val logger = LoggerFactory.getLogger(GameNotificationService::class.java)
     }
 
-    private val hostedGames = mutableMapOf<Int, Pair<Game, List<GameNotifier>>>()
+    private val hostedGames = mutableMapOf<Long, Pair<Game, List<GameNotifier>>>()
 
     private val notifyGamesWork = metricsWork(::notifyGames)
     suspend fun notifyGames(currentlyHostedGames: List<Game>) {

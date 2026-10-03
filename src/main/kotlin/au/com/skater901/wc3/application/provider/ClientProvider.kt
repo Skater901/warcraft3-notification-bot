@@ -16,19 +16,23 @@ internal class ClientProvider(
     private val clientConfiguration: Provider<Map<String, URI>>,
     private val configProperties: Provider<Properties>
 ) : Provider<Client> {
-    override fun get(): Client? = JerseyClientBuilder(environment.get()).using(defaultClientConfiguration)
-        .build(clientFor.value)
-        .let {
-            (
-                    clientConfiguration.get()[clientFor.value]
-                        ?: configProperties.get()["client.${clientFor.value}"]
-                            ?.let { baseUriString -> URI.create(baseUriString.toString()) }
-                    )
-                ?.let { baseUri ->
-                    it.register(ClientRequestFilter { request ->
-                        request.uri = URI.create(baseUri.toString() + request.uri.toString())
-                    })
-                }
-                ?: it
-        }
+    private val client by lazy {
+        JerseyClientBuilder(environment.get()).using(defaultClientConfiguration)
+            .build(clientFor.value)
+            .let {
+                (
+                        clientConfiguration.get()[clientFor.value]
+                            ?: configProperties.get()["client.${clientFor.value}"]
+                                ?.let { baseUriString -> URI.create(baseUriString.toString()) }
+                        )
+                    ?.let { baseUri ->
+                        it.register(ClientRequestFilter { request ->
+                            request.uri = URI.create(baseUri.toString() + request.uri.toString())
+                        })
+                    }
+                    ?: it
+            }
+    }
+
+    override fun get(): Client = client
 }

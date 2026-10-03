@@ -22,7 +22,7 @@ public class MastoReplyGuy @Inject constructor(
     private val conf: MastoConfig,
     @param:MastodonModule
     private val wc3GameNotificationService: WC3GameNotificationService,
-    @param:ClientFor("mastodon-reply") // TODO fix this when classgraph is fixed
+    @param:ClientFor("mastodon")
     private val client: Client,
     private val mapper: ObjectMapper
 ) : ScheduledTask {

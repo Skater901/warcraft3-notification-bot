@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap
 
 public class MastoNotifier @Inject constructor(
     private val conf: MastoConfig,
-    @param:ClientFor("mastodon-notifier") // TODO fix this when classgraph is fixed
+    @param:ClientFor("mastodon")
     private val client: Client,
     private val mapper: ObjectMapper
 ) : GameNotifier {

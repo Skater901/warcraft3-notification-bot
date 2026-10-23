@@ -4,6 +4,7 @@ import au.com.skater901.wc3.api.core.domain.Game
 import au.com.skater901.wc3.api.core.domain.GameSource
 import au.com.skater901.wc3.api.core.domain.Region
 import au.com.skater901.wc3.core.convertors.RegionDeserializer
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -23,7 +24,8 @@ internal data class WC3MapsGame(
     @param:JsonDeserialize(using = RegionDeserializer::class)
     override val region: Region
 ) : Game {
-    override val id by lazy { name.hashCode() + map.hashCode() + host.hashCode() + created.epochSecond }
+    @JsonIgnore
+    override val id = name.hashCode() + map.hashCode() + host.hashCode() + created.epochSecond
 
-    override val gameSource = GameSource.BattleNet
+    override val gameSource = GameSource.WC3Maps
 }

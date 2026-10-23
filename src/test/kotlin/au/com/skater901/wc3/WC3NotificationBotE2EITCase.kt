@@ -354,7 +354,6 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
-                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",
@@ -371,7 +370,6 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
-                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",
@@ -388,7 +386,6 @@ class WC3NotificationBotE2EITCase {
 
                                 body equalTo mapper.writeValueAsString(
                                     WC3StatsGame(
-                                        1,
                                         "private swat",
                                         "SwatAfterP241127",
                                         "teller55",

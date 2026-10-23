@@ -81,7 +81,6 @@ class NotifyGamesJobTest {
                         mock {
                             on { getGames() } doReturn listOf(
                                 WC3StatsGame(
-                                    1,
                                     "x hero",
                                     "X_Hero_Reborn_1.2_ENG_fix~1.w3x",
                                     "Nyxiz#2980",
@@ -91,7 +90,6 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
-                                    2,
                                     "greenTD",
                                     "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x",
                                     "RoDac90#2504",
@@ -101,7 +99,6 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
-                                    3,
                                     "-phccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",
@@ -111,7 +108,6 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
-                                    4,
                                     "-prccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",
@@ -190,44 +186,44 @@ class NotifyGamesJobTest {
                                         it.gameSource == GameSource.WC3Connect
                             } &&
                             any {
-                                it.id == 1L &&
+                                it.id == 186107055L &&
                                         it.name == "x hero" &&
                                         it.map == "X_Hero_Reborn_1.2_ENG_fix~1.w3x" &&
                                         it.host == "Nyxiz#2980" &&
                                         it.currentPlayers == 8 &&
                                         it.maxPlayers == 9 &&
                                         it.region == Region.EU &&
-                                        it.gameSource == GameSource.BattleNet
+                                        it.gameSource == GameSource.WC3Stats
                             } &&
                             any {
-                                it.id == 2L &&
+                                it.id == 1984056240L &&
                                         it.name == "greenTD" &&
                                         it.map == "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x" &&
                                         it.host == "RoDac90#2504" &&
                                         it.currentPlayers == 4 &&
                                         it.maxPlayers == 9 &&
                                         it.region == Region.EU &&
-                                        it.gameSource == GameSource.BattleNet
+                                        it.gameSource == GameSource.WC3Stats
                             } &&
                             any {
-                                it.id == 3L &&
+                                it.id == 541920015L &&
                                         it.name == "-phccezlg" &&
                                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                                         it.host == "JosipBukal#2996" &&
                                         it.currentPlayers == 1 &&
                                         it.maxPlayers == 16 &&
                                         it.region == Region.EU &&
-                                        it.gameSource == GameSource.BattleNet
+                                        it.gameSource == GameSource.WC3Stats
                             } &&
                             any {
-                                it.id == 4L &&
+                                it.id == 827022258L &&
                                         it.name == "-prccezlg" &&
                                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                                         it.host == "JosipBukal#2996" &&
                                         it.currentPlayers == 1 &&
                                         it.maxPlayers == 16 &&
                                         it.region == Region.EU &&
-                                        it.gameSource == GameSource.BattleNet
+                                        it.gameSource == GameSource.WC3Stats
                             }
                 }
             )
@@ -250,7 +246,6 @@ class NotifyGamesJobTest {
                         mock {
                             on { getGames() } doReturn listOf(
                                 WC3StatsGame(
-                                    1,
                                     "x hero",
                                     "X_Hero_Reborn_1.2_ENG_fix~1.w3x",
                                     "Nyxiz#2980",
@@ -260,7 +255,6 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
-                                    2,
                                     "greenTD",
                                     "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x",
                                     "RoDac90#2504",
@@ -270,7 +264,6 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
-                                    3,
                                     "-phccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",
@@ -280,7 +273,6 @@ class NotifyGamesJobTest {
                                     Region.EU
                                 ),
                                 WC3StatsGame(
-                                    4,
                                     "-prccezlg",
                                     "Legion_TD_11.0k_TeamOZE.w3x",
                                     "JosipBukal#2996",

@@ -1,6 +1,7 @@
 package au.com.skater901.wc3.discord.core.handler
 
 import au.com.skater901.wc3.api.core.domain.Game
+import au.com.skater901.wc3.api.core.domain.GameNetwork
 import au.com.skater901.wc3.api.core.domain.GameSource
 import au.com.skater901.wc3.api.core.domain.Region
 import au.com.skater901.wc3.api.core.domain.exceptions.InvalidNotificationException
@@ -108,19 +109,19 @@ internal class DiscordGameNotifier @Inject constructor(
                 author(iconUrl = "https://wow.zamimg.com/uploads/screenshots/normal/875650.jpg") {
                     name = game.host
                 }
-                title = when (game.gameSource) {
-                    GameSource.BattleNet -> game.map.dropLast(4) // BattleNet games have .w3x at the end of the map name.
-                    GameSource.WC3Connect -> game.map
+                title = when (game.gameSource.gameNetwork) {
+                    GameNetwork.BattleNet -> game.map.dropLast(4) // BattleNet games have .w3x at the end of the map name.
+                    GameNetwork.WC3Connect -> game.map
                 }
                 url = when (game.gameSource) {
-                    GameSource.BattleNet -> battleNetMap(game.map)
+                    GameSource.WC3Maps, GameSource.WC3Stats -> battleNetMap(game.map)
                     GameSource.WC3Connect -> wc3ConnectMap(game.map)
                 }
                 field {
                     name = "Hosted On"
-                    value = when (game.gameSource) {
-                        GameSource.BattleNet -> "Battle.Net"
-                        GameSource.WC3Connect -> game.gameSource.name
+                    value = when (game.gameSource.gameNetwork) {
+                        GameNetwork.BattleNet -> "Battle.Net"
+                        GameNetwork.WC3Connect -> game.gameSource.name
                     }
                     inline = false
                 }
@@ -142,7 +143,8 @@ internal class DiscordGameNotifier @Inject constructor(
                     inline = false
                 }
                 val (icon, url) = when (game.gameSource) {
-                    GameSource.BattleNet -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
+                    GameSource.WC3Maps -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3maps_favicon.png" to "https://wc3maps.com/"
+                    GameSource.WC3Stats -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
                     GameSource.WC3Connect -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
                 }
                 footer("Powered by $url", icon)

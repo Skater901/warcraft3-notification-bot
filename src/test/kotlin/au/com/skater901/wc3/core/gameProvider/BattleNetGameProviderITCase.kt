@@ -33,44 +33,44 @@ class BattleNetGameProviderITCase {
 
         assertThat(games).hasSize(4)
             .anyMatch {
-                it.id == 19342L &&
+                it.id == 186107055L &&
                         it.name == "x hero" &&
                         it.map == "X_Hero_Reborn_1.2_ENG_fix~1.w3x" &&
                         it.host == "Nyxiz#2980" &&
                         it.currentPlayers == 8 &&
                         it.maxPlayers == 9 &&
                         it.region == Region.EU &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Stats
             }
             .anyMatch {
-                it.id == 21541L &&
+                it.id == 1984056240L &&
                         it.name == "greenTD" &&
                         it.map == "Green_HappyNewYear_Nightmare_FIXDESYNC~1.w3x" &&
                         it.host == "RoDac90#2504" &&
                         it.currentPlayers == 4 &&
                         it.maxPlayers == 9 &&
                         it.region == Region.US &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Stats
             }
             .anyMatch {
-                it.id == 56252L &&
+                it.id == 541920015L &&
                         it.name == "-phccezlg" &&
                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                         it.host == "JosipBukal#2996" &&
                         it.currentPlayers == 1 &&
                         it.maxPlayers == 16 &&
                         it.region == Region.EU &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Stats
             }
             .anyMatch {
-                it.id == 56258L &&
+                it.id == 827022258L &&
                         it.name == "-prccezlg" &&
                         it.map == "Legion_TD_11.0k_TeamOZE.w3x" &&
                         it.host == "JosipBukal#2996" &&
                         it.currentPlayers == 1 &&
                         it.maxPlayers == 16 &&
                         it.region == Region.Asia &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Stats
             }
 
         wireMockRuntime.wireMock.verify {
@@ -87,6 +87,7 @@ class BattleNetGameProviderITCase {
 
             headers contains HttpHeaders.ACCEPT equalTo MediaType.APPLICATION_JSON
         } returns {
+            header = HttpHeaders.CONTENT_TYPE to MediaType.APPLICATION_JSON
             body = "{\"body\":[]}"
         }
         wireMockRuntime.wireMock.get {
@@ -112,7 +113,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 10 &&
                         it.created == Instant.ofEpochSecond(1767671509) &&
                         it.region == Region.US &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
             .anyMatch {
                 it.id == 2910776496L &&
@@ -123,7 +124,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 4 &&
                         it.created == Instant.ofEpochSecond(1767671507) &&
                         it.region == Region.Asia &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
             .anyMatch {
                 it.id == 2960872087L &&
@@ -134,7 +135,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 10 &&
                         it.created == Instant.ofEpochSecond(1767670451) &&
                         it.region == Region.US &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
             .anyMatch {
                 it.id == 1002149745L &&
@@ -145,7 +146,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 11 &&
                         it.created == Instant.ofEpochSecond(1767670901) &&
                         it.region == Region.EU &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
     }
 
@@ -181,7 +182,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 10 &&
                         it.created == Instant.ofEpochSecond(1767671509) &&
                         it.region == Region.US &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
             .anyMatch {
                 it.id == 2910776496L &&
@@ -192,7 +193,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 4 &&
                         it.created == Instant.ofEpochSecond(1767671507) &&
                         it.region == Region.Asia &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
             .anyMatch {
                 it.id == 2960872087L &&
@@ -203,7 +204,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 10 &&
                         it.created == Instant.ofEpochSecond(1767670451) &&
                         it.region == Region.US &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
             .anyMatch {
                 it.id == 1002149745L &&
@@ -214,7 +215,7 @@ class BattleNetGameProviderITCase {
                         it.maxPlayers == 11 &&
                         it.created == Instant.ofEpochSecond(1767670901) &&
                         it.region == Region.EU &&
-                        it.gameSource == GameSource.BattleNet
+                        it.gameSource == GameSource.WC3Maps
             }
     }
 

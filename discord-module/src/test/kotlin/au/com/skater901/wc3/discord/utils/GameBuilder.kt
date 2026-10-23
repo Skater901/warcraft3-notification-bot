@@ -14,7 +14,7 @@ class GameBuilder : Game {
     override var maxPlayers = 8
     override var created: Instant = Instant.now()
     override var region = Region.US
-    override var gameSource = GameSource.BattleNet
+    override var gameSource = GameSource.WC3Stats
 }
 
 fun game(builder: GameBuilder.() -> Unit = {}): Game = GameBuilder().apply(builder)

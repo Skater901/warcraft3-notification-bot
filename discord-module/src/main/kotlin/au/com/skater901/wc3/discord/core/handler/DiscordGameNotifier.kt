@@ -143,7 +143,7 @@ internal class DiscordGameNotifier @Inject constructor(
                     inline = false
                 }
                 val (icon, url) = when (game.gameSource) {
-                    GameSource.WC3Maps -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3maps_favicon.png" to "https://wc3maps.com/"
+                    GameSource.WC3Maps -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3maps_favicon.jpg" to "https://wc3maps.com/"
                     GameSource.WC3Stats -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3stats_favicon.png" to "https://wc3stats.com/"
                     GameSource.WC3Connect -> "https://raw.githubusercontent.com/Skater901/warcraft3-notification-bot/main/assets/wc3connect_favicon.png" to "https://entgaming.net/"
                 }

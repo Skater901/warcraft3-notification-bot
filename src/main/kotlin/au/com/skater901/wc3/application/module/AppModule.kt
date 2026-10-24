@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorService
 internal class AppModule(scanResult: ScanResult) : KotlinModule() {
     private val gameProviders = scanResult.allClasses
         .filter { it.implementsInterface(GameProvider::class.java) }
-        .map { it.loadClass() as Class<out GameProvider> }
+        .map { Class.forName(it.name) as Class<out GameProvider> }
 
     override fun configure() {
         val binder = newSetBinder<GameProvider>(binder())

@@ -50,8 +50,11 @@ internal class WC3NotificationBot : Application<WC3NotificationBotConfiguration>
             *notificationModules.map { it.javaClass.packageName }
                 .toTypedArray()
         )
+            .enableNonSystemModules()
+            .enableClasspath()
             .enableAnnotationInfo()
             .enableMethodInfo()
+            .enableClassInfo()
             .scan()
             .use { scanResult ->
                 lateinit var guiceBundle: GuiceBundle

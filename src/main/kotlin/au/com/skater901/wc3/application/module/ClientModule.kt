@@ -42,8 +42,9 @@ internal class ClientModule(scanResult: ScanResult) : KotlinModule() {
             it.hasAnnotation(ClientFor::class.java) &&
                     (it.typeDescriptor as? ClassRefTypeSignature)?.fullyQualifiedClassName == Client::class.java.name
         }
-        .map { it.getAnnotationInfo(ClientFor::class.java).loadClassAndInstantiate() }
-        .filterIsInstance<ClientFor>()
+        .map {
+            ClientFor(it.getAllAnnotationInfo(ClientFor::class.java)!!.parameterValues[0].value as String)
+        }
         .toSet()
 
     override fun configure() {

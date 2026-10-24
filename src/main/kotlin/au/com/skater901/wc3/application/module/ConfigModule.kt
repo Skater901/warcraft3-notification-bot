@@ -16,7 +16,7 @@ import java.util.*
 internal class ConfigModule(scanResult: ScanResult) : KotlinModule() {
     private val configClasses = scanResult.allClasses
         .filter { it.hasAnnotation(ConfigClass::class.java) }
-        .map { it.loadClass() as Class<Any> }
+        .map { Class.forName(it.name) as Class<Any> }
 
     override fun configure() {
         val configProperties = getProvider(Key.get(Properties::class.java).withAnnotation(named("configProperties")))

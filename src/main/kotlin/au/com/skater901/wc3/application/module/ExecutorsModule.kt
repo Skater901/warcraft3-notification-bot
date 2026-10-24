@@ -22,8 +22,9 @@ internal class ExecutorsModule(scanResult: ScanResult) : KotlinModule() {
             it.hasAnnotation(ExecutorFor::class.java) &&
                     (it.typeDescriptor as? ClassRefTypeSignature)?.fullyQualifiedClassName == ExecutorService::class.java.name
         }
-        .map { it.getAnnotationInfo(ExecutorFor::class.java).loadClassAndInstantiate() }
-        .filterIsInstance<ExecutorFor>()
+        .map {
+            ExecutorFor(it.getAllAnnotationInfo(ExecutorFor::class.java)!!.parameterValues[0].value as String)
+        }
         .toList()
 
     override fun configure() {

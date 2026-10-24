@@ -3,8 +3,8 @@ coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0"
 
 guice = "dev.misfitlabs.kotlinguice4:kotlin-guice:3.0.0"
 
-drivers-mariadb = "org.mariadb.jdbc:mariadb-java-client:3.5.10"
-drivers-mysql = "com.mysql:mysql-connector-j:26.7.0"
+drivers-mariadb = "org.mariadb.jdbc:mariadb-java-client:4.0.0"
+drivers-mysql = "com.mysql:mysql-connector-j:26.10.0"
 jdbi = "org.jdbi:jdbi3-core:3.54.0" # Keep this in sync with Dropwizard
 liquibase = "org.liquibase:liquibase-core:5.0.4"
 
@@ -14,4 +14,4 @@ assertj = "org.assertj:assertj-core:3.27.7"
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:6.4.0"
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.4.0" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.4.21" }

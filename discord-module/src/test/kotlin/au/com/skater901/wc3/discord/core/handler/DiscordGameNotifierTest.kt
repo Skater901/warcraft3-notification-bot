@@ -269,7 +269,7 @@ class DiscordGameNotifierTest {
     @Test
     fun `should link to map on WC3Maps for BattleNet game`() {
         verifyMessageSent(game()) {
-            url == "https://wc3maps.com/maps?query=Best_Map.w3x"
+            url == "https://wc3maps.com/maps?query=Best_Map"
         }
     }
 
@@ -388,13 +388,13 @@ class DiscordGameNotifierTest {
         verifyMessageSent(game {
             map = "My cool map.w3x"
         }) {
-            url == "https://wc3maps.com/maps?query=My%20cool%20map.w3x"
+            url == "https://wc3maps.com/maps?query=My%20cool%20map"
         }
         verifyMessageSent(game {
-            map = "My cool map.w3x"
+            map = "My cool map"
             gameSource = GameSource.WC3Connect
         }) {
-            url == "https://entgaming.net/link/host_add.php?filter=My%20cool%20map.w3x"
+            url == "https://entgaming.net/link/host_add.php?filter=My%20cool%20map"
         }
     }
 

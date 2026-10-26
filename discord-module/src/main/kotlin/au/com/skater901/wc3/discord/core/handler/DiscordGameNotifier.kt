@@ -164,7 +164,7 @@ internal class DiscordGameNotifier @Inject constructor(
         "https",
         "wc3maps.com",
         "/maps",
-        "query=$mapName",
+        "query=${mapName.dropLast(4)}", // BattleNet games have .w3x at the end of the map name, which means the search finds ALL maps
         null
     )
         .toString()

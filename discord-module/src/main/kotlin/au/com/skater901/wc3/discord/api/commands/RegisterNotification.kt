@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 internal class RegisterNotification @Inject constructor(
-    @param:DiscordModule
+    @DiscordModule
     private val wc3GameNotificationService: WC3GameNotificationService,
     private val roleNotificationDAO: RoleNotificationDAO
 ) : Command {

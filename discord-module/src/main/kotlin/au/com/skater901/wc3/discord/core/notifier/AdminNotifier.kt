@@ -2,6 +2,7 @@ package au.com.skater901.wc3.discord.core.notifier
 
 import au.com.skater901.wc3.api.core.service.AdminMessageNotifier
 import au.com.skater901.wc3.api.core.service.WC3GameNotificationService
+import au.com.skater901.wc3.discord.annotations.DiscordModule
 import au.com.skater901.wc3.utilities.collections.forEachAsync
 import au.com.skater901.wc3.utilities.metricsWork
 import dev.minn.jda.ktx.coroutines.await
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory
 
 internal class AdminNotifier @Inject constructor(
     private val jda: JDA,
+    @DiscordModule
     private val wC3GameNotificationService: WC3GameNotificationService
 ) : AdminMessageNotifier {
     companion object {

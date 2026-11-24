@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 
 internal class StopNotification @Inject constructor(
-    @param:DiscordModule
+    @DiscordModule
     private val wc3GameNotificationService: WC3GameNotificationService,
     private val roleNotificationDAO: JdbiRoleNotificationDAO
 ) : Command {

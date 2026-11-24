@@ -8,12 +8,15 @@ import au.com.skater901.wc3.discord.core.dao.RoleNotificationDAO
 import au.com.skater901.wc3.discord.utils.game
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
 import net.dv8tion.jda.api.exceptions.ContextException
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.Response
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
@@ -232,6 +235,43 @@ class DiscordGameNotifierTest {
 
         assertThatThrownBy {
             runBlocking { DiscordGameNotifier(jda, mock()).notifyNewGame("1", mock()) }
+        }
+            .isInstanceOf(InvalidNotificationException::class.java)
+    }
+
+    @Test
+    fun `should throw InvalidNotificationException if channel doesn't have permissions set to allow creating message`() {
+        val guild = mock<Guild> {
+            on { idLong } doReturn 1L
+        }
+        val exception = InsufficientPermissionException(
+            guild,
+            Permission.MESSAGE_SEND
+        )
+        val response = mock<MessageCreateAction> {
+            on { submit() } doReturn CompletableFuture.failedFuture(exception)
+        }
+        val channel = mock<TextChannel> {
+            on { sendMessage(any<MessageCreateData>()) } doReturn response
+        }
+        val jda = mock<JDA> {
+            on { getTextChannelById(any<String>()) } doReturn channel
+        }
+
+        val game = mock<Game> {
+            on { id } doReturn 1
+            on { name } doReturn "DotA All Stars join fast!!!!!"
+            on { map } doReturn "DotA All Stars 6.0x"
+            on { host } doReturn "IceFrog"
+            on { currentPlayers } doReturn 3
+            on { maxPlayers } doReturn 10
+            on { created } doReturn Instant.now().minusMinutes(1).minusSeconds(5)
+            on { region } doReturn Region.US
+            on { gameSource } doReturn GameSource.WC3Connect
+        }
+
+        assertThatThrownBy {
+            runBlocking { DiscordGameNotifier(jda, mock()).notifyNewGame("1", game) }
         }
             .isInstanceOf(InvalidNotificationException::class.java)
     }

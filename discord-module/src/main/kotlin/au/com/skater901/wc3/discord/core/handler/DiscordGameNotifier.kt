@@ -17,6 +17,7 @@ import jakarta.inject.Singleton
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import java.net.URI
@@ -44,12 +45,16 @@ internal class DiscordGameNotifier @Inject constructor(
 
             val roleToNotify = roleNotificationDAO.find(notificationId)
 
-            channel.sendMessage(createGameMessage(game, false, roleToNotify))
-                .await()
-                .let {
-                    hostedGameMessages.computeIfAbsent(game.id) { mutableSetOf() }
-                        .add(it to roleToNotify)
-                }
+            try {
+                channel.sendMessage(createGameMessage(game, false, roleToNotify))
+                    .await()
+                    .let {
+                        hostedGameMessages.computeIfAbsent(game.id) { mutableSetOf() }
+                            .add(it to roleToNotify)
+                    }
+            } catch (_: InsufficientPermissionException) {
+                throw InvalidNotificationException()
+            }
         }
     }
 
